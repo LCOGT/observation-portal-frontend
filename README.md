@@ -2,11 +2,11 @@
 
 ## Environment variables
 
-| Variable                           | Description                |
-| ---------------------------------- | -------------------------- |
-| VUE_APP_OBSERVATION_PORTAL_API_URL | Observation portal API URL |
-| VUE_APP_ARCHIVE_API_URL            | Archive API URL            |
-| VUE_APP_SIMBAD_SERVICE_URL         | Simbad service URL         |
+| Variable                             | Description                |
+| ------------------------------------ | -------------------------- |
+| `VUE_APP_OBSERVATION_PORTAL_API_URL` | Observation portal API URL |
+| `VUE_APP_ARCHIVE_API_URL`            | Archive API URL            |
+| `VUE_APP_SIMBAD_SERVICE_URL`         | Simbad service URL         |
 
 ## Project setup
 ```
