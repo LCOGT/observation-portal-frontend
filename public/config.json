@@ -1,0 +1,5 @@
+{
+    "observationPortalApiUrl": "http://observation-portal-dev.lco.gtn",
+    "archiveApiUrl": "http://archive-api-dev.lco.gtn",
+    "simbadServiceUrl": "https://simbad2k.lco.global"
+}

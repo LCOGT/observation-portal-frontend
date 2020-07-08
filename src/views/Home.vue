@@ -20,10 +20,9 @@ export default {
   },
   methods: {
     getRequestgroups: function() {
-      let url = process.env.VUE_APP_OBSERVATION_PORTAL_URL + "/api/requestgroups/?limit=1";
+      let url = this.observationPortalApiUrl + "/api/requestgroups/?limit=1";
       let that = this;
       $.getJSON(url, function(data) {
-        console.log(data.results);
         that.requestgroups = data.results;
       }).done(function() {
         console.log('Finished loading ' + url);

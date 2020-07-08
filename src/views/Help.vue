@@ -8,26 +8,26 @@
         <li>
           <i class="fa fa-users fa-2x fa-fw" aria-hidden="true"></i>
           <span>
-            <router-link :to="{name: 'apply'}">Write and submit proposals</router-link>and manage the membership of their research teams.
+            <router-link :to="{name: 'apply'}">Write and submit proposals</router-link> and manage the membership of their research teams.
           </span>
         </li>
         <li>
           <i class="fab fa-wpexplorer fa-2x fa-fw" aria-hidden="true"></i>
           <span>
-            <router-link :to="{name: 'create'}">Plan, compose, and submit observation requests</router-link>for approved proposals.
+            <router-link :to="{name: 'create'}">Plan, compose, and submit observation requests</router-link> for approved proposals.
           </span>
         </li>
         <li>
           <i class="fa fa-check fa-2x fa-fw" aria-hidden="true"></i>
           <span>
-            <router-link :to="{name: 'home'}">Track the status</router-link>of submitted requests.
+            <router-link :to="{name: 'home'}">Track the status</router-link> of submitted requests.
           </span>
         </li>
         <li>
           <i class="fas fa-cloud-download-alt fa-2x fa-fw" aria-hidden="true"></i>
           <span>
             Identify and
-            <router-link :to="{name: 'apply'}">download data from completed observations.</router-link>
+            <router-link :to="{name: 'apply'}"> download data from completed observations.</router-link>
           </span>
         </li>
         <li>
@@ -39,17 +39,13 @@
         <li>
           <i class="fa fa-question fa-2x fa-fw" aria-hidden="true"></i>
           <span>
-            <a
-              href="mailto:science-support@lco.global"
-            >Report problems, ask questions, and make suggestions.</a>
+            <a href="mailto:science-support@lco.global">Report problems, ask questions, and make suggestions.</a>
           </span>
         </li>
       </ul>
       <p>
         If you are a new user of this Observation Portal, we strongly recommend that you read the
-        <a
-          href="https://lco.global/documents/450/GettingStartedontheLCONetwork.latest.pdf"
-        >"Getting Started on the LCO Global Telescope Network" Guide.</a>
+        <a href="https://lco.global/documents/450/GettingStartedontheLCONetwork.latest.pdf">"Getting Started on the LCO Global Telescope Network" Guide.</a>
       </p>
       <p>
         If you are a new user of the LCO network, information about the
@@ -73,24 +69,19 @@
       </p>
       <ul class="list-unstyled">
         <li>
-          Google Chrome/Chromium:
-          <strong>56+</strong>
+          Google Chrome/Chromium: <strong>56+</strong>
         </li>
         <li>
-          Mozilla Firefox:
-          <strong>46+</strong>
+          Mozilla Firefox: <strong>46+</strong>
         </li>
         <li>
-          Apple Safari:
-          <strong>11.1+</strong>
+          Apple Safari: <strong>11.1+</strong>
         </li>
         <li>
-          Microsoft Edge:
-          <strong>17+</strong>
+          Microsoft Edge: <strong>17+</strong>
         </li>
         <li>
-          Internet Explorer:
-          <strong>10+</strong> (minimal support)
+          Internet Explorer: <strong>10+</strong> (minimal support)
         </li>
       </ul>
       <p>
