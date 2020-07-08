@@ -8,38 +8,37 @@
         <li>
           <i class="fa fa-users fa-2x fa-fw" aria-hidden="true"></i>
           <span>
-            <router-link :to="{name: 'apply'}">Write and submit proposals</router-link> and manage the membership of their research teams.
+            <router-link :to="{name: 'apply'}"> Write and submit proposals</router-link> and manage the membership of their research teams.
           </span>
         </li>
         <li>
           <i class="fab fa-wpexplorer fa-2x fa-fw" aria-hidden="true"></i>
           <span>
-            <router-link :to="{name: 'create'}">Plan, compose, and submit observation requests</router-link> for approved proposals.
+            <router-link :to="{name: 'create'}"> Plan, compose, and submit observation requests</router-link> for approved proposals.
           </span>
         </li>
         <li>
           <i class="fa fa-check fa-2x fa-fw" aria-hidden="true"></i>
           <span>
-            <router-link :to="{name: 'home'}">Track the status</router-link> of submitted requests.
+            <router-link :to="{name: 'home'}"> Track the status</router-link> of submitted requests.
           </span>
         </li>
         <li>
           <i class="fas fa-cloud-download-alt fa-2x fa-fw" aria-hidden="true"></i>
-          <span>
-            Identify and
+          <span> Identify and
             <router-link :to="{name: 'apply'}"> download data from completed observations.</router-link>
           </span>
         </li>
         <li>
           <i class="far fa-clock fa-2x fa-fw" aria-hidden="true"></i>
           <span>
-            <router-link :to="{name: 'proposals'}">Monitor the hours used by approved proposals.</router-link>
+            <router-link :to="{name: 'proposals'}"> Monitor the hours used by approved proposals.</router-link>
           </span>
         </li>
         <li>
           <i class="fa fa-question fa-2x fa-fw" aria-hidden="true"></i>
           <span>
-            <a href="mailto:science-support@lco.global">Report problems, ask questions, and make suggestions.</a>
+            <a href="mailto:science-support@lco.global"> Report problems, ask questions, and make suggestions.</a>
           </span>
         </li>
       </ul>
