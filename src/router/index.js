@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import NotFound from '../views/NotFound.vue';
+import _ from 'lodash';
 
 Vue.use(VueRouter)
 
@@ -9,7 +10,10 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home
+    component: Home,
+    meta: {
+      title: 'Submitted Requests'
+    }
   },
   {
     path: '/help',
@@ -17,7 +21,10 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (help.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Help.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/Help.vue'),
+    meta: {
+      title: 'Help'
+    }
   },
   {
     path: '/proposals',
@@ -65,6 +72,19 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+});
+
+router.beforeEach((to, from, next) => {
+  // Set the title of each page
+  const baseTitle = _.split(document.title, '|')[0];
+  const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title);
+  // If a route with a title was found, set the document (page) title to that value.
+  if (nearestWithTitle) {
+    document.title = baseTitle + ' | ' + nearestWithTitle.meta.title;
+  } else {
+    document.title = baseTitle;
+  }
+  next();
 });
 
 export default router;
