@@ -9,7 +9,7 @@ import '@/assets/css/main.css';
 Vue.config.productionTip = false
 
 const getRuntimeConfig = async () => {
-  const runtimeConfig = await fetch('/config.json');
+  const runtimeConfig = await fetch('/config/urls.json');
   return await runtimeConfig.json();
 }
 

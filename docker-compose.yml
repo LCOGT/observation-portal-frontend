@@ -1,7 +1,7 @@
 web:
   image: op-frontend
   ports:
-    - "8080:80"
+    - "8080:8080"
   environment:
     - VUE_APP_OBSERVATION_PORTAL_API_URL=http://observation-portal-dev.lco.gtn
     - VUE_APP_ARCHIVE_API_URL=http://archive-api-dev.lco.gtn

@@ -1,0 +1,5 @@
+{
+    "observationPortalApiUrl": "http://127.0.0.1:8000",
+    "archiveApiUrl": "http://127.0.0.1:8000",
+    "simbadServiceUrl": "http://127.0.0.1:8000"
+}
