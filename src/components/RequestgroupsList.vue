@@ -273,7 +273,7 @@ import $ from 'jquery';
 import _ from 'lodash';
 
 import { timeFromNow, formatDate, copyObject, stateToBsClass } from '@/utils.js';
-import { testProfileData } from '@/testData.js';
+import { getTestProfileData } from '@/testData.js';
 
 export default {
   name: 'RequestgroupsList',
@@ -341,6 +341,7 @@ export default {
       limit: 20,
       offset: 0
     }
+    let testProfileData = getTestProfileData(this.$route.query);
     return {
       orderOptions: orderOptions,
       stateOptions: stateOptions,
@@ -351,7 +352,7 @@ export default {
         { key: 'requestgroupInfo', tdClass: 'p-0 m-0', thClass: 'border-0' },
       ],
       // TODO: Replace with actual profile data
-      profile: testProfileData,
+      profile: testProfileData[0],
       isBusy: false,
       errors: [],
       currentPage: 1,
@@ -445,8 +446,12 @@ export default {
     updateRequestgroups: function() {
       this.setUserIfAuthoredOnly();
       this.getRequestgroups();
-      if (!_.isEqual(this.rgQueryParams, this.$route.query)) {
-        this.$router.push({ query: this.rgQueryParams });
+      let newQueryParams = copyObject(this.$route.query);
+      for (let rgKey in this.rgQueryParams) {
+        newQueryParams[rgKey] = this.rgQueryParams[rgKey];
+      }
+      if (!_.isEqual(newQueryParams, this.$route.query)) {
+        this.$router.push({ query: newQueryParams });
       }
     },
     onSubmit: function(event) {

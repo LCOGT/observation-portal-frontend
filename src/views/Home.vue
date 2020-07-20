@@ -68,7 +68,7 @@
   </b-container>
 </template>
 <script>
-import { testProfileData, userIsAuthenticated } from '@/testData.js';
+import { getTestProfileData } from '@/testData.js';
 
 import RequestgroupsList from '@/components/RequestgroupsList.vue';
 import TelescopeAvailabilityChart from '@/components/TelescopeAvailabilityChart.vue';
@@ -80,10 +80,11 @@ export default {
     TelescopeAvailabilityChart
   },
   data: function() {
+    let testProfileData = getTestProfileData(this.$route.query);
     return {
       // TODO: Update to derive from actual profile data
-      profile: testProfileData,
-      userIsAuthenticated: userIsAuthenticated
+      profile: testProfileData[0],
+      userIsAuthenticated: testProfileData[1]
     }
   },
   computed: {

@@ -100,17 +100,18 @@
 <script>
 import moment from 'moment';
 
-import { testProfileData, userIsAuthenticated } from '@/testData.js';
+import { getTestProfileData } from '@/testData.js';
 
 export default {
   name: "App",
   data: function() {
+    let testProfileData = getTestProfileData(this.$route.query);
     return {
       bootstrap_messages: "",
       year: moment.utc().format("YYYY"),
       // TODO: Update to derive from actual profile data
-      profile: testProfileData,
-      userIsAuthenticated: userIsAuthenticated
+      profile: testProfileData[0],
+      userIsAuthenticated: testProfileData[1]
     };
   },
   computed: {
