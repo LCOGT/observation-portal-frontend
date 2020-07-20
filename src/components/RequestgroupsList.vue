@@ -127,22 +127,24 @@
                   <i class="fa fa-arrow-left"></i> <i class="fa fa-calendar"></i> Submitted Before 
                 </template>
               </b-form-group>
-              <b-form-group 
-                id="input-group-user" 
-                label-for="input-user"
-                label-class="m-0"
-                class="my-2"
-              >
-                <b-form-input
-                  id="input-user"
-                  v-model="rgQueryParams.user"
-                  placeholder="Username Contains"
-                  size="sm"
-                ></b-form-input>
-                <template v-slot:label>
-                  <i class="fa fa-user"></i> Username Contains
-                </template>
-              </b-form-group>
+              <div v-if="!viewAuthoredRequestsOnly">
+                <b-form-group
+                  id="input-group-user"
+                  label-for="input-user"
+                  label-class="m-0"
+                  class="my-2"
+                >
+                  <b-form-input
+                    id="input-user"
+                    v-model="rgQueryParams.user"
+                    placeholder="Username Contains"
+                    size="sm"
+                  ></b-form-input>
+                  <template v-slot:label>
+                    <i class="fa fa-user"></i> Username Contains
+                  </template>
+                </b-form-group>
+              </div>
               <b-dropdown-divider></b-dropdown-divider>
               <b-button-group class="mx-4">
                 <b-button type="submit" variant="outline-info"><span class="text-nowrap">Filter Results</span></b-button>
@@ -335,6 +337,7 @@ export default {
       target: '',
       created_after: '',
       created_before: '',
+      user: '',
       limit: 20,
       offset: 0
     }
@@ -363,7 +366,7 @@ export default {
   },
   created: function() {
     this.mergeRgQueryParams();
-    this.getRequestgroups();
+    this.updateRequestgroups();
   },
   computed: {
     proposalOptions: function() {
@@ -381,6 +384,9 @@ export default {
         }
       }
       return options;
+    },
+    viewAuthoredRequestsOnly: function() {
+      return this.profile.profile && this.profile.profile.view_authored_requests_only;
     }
   },
   methods: {
@@ -407,8 +413,12 @@ export default {
     calculateOffset(currentPage) {
       return (currentPage - 1) * this.rgQueryParams.limit;
     },
+    setUserIfAuthoredOnly: function() {
+      if (this.viewAuthoredRequestsOnly) {
+        this.rgQueryParams.user = this.profile.username;
+      }
+    },
     getRequestgroups: function() {
-      // TODO: Take profile.staff_view and profile.view_authored_requests_only into account
       // TODO: Cancel any currently running request
       this.isBusy = true;
       let url = this.observationPortalApiUrl + '/api/requestgroups/';
@@ -432,16 +442,21 @@ export default {
         that.isBusy = false;
       })
     },
+    updateRequestgroups: function() {
+      this.setUserIfAuthoredOnly();
+      this.getRequestgroups();
+      if (!_.isEqual(this.rgQueryParams, this.$route.query)) {
+        this.$router.push({ query: this.rgQueryParams });
+      }
+    },
     onSubmit: function(event) {
       event.preventDefault();
-      this.getRequestgroups();
-      this.$router.push({ query: this.rgQueryParams });
+      this.updateRequestgroups();
     },
     onReset: function(event) {
       event.preventDefault();
       this.rgQueryParams = copyObject(this.defaultRgQueryParams);
-      this.getRequestgroups();
-      this.$router.push({ query: this.rgQueryParams });
+      this.updateRequestgroups()
     }
   },
   watch: {
@@ -449,12 +464,12 @@ export default {
       // Update the limit and offset in the params, then get a new resultset
       if (newCurrentPage) {
         this.rgQueryParams.offset = this.calculateOffset(newCurrentPage);
-        this.getRequestgroups();
+        this.updateRequestgroups();
       }
     },
     'rgQueryParams.limit': function(newLimit) {
       if (newLimit) {
-        this.getRequestgroups();
+        this.updateRequestgroups();
       }
     }
   }
