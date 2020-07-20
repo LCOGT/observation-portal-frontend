@@ -2,7 +2,7 @@
 
 export const userIsAuthenticated = true;
 export const testProfileData = {
-    "username": "isaac newton",
+    "username": "isaac_newton",
     "email": "isaac@lco.global",
     "profile": {
         "education_user": false,
