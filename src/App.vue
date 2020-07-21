@@ -15,7 +15,7 @@
             Observation
             <br />Portal
           </router-link>
-          <span v-if="user.profile.simple_interface" class="basic">basic mode</span>
+          <span v-if="simpleInterface" class="basic">basic mode</span>
         </div>
       </div>
       <button
@@ -51,13 +51,13 @@
           </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li v-if="user.is_authenticated" class="dropdown nav-item">
+          <li v-if="userIsAuthenticated" class="dropdown nav-item">
             <a
               class="dropdown-toggle nav-link"
               id="userNavOptions"
               data-toggle="dropdown"
               href="#"
-            >{{ user.username }}</a>
+            >{{ profile.username }}</a>
             <div class="dropdown-menu" aria-labelledby="userNavOptions">
               <router-link class="dropdown-item" :to="{name: 'profile'}">Profile</router-link>
               <router-link class="dropdown-item" :to="{name: 'logout'}">Logout</router-link>
@@ -98,22 +98,30 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment';
+
+import { getTestProfileData } from '@/testData.js';
 
 export default {
   name: "App",
   data: function() {
+    let testProfileData = getTestProfileData(this.$route.query);
     return {
       bootstrap_messages: "",
       year: moment.utc().format("YYYY"),
-      user: {
-        username: "isaac_newton",
-        is_authenticated: true,
-        profile: {
-          simple_interface: false
-        }
-      }
+      // TODO: Update to derive from actual profile data
+      profile: testProfileData[0],
+      userIsAuthenticated: testProfileData[1]
     };
+  },
+  computed: {
+    simpleInterface: function() {
+      if (this.profile.profile && this.profile.profile.simple_interface) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 };
 </script>

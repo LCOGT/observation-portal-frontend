@@ -145,13 +145,11 @@ a:hover {
     border: 1px solid #EFF0EC;
     min-height: 75px;
     margin: 0px;
-
 }
 
 .requestgroup-title {
     font-size: 1.2em;
     font-weight: 900;
-    margin-left: 4px;
 }
 
 .requestgroup-success {
@@ -172,10 +170,6 @@ a:hover {
 
 .requestgroup-info {
     background: linear-gradient(to right,#31708f 0,#31708f 10px,#fff 10px,#fff 100%) no-repeat;
-}
-
-.requestgroup-block > p {
-    margin: 3px;
 }
 
 .requestgroup-block.border-right {
@@ -199,9 +193,9 @@ a:hover {
 
 .request-count {
     font-size: 1.9em;
-    margin-top: 15px;
-    margin-bottom: 5px;
+    padding-top: 15px;
 }
+
 .request-additional {
     padding-top: 20px;
     font-size: 1.5em;
@@ -283,6 +277,11 @@ a:hover {
     color: #009cc3;
 }
 
+a {
+    color: #009cc3;
+    text-decoration: none;
+}
+
 .pagination > .active > a {
     background-color: #009cc3;
 }
@@ -307,8 +306,7 @@ a:hover {
     padding: 0 !important;
 }
 
-
- .btn-outline-secondary {
+.btn-outline-secondary {
     border-color: #bababa;
     color: #000000;
 }

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
+import Tools from '../views/Tools.vue';
 import NotFound from '../views/NotFound.vue';
 import _ from 'lodash';
 
@@ -33,6 +34,18 @@ const routes = [
     component: NotFound
   },
   {
+    path: '/proposals/:id',
+    name: 'proposalsDetail',
+    // TODO: Update component
+    component: NotFound
+  },
+  {
+    path: '/requestgroups/:id',
+    name: 'requestgroupsDetail',
+    // TODO: Update component
+    component: NotFound
+  },
+  {
     path: '/accounts/profile',
     name: 'profile',
     // TODO: Update with profile component
@@ -51,6 +64,12 @@ const routes = [
     component: NotFound
   },
   {
+    path: '/register',
+    name: 'register',
+    // TODO: Update component
+    component: NotFound
+  },
+  {
     path: '/apply',
     name: 'apply',
     // TODO: Update with sciapplications component
@@ -61,6 +80,14 @@ const routes = [
     name: 'create',
     // TODO: Update with create component
     component: NotFound
+  },
+  {
+    path: '/tools',
+    name: 'tools',
+    component: Tools,
+    meta: {
+      title: 'Planning Tools'
+    }
   },
   { 
     path: '*',
