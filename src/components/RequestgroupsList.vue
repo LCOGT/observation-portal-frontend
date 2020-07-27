@@ -463,7 +463,7 @@ export default {
       this.currentPage = 1;
       this.rgQueryParams.offset = 0;
     },
-    isIntAndChanged: function(newInt, oldInt) {
+    isNumberAndChanged: function(newInt, oldInt) {
       newInt = _.parseInt(newInt);
       oldInt = _.parseInt(oldInt);
       return _.isNumber(newInt) && newInt !== oldInt;
@@ -480,14 +480,14 @@ export default {
       this.updateRequestgroups()
     },
     onPageChange: function(newPage) {
-      if (this.isIntAndChanged(newPage, this.currentPage)) {
+      if (this.isNumberAndChanged(newPage, this.currentPage)) {
         this.currentPage = newPage;
         this.rgQueryParams.offset = this.calculateOffset(newPage);
         this.updateRequestgroups();
       }
     },
     onLimitChange: function(newLimit) {
-      if (this.isIntAndChanged(newLimit, this.rgQueryParams.limit)) {
+      if (this.isNumberAndChanged(newLimit, this.rgQueryParams.limit)) {
         this.rgQueryParams.limit = newLimit;
         this.goToFirstPage();
         this.updateRequestgroups();
