@@ -247,9 +247,11 @@
       <b-row class="row">
         <b-col md="9" cols="12">
           <b-pagination
-            v-model="currentPage"
+            v-if="requestgroups.count > rgQueryParams.limit"
+            :value="currentPage"
             :total-rows="requestgroups.count"
             :per-page="rgQueryParams.limit"
+            @change="onPageChange"
             aria-controls="requestgroups-table"
           ></b-pagination>
         </b-col>
@@ -258,9 +260,10 @@
             label-for="perPageSelect"
           >
             <b-form-select
-              v-model="rgQueryParams.limit"
+              :value="rgQueryParams.limit"
               id="perPageSelect"
               :options="perPageOptions"
+              @change="onLimitChange"
             ></b-form-select>
           </b-form-group>
         </b-col>
@@ -341,11 +344,13 @@ export default {
       limit: 20,
       offset: 0
     }
+    let rgQueryParams = this.getMergedRgQueryParams(defaultRgQueryParams);
+    let currentPage = this.calculateCurrentPage(rgQueryParams.offset, rgQueryParams.limit)
     let testProfileData = getTestProfileData(this.$route.query);
     return {
       orderOptions: orderOptions,
       stateOptions: stateOptions,
-      rgQueryParams: copyObject(defaultRgQueryParams),
+      rgQueryParams: rgQueryParams,
       defaultRgQueryParams: defaultRgQueryParams,
       requestgroups: { count: 0, results: [] },
       fields: [
@@ -355,7 +360,7 @@ export default {
       profile: testProfileData[0],
       isBusy: false,
       errors: [],
-      currentPage: 1,
+      currentPage: currentPage,
       perPageOptions: [
         { value: '5', text: 'Show: 5'},
         { value: '10', text: 'Show: 10'},
@@ -366,7 +371,6 @@ export default {
     }
   },
   created: function() {
-    this.mergeRgQueryParams();
     this.updateRequestgroups();
   },
   computed: {
@@ -398,18 +402,20 @@ export default {
         return;
       }
     },
-    mergeRgQueryParams: function() {
+    getMergedRgQueryParams: function(baseRgQueryParams) {
       // Add any requestgroup query parameters that are in the url to the 
       // request query param object so that the API request will include them.
+      let mergedRgQueryParams = copyObject(baseRgQueryParams);
       for (let key in this.$route.query) {
-        if (_.has(this.rgQueryParams, key)) {
-          this.rgQueryParams[key] = this.$route.query[key];
+        if (_.has(mergedRgQueryParams, key)) {
+          mergedRgQueryParams[key] = this.$route.query[key];
         }
       }
+      return mergedRgQueryParams;
     },
-    calculateCurrentPage(offset) {
+    calculateCurrentPage(offset, limit) {
       // The offset is always a multiple of the limit
-      return offset / this.rgQueryParams.limit + 1;
+      return offset / limit + 1;
     },
     calculateOffset(currentPage) {
       return (currentPage - 1) * this.rgQueryParams.limit;
@@ -426,7 +432,6 @@ export default {
       let that = this;
       $.getJSON(url, this.rgQueryParams).done(function(data) {
         that.requestgroups = data;
-        that.currentPage = that.calculateCurrentPage(that.rgQueryParams.offset);
         that.errors = [];
       }).fail(function(data) {
         that.requestgroups = {count: 0, results: []};
@@ -454,26 +459,37 @@ export default {
         this.$router.push({ query: newQueryParams });
       }
     },
+    goToFirstPage: function() {
+      this.currentPage = 1;
+      this.rgQueryParams.offset = 0;
+    },
+    isIntAndChanged: function(newInt, oldInt) {
+      newInt = _.parseInt(newInt);
+      oldInt = _.parseInt(oldInt);
+      return _.isNumber(newInt) && newInt !== oldInt;
+    },
     onSubmit: function(event) {
       event.preventDefault();
+      this.goToFirstPage();
       this.updateRequestgroups();
     },
     onReset: function(event) {
       event.preventDefault();
       this.rgQueryParams = copyObject(this.defaultRgQueryParams);
+      this.goToFirstPage();
       this.updateRequestgroups()
-    }
-  },
-  watch: {
-    currentPage: function(newCurrentPage) {
-      // Update the limit and offset in the params, then get a new resultset
-      if (newCurrentPage) {
-        this.rgQueryParams.offset = this.calculateOffset(newCurrentPage);
+    },
+    onPageChange: function(newPage) {
+      if (this.isIntAndChanged(newPage, this.currentPage)) {
+        this.currentPage = newPage;
+        this.rgQueryParams.offset = this.calculateOffset(newPage);
         this.updateRequestgroups();
       }
     },
-    'rgQueryParams.limit': function(newLimit) {
-      if (newLimit) {
+    onLimitChange: function(newLimit) {
+      if (this.isIntAndChanged(newLimit, this.rgQueryParams.limit)) {
+        this.rgQueryParams.limit = newLimit;
+        this.goToFirstPage();
         this.updateRequestgroups();
       }
     }
