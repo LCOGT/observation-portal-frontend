@@ -7,6 +7,15 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import '@/assets/css/main.css';
+import $ from 'jquery';
+import { addCsrfProtection } from '@/utils.js';
+
+$(document).ajaxSend(addCsrfProtection);
+$.ajaxSetup({
+  xhrFields: {
+     withCredentials: true
+  }
+});
 
 Vue.use(BootstrapVue);
 

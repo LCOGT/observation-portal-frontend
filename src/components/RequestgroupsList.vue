@@ -276,7 +276,6 @@ import $ from 'jquery';
 import _ from 'lodash';
 
 import { timeFromNow, formatDate, copyObject, stateToBsClass } from '@/utils.js';
-import { getTestProfileData } from '@/testData.js';
 
 export default {
   name: 'RequestgroupsList',
@@ -346,7 +345,6 @@ export default {
     }
     let rgQueryParams = this.getMergedRgQueryParams(defaultRgQueryParams);
     let currentPage = this.calculateCurrentPage(rgQueryParams.offset, rgQueryParams.limit)
-    let testProfileData = getTestProfileData(this.$route.query);
     return {
       orderOptions: orderOptions,
       stateOptions: stateOptions,
@@ -356,8 +354,6 @@ export default {
       fields: [
         { key: 'requestgroupInfo', tdClass: 'p-0 m-0', thClass: 'border-0' },
       ],
-      // TODO: Replace with actual profile data
-      profile: testProfileData[0],
       isBusy: false,
       errors: [],
       currentPage: currentPage,
@@ -374,6 +370,9 @@ export default {
     this.updateRequestgroups();
   },
   computed: {
+    profile: function() {
+      return this.$store.state.profile;
+    },
     proposalOptions: function() {
       let selected = this.rgQueryParams.proposal;
       let proposalInQuery = _.get(this.$route, 'query.proposal', '');

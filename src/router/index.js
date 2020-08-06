@@ -3,9 +3,10 @@ import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import Tools from '../views/Tools.vue';
 import NotFound from '../views/NotFound.vue';
+import Login from '../views/Login.vue';
 import _ from 'lodash';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
@@ -55,17 +56,20 @@ const routes = [
     path: '/login',
     name: 'login',
     // TODO: Update with login component
-    component: NotFound
-  },
-  {
-    path: '/logout',
-    name: 'logout',
-    // TODO: Update with logout component
-    component: NotFound
+    component: Login,
+    meta: {
+      title: 'Log in'
+    }
   },
   {
     path: '/register',
     name: 'register',
+    // TODO: Update component
+    component: NotFound
+  },
+  {
+    path: '/accounts/password/reset',
+    name: 'passwordReset',
     // TODO: Update component
     component: NotFound
   },
