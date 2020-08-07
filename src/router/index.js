@@ -48,7 +48,7 @@ const routes = [
     component: NotFound
   },
   {
-    path: '/profile',
+    path: '/accounts/profile',
     name: 'profile',
     component: Profile,
     meta: {
@@ -56,7 +56,7 @@ const routes = [
     }
   },
   {
-    path: '/login',
+    path: '/accounts/login',
     name: 'login',
     // TODO: Update with login component
     component: Login,
@@ -65,7 +65,7 @@ const routes = [
     }
   },
   {
-    path: '/register',
+    path: '/accounts/register',
     name: 'register',
     // TODO: Update component
     component: NotFound
@@ -84,7 +84,7 @@ const routes = [
   },
   {
     // This is one of our views
-    path: '/accounts/removalrequest/',
+    path: '/accounts/removalrequest',
     name: 'accountRemoval',
     component: NotFound
   },

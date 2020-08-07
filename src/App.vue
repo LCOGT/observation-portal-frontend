@@ -130,7 +130,7 @@ export default {
     performLogout: function() {
       let that = this;
       $.ajax({
-        method: 'GET',
+        method: 'POST',
         url: this.observationPortalApiUrl + '/accounts/logout/',
         success: function() {
           console.log('successfully logged out');
