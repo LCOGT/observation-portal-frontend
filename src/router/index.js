@@ -4,6 +4,7 @@ import Home from '../views/Home.vue';
 import Tools from '../views/Tools.vue';
 import NotFound from '../views/NotFound.vue';
 import Login from '../views/Login.vue';
+import Profile from '../views/Profile.vue'
 import _ from 'lodash';
 
 Vue.use(VueRouter);
@@ -47,10 +48,12 @@ const routes = [
     component: NotFound
   },
   {
-    path: '/accounts/profile',
+    path: '/profile',
     name: 'profile',
-    // TODO: Update with profile component
-    component: NotFound
+    component: Profile,
+    meta: {
+      title: 'Profile'
+    }
   },
   {
     path: '/login',
@@ -71,6 +74,18 @@ const routes = [
     path: '/accounts/password/reset',
     name: 'passwordReset',
     // TODO: Update component
+    component: NotFound
+  },
+  {
+    path: '/accounts/password/change',
+    name: 'passwordChange',
+    // TODO: Update component
+    component: NotFound
+  },
+  {
+    // This is one of our views
+    path: '/accounts/removalrequest/',
+    name: 'accountRemoval',
     component: NotFound
   },
   {

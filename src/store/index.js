@@ -6,7 +6,12 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
-    profile: {},
+    profile: {
+      profile: {},
+      tokens: {},
+      proposals: [],
+      available_instrument_types: []
+    },
     userIsAuthenticated: false
   },
   mutations: {

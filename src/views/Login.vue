@@ -17,7 +17,7 @@ export default {
   name: 'Login',
   data: function() {
     return {
-      formElementId: '#obs-portal-log-in-form'
+      formElementSelector: '#obs-portal-log-in-form'
     }
   },
   mounted: function() {
@@ -27,7 +27,7 @@ export default {
       evt.preventDefault();
       that.submitForm();
     });
-    loadedContentElement.load(this.observationPortalLoginUrl + ' ' + this.formElementId);
+    loadedContentElement.load(this.observationPortalLoginUrl + ' ' + this.formElementSelector);
   },
   computed: {
     observationPortalLoginUrl: function() {
@@ -40,13 +40,13 @@ export default {
       $.ajax({
         method: 'POST',
         url: this.observationPortalLoginUrl,
-        data: $(this.formElementId).serialize(),
+        data: $(this.formElementSelector).serialize(),
         success: function(data) {
           // If the form is in the response, that means there was an error logging in. Replace with
           // the new form to display error messages.
-          let updatedForm = $(data).find(that.formElementId);
+          let updatedForm = $(data).find(that.formElementSelector);
           if (updatedForm.length == 1) {
-            $(that.formElementId).replaceWith(updatedForm);
+            $(that.formElementSelector).replaceWith(updatedForm);
           } else {
             // Successful log in
             let homePath = that.$router.resolve({ name: 'home'});
