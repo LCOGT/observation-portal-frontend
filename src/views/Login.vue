@@ -1,12 +1,10 @@
 <template>
   <b-row>
     <b-col id="form-content">
-      <div id="form-alert"></div>
       <b-form id="obs-portal-log-in-form">
         <b-form-group id="input-group-login-username" label="Username" label-for="input-login-username">
           <b-form-input
             id="input-login-username"
-            v-model="formData.username"
             name="username"
             required
           ></b-form-input>
@@ -14,7 +12,6 @@
         <b-form-group id="input-group-login-password" label="Password" label-for="input-login-password">
           <b-form-input
             id="input-login-password"
-            v-model="formData.password"
             name="password"
             type="password"
             required
@@ -37,10 +34,6 @@ export default {
   name: 'Login',
   data: function() {
     return {
-      formData: {
-        username: '',
-        password: ''
-      },
       // Both the element ID of this form and the ID of the form that is returned
       // from the login procedure when there are errors
       formElementSelector: '#obs-portal-log-in-form'
