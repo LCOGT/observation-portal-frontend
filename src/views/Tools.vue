@@ -40,6 +40,11 @@
         instruments: []
       }
     },
+    computed: {
+      observationPortalApiUrl: function() {
+        return this.$store.state.urls.observationPortalApi;
+      }
+    },
     created: function() {
       let that = this;
       $.getJSON(that.observationPortalApiUrl + '/api/instruments/', function(data) {

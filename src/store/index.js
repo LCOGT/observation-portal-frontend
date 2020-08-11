@@ -12,7 +12,10 @@ export default new Vuex.Store({
       proposals: [],
       available_instrument_types: []
     },
-    userIsAuthenticated: false
+    profileDataRetrieved: false,
+    userIsAuthenticated: false,
+    userAcceptedTerms: false,
+    urls: {}
   },
   mutations: {
     setProfileData (state, payload) {
@@ -20,6 +23,16 @@ export default new Vuex.Store({
       if (payload.username) {
         state.userIsAuthenticated = true;
       }
+      if (payload.profile.terms_accepted) {
+        state.userAcceptedTerms = true;
+      }
+      state.profileDataRetrieved = true;
+    },
+    setProfileDataAsRetrieved (state) {
+      state.profileDataRetrieved = true;
+    },
+    setRuntimeConfig (state, payload) {
+      state.urls = payload;
     }
   },
   actions: {

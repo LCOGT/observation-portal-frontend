@@ -4,8 +4,13 @@ import Home from '../views/Home.vue';
 import Tools from '../views/Tools.vue';
 import NotFound from '../views/NotFound.vue';
 import Login from '../views/Login.vue';
-import Profile from '../views/Profile.vue'
+import Profile from '../views/Profile.vue';
+import Register from '../views/Register.vue'
+import ActivateAccount from '../views/ActivateAccount.vue';
+import AcceptTerms from '../views/AcceptTerms.vue';
+import store from '../store/index.js';
 import _ from 'lodash';
+import $ from 'jquery';
 
 Vue.use(VueRouter);
 
@@ -67,8 +72,18 @@ const routes = [
   {
     path: '/accounts/register',
     name: 'register',
-    // TODO: Update component
-    component: NotFound
+    component: Register,
+    meta: {
+      title: 'Register for an account'
+    }
+  },
+  {
+    path: '/accounts/activate/:id',
+    name: 'ActivateAccount',
+    component: ActivateAccount,
+    meta: {
+      title: 'Activate account'
+    }
   },
   {
     path: '/accounts/password/reset',
@@ -87,6 +102,14 @@ const routes = [
     path: '/accounts/removalrequest',
     name: 'accountRemoval',
     component: NotFound
+  },
+  {
+    path: '/accounts/acceptterms',
+    name: 'acceptTerms',
+    component: AcceptTerms,
+    meta: {
+      title: 'Accept Terms'
+    }
   },
   {
     path: '/apply',
@@ -131,6 +154,33 @@ router.beforeEach((to, from, next) => {
     document.title = baseTitle;
   }
   next();
+})
+
+router.beforeEach((to, from, next) => {
+  // Redirect to the Accept Terms page if the user is logged in but has not
+  // yet accepted the terms.
+  if (!store.state.profileDataRetrieved) {
+    $.ajax({
+      url: store.state.urls.observationPortalApi + '/api/profile/',
+      success: function (response) {
+        store.commit('setProfileData', response);
+      },
+      error: function(response) {
+        if (response.status === 403) {
+          // Tried to get profile data, but are not authenticated.
+          store.commit('setProfileDataAsRetrieved')
+        }
+      },
+      // Need to wait for profile information to load before moving on to the next step as
+      // that contains whether a user has accepted terms or not.
+      async: false
+    });
+  }
+  if (store.state.userIsAuthenticated && !store.state.userAcceptedTerms && to.name !== 'acceptTerms') {
+    next({ name: 'acceptTerms' });
+  } else {
+    next();
+  }
 });
 
 export default router;

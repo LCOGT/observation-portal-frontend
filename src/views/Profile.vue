@@ -214,6 +214,9 @@ export default {
     profile: function () {
       return copyObject(this.$store.state.profile);
     },
+    observationPortalApiUrl: function() {
+      return this.$store.state.urls.observationPortalApi;
+    }
   },
   methods: {
     getFeedback: function (key) {
@@ -246,7 +249,7 @@ export default {
       let that = this;
       $.ajax({
         method: "PATCH",
-        url: this.observationPortalApiUrl + "/api/profile/",
+        url: this.observationPortalApiUrl + '/api/profile/',
         data: JSON.stringify(that.formData),
         contentType: "application/json",
         success: function () {

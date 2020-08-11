@@ -60,7 +60,13 @@
             >{{ profile.username }}</a>
             <div class="dropdown-menu" aria-labelledby="userNavOptions">
               <router-link class="dropdown-item" :to="{name: 'profile'}">Profile</router-link>
-              <a class="dropdown-item" @click="performLogout">Logout</a>
+              <passthrough-get
+                endpoint="/accounts/logout/"
+                :asLink="true"
+                linkText="Logout"
+                successRedirectViewName="home"
+                linkClasses="dropdown-item"
+              ></passthrough-get>
             </div>
           </li>
           <li v-else class="nav-item">
@@ -99,21 +105,19 @@
 
 <script>
 import moment from 'moment';
-import $ from 'jquery';
+
+import PassthroughGet from '@/components/PassthroughGet.vue';
 
 export default {
   name: 'App',
+  components: {
+    PassthroughGet
+  },
   data: function() {
     return {
       bootstrap_messages: '',
       year: moment.utc().format('YYYY'),
     };
-  },
-  created: function() {
-    let that = this;
-    $.getJSON(this.observationPortalApiUrl + '/api/profile/').done(function(data) {
-      that.$store.commit('setProfileData', data);
-    })
   },
   computed: {
     profile: function() {
@@ -124,23 +128,6 @@ export default {
     },
     simpleInterface: function() {
       return this.profile && this.profile.profile && this.profile.profile.simple_interface;
-    }
-  },
-  methods: {
-    performLogout: function() {
-      let that = this;
-      $.ajax({
-        method: 'POST',
-        url: this.observationPortalApiUrl + '/accounts/logout/',
-        success: function() {
-          console.log('successfully logged out');
-          let homePath = that.$router.resolve({ name: 'home'});
-          window.location.pathname = homePath.href;
-        },
-        error: function() {
-          console.log('there was an error logging out');
-        }
-      })
     }
   }
 };

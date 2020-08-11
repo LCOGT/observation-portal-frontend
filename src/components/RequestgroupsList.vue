@@ -373,6 +373,9 @@ export default {
     profile: function() {
       return this.$store.state.profile;
     },
+    observationPortalApiUrl: function() {
+      return this.$store.state.urls.observationPortalApi;
+    },
     proposalOptions: function() {
       let selected = this.rgQueryParams.proposal;
       let proposalInQuery = _.get(this.$route, 'query.proposal', '');

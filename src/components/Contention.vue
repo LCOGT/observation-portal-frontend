@@ -65,6 +65,9 @@
       };
     },
     computed: {
+      observationPortalApiUrl: function() {
+        return this.$store.state.urls.observationPortalApi;
+      },
       toChartData: function() {
         let datasets = {};
         for (let ra = 0; ra < this.rawData.length; ra++) {
