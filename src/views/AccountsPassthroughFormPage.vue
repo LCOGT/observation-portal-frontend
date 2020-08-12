@@ -1,19 +1,20 @@
 <template>
   <b-row>
-    <b-col>
-      <passthrough-get
+    <b-col id="form-container">
+      <passthrough-form
         :endpoint="endpoint"
-      ></passthrough-get>
+      ></passthrough-form>
+      <br/>
     </b-col>
   </b-row>
 </template>
 <script>
-import PassthroughGet from '@/components/PassthroughGet.vue';
+import PassthroughForm from '@/components/PassthroughForm.vue';
 
 export default {
-  name: 'ActivateAccount',
+  name: 'AccountsPassthroughFormPage',
   components: {
-    PassthroughGet
+    PassthroughForm
   },
   data: function() {
     return {

@@ -6,8 +6,9 @@ import NotFound from '../views/NotFound.vue';
 import Login from '../views/Login.vue';
 import Profile from '../views/Profile.vue';
 import Register from '../views/Register.vue'
-import ActivateAccount from '../views/ActivateAccount.vue';
 import AcceptTerms from '../views/AcceptTerms.vue';
+import AccountsPassthroughGetPage from '../views/AccountsPassthroughGetPage.vue';
+import AccountsPassthroughFormPage from '../views/AccountsPassthroughFormPage.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
 import $ from 'jquery';
@@ -53,65 +54,6 @@ const routes = [
     component: NotFound
   },
   {
-    path: '/accounts/profile',
-    name: 'profile',
-    component: Profile,
-    meta: {
-      title: 'Profile'
-    }
-  },
-  {
-    path: '/accounts/login',
-    name: 'login',
-    // TODO: Update with login component
-    component: Login,
-    meta: {
-      title: 'Log in'
-    }
-  },
-  {
-    path: '/accounts/register',
-    name: 'register',
-    component: Register,
-    meta: {
-      title: 'Register for an account'
-    }
-  },
-  {
-    path: '/accounts/activate/:id',
-    name: 'ActivateAccount',
-    component: ActivateAccount,
-    meta: {
-      title: 'Activate account'
-    }
-  },
-  {
-    path: '/accounts/password/reset',
-    name: 'passwordReset',
-    // TODO: Update component
-    component: NotFound
-  },
-  {
-    path: '/accounts/password/change',
-    name: 'passwordChange',
-    // TODO: Update component
-    component: NotFound
-  },
-  {
-    // This is one of our views
-    path: '/accounts/removalrequest',
-    name: 'accountRemoval',
-    component: NotFound
-  },
-  {
-    path: '/accounts/acceptterms',
-    name: 'acceptTerms',
-    component: AcceptTerms,
-    meta: {
-      title: 'Accept Terms'
-    }
-  },
-  {
     path: '/apply',
     name: 'apply',
     // TODO: Update with sciapplications component
@@ -131,8 +73,64 @@ const routes = [
       title: 'Planning Tools'
     }
   },
+  {
+    path: '/accounts/profile',
+    name: 'profile',
+    component: Profile,
+    meta: {
+      title: 'Profile'
+    }
+  },
+  {
+    path: '/accounts/login',
+    name: 'login',
+    component: Login,
+    meta: {
+      title: 'Log in'
+    }
+  },
+  {
+    path: '/accounts/register',
+    name: 'register',
+    component: Register,
+    meta: {
+      title: 'Register for an account'
+    }
+  },
+  {
+    path: '/accounts/password/reset',
+    name: 'passwordReset',
+    component: AccountsPassthroughFormPage
+  },
+  {
+    path: '/accounts/password/change',
+    name: 'passwordChange',
+    component: AccountsPassthroughFormPage
+  },
+  {
+    path: '/accounts/removalrequest',
+    name: 'accountRemoval',
+    component: NotFound
+  },
+  {
+    path: '/accounts/acceptterms',
+    name: 'acceptTerms',
+    component: AcceptTerms,
+    meta: {
+      title: 'Accept Terms'
+    }
+  },
+  {
+    path: '/accounts/*',
+    name: 'AccountsPassthroughGetPage',
+    component: AccountsPassthroughGetPage,
+    meta: {
+      title: 'Accounts'
+    }
+  },
   { 
     path: '*',
+    name: 'notFound',
     component: NotFound
   }
 ]
@@ -176,7 +174,7 @@ router.beforeEach((to, from, next) => {
       async: false
     });
   }
-  if (store.state.userIsAuthenticated && !store.state.userAcceptedTerms && to.name !== 'acceptTerms') {
+  if (store.state.userIsAuthenticated && !store.state.profile.profile.is_staff && !store.state.userAcceptedTerms && to.name !== 'acceptTerms') {
     next({ name: 'acceptTerms' });
   } else {
     next();
