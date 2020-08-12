@@ -12,7 +12,6 @@ export default new Vuex.Store({
       proposals: [],
       available_instrument_types: []
     },
-    profileDataRetrieved: false,
     userIsAuthenticated: false,
     userAcceptedTerms: false,
     urls: {}
@@ -26,10 +25,6 @@ export default new Vuex.Store({
       if (payload.profile.terms_accepted) {
         state.userAcceptedTerms = true;
       }
-      state.profileDataRetrieved = true;
-    },
-    setProfileDataAsRetrieved (state) {
-      state.profileDataRetrieved = true;
     },
     setRuntimeConfig (state, payload) {
       state.urls = payload;

@@ -1,7 +1,7 @@
 <template>
   <b-row>
-    <b-col id="form-container">
-      <passthrough-form 
+    <b-col>
+      <passthrough-form
         endpoint="/accounts/register/"
       ></passthrough-form>
       <!-- TODO: Translate this -->

@@ -36,7 +36,8 @@ export default {
   },
   computed: {
     url: function() {
-      return this.$store.state.urls.observationPortalApi + this.endpoint + '?passthrough=true';
+      let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
+      return this.$store.state.urls.observationPortalApi + endpoint + '?passthrough=true';
     }
   },
   methods: {
@@ -51,9 +52,8 @@ export default {
             let successPathname = that.$router.resolve({ name: that.successRedirectViewName});
             window.location.pathname = successPathname.href;
           } else {
-            // Successful submission, and no redirect has been set. Replace the contents with the main content
-            // of the response. This allows us to let the GET to the backend dictate what is displayed on the page
-            // on success.
+            // Successful submission, and no redirect has been set. Replace the contents with
+            // the main content of the response.
             let reponseContent = $(response).find('.content-container');
             $('#passthrough-container').replaceWith(reponseContent);
           }

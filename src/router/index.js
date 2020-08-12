@@ -7,8 +7,8 @@ import Login from '../views/Login.vue';
 import Profile from '../views/Profile.vue';
 import Register from '../views/Register.vue'
 import AcceptTerms from '../views/AcceptTerms.vue';
-import AccountsPassthroughGetPage from '../views/AccountsPassthroughGetPage.vue';
-import AccountsPassthroughFormPage from '../views/AccountsPassthroughFormPage.vue';
+import AccountsGet from '../views/AccountsGet.vue';
+import AccountsForm from '../views/AccountsForm.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
 import $ from 'jquery';
@@ -98,14 +98,27 @@ const routes = [
     }
   },
   {
+    path: '/accounts/password/reset/confirm/:id/set-password',
+    name: 'passwordResetConfirmSetPassword',
+    component: AccountsForm
+  },
+  {
+    path: '/accounts/password/reset/confirm/:id/:anotherId',
+    name: 'passwordResetConfirm',
+    component: AccountsGet,
+    props: {
+      successRedirectViewName: 'passwordResetConfirmSetPassword'
+    }
+  },
+  {
     path: '/accounts/password/reset',
     name: 'passwordReset',
-    component: AccountsPassthroughFormPage
+    component: AccountsForm
   },
   {
     path: '/accounts/password/change',
     name: 'passwordChange',
-    component: AccountsPassthroughFormPage
+    component: AccountsForm
   },
   {
     path: '/accounts/removalrequest',
@@ -122,8 +135,7 @@ const routes = [
   },
   {
     path: '/accounts/*',
-    name: 'AccountsPassthroughGetPage',
-    component: AccountsPassthroughGetPage,
+    component: AccountsGet,
     meta: {
       title: 'Accounts'
     }
@@ -157,23 +169,15 @@ router.beforeEach((to, from, next) => {
 router.beforeEach((to, from, next) => {
   // Redirect to the Accept Terms page if the user is logged in but has not
   // yet accepted the terms.
-  if (!store.state.profileDataRetrieved) {
-    $.ajax({
-      url: store.state.urls.observationPortalApi + '/api/profile/',
-      success: function (response) {
-        store.commit('setProfileData', response);
-      },
-      error: function(response) {
-        if (response.status === 403) {
-          // Tried to get profile data, but are not authenticated.
-          store.commit('setProfileDataAsRetrieved')
-        }
-      },
-      // Need to wait for profile information to load before moving on to the next step as
-      // that contains whether a user has accepted terms or not.
-      async: false
-    });
-  }
+  $.ajax({
+    url: store.state.urls.observationPortalApi + '/api/profile/',
+    success: function (response) {
+      store.commit('setProfileData', response);
+    },
+    // Need to wait for profile information to load before moving on to the next step as
+    // that contains whether a user has accepted terms or not.
+    async: false
+  });
   if (store.state.userIsAuthenticated && !store.state.profile.profile.is_staff && !store.state.userAcceptedTerms && to.name !== 'acceptTerms') {
     next({ name: 'acceptTerms' });
   } else {

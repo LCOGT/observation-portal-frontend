@@ -1,6 +1,6 @@
 <template>
   <b-row>
-    <b-col id="form-container">
+    <b-col>
       <passthrough-form
         endpoint="/accounts/login/"
         successRedirectViewName="home"

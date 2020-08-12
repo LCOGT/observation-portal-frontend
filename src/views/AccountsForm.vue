@@ -1,8 +1,9 @@
 <template>
   <b-row>
-    <b-col id="form-container">
+    <b-col>
       <passthrough-form
         :endpoint="endpoint"
+        :successRedirectViewName="successRedirectViewName"
       ></passthrough-form>
       <br/>
     </b-col>
@@ -15,6 +16,12 @@ export default {
   name: 'AccountsPassthroughFormPage',
   components: {
     PassthroughForm
+  },
+  props: {
+    successRedirectViewName: {
+      type: String,
+      default: ''
+    }
   },
   data: function() {
     return {
