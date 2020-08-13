@@ -181,9 +181,11 @@
       <h2>Account Removal</h2>
       <p>You may request that your account be deleted.</p>
       <router-link
-        :to="{name: 'accountRemoval'}"
+        :to="{name: 'accountRemovalRequest'}"
         title="Request account removal"
-      >Request account removal</router-link>
+      >
+        Request account removal
+      </router-link>
     </b-col>
   </b-row>
 </template>

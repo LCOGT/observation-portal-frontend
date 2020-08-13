@@ -9,6 +9,7 @@ import Register from '../views/Register.vue'
 import AcceptTerms from '../views/AcceptTerms.vue';
 import AccountsGet from '../views/AccountsGet.vue';
 import AccountsForm from '../views/AccountsForm.vue';
+import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
 import $ from 'jquery';
@@ -122,8 +123,8 @@ const routes = [
   },
   {
     path: '/accounts/removalrequest',
-    name: 'accountRemoval',
-    component: NotFound
+    name: 'accountRemovalRequest',
+    component: AccountRemovalRequest
   },
   {
     path: '/accounts/acceptterms',
