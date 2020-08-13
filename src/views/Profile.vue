@@ -232,7 +232,18 @@ export default {
     },
     performRevokeToken: function (evt) {
       evt.preventDefault();
-      // TODO: Hit the endpoint, then update the profile information, retrieving the new token
+      $.ajax({
+        method: 'POST',
+        url: this.observationPortalApiUrl + '/api/revoke_token/',
+        success: function() {
+          // TODO: Refresh profile info from here, and message user that revoke was successful
+          location.reload();
+        },
+        error: function(response) {
+          // TODO: Let user know to try again
+          console.log('there was an error', response);
+        }
+      })
     },
     clearProfileForm: function (evt) {
       evt.preventDefault();
