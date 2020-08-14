@@ -234,16 +234,16 @@ export default {
     },
     performRevokeToken: function (evt) {
       evt.preventDefault();
+      let that = this;
       $.ajax({
         method: 'POST',
         url: this.observationPortalApiUrl + '/api/revoke_token/',
-        success: function() {
-          // TODO: Refresh profile info from here, and message user that revoke was successful
-          location.reload();
+        success: function(response) {
+          that.$store.dispatch('getProfileData');
+          that.$store.commit('addMessage', {text: response.message, variant: 'success'})
         },
-        error: function(response) {
-          // TODO: Let user know to try again
-          console.log('there was an error', response);
+        error: function() {
+          that.$store.commit('addMessage', {text: 'There was a problem revoking your token, please try again', variant: 'danger'})
         }
       })
     },
@@ -266,17 +266,19 @@ export default {
         data: JSON.stringify(that.formData),
         contentType: "application/json",
         success: function () {
-          let homePath = that.$router.resolve({ name: "home" });
-          window.location.pathname = homePath.href;
+          that.$store.dispatch('getProfileData');
+          that.$store.commit('clearAllMessages');
+          that.$store.commit('addMessage', {text: 'Profile successfully updated', variant: 'success'});
+          that.$router.push({ name: 'home', params: { persistMessage: true } });
         },
         error: function (response) {
           if (response.status === 400) {
             that.errors = response.responseJSON;
           } else {
             that.errors = null;
-            // TODO: Let user know that something went wrong
+            that.$store.commit('addMessage', {text: 'There was a problem updating your profile information, please try again', variant: 'danger'});
           }
-        },
+        }
       });
     },
   },

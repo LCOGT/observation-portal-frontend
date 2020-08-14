@@ -154,9 +154,6 @@
           </b-dropdown-form>
         </b-dropdown>
       </b-col>
-      <b-alert v-for="error in errors" :key="error" show variant="danger" class="w-100">
-        <i class="fas fa-exclamation-circle"></i> {{ error }}
-      </b-alert>
     </b-row>
     <div>
       <b-table 
@@ -354,8 +351,8 @@ export default {
       fields: [
         { key: 'requestgroupInfo', tdClass: 'p-0 m-0', thClass: 'border-0' },
       ],
+      rgQueryErrors: [],
       isBusy: false,
-      errors: [],
       currentPage: currentPage,
       perPageOptions: [
         { value: '5', text: 'Show: 5'},
@@ -427,6 +424,24 @@ export default {
         this.rgQueryParams.user = this.profile.username;
       }
     },
+    clearErrors: function() {
+      for (let error of this.rgQueryErrors) {
+        this.$store.commit('deleteMessage', error);
+      }
+      this.rgQueryErrors = [];
+    },
+    setErrors: function(errorsObject) {
+      for (let field in errorsObject) {
+        let message = '';
+        if (field === 'retrieving') {
+          message = errorsObject[field];
+        } else {
+          message = field + ': ' + errorsObject[field];
+        }
+        this.rgQueryErrors.push(message);
+        this.$store.commit('addMessage', {text: message, variant: 'danger'});
+      }
+    },
     getRequestgroups: function() {
       // TODO: Cancel any currently running request
       this.isBusy = true;
@@ -434,17 +449,15 @@ export default {
       let that = this;
       $.getJSON(url, this.rgQueryParams).done(function(data) {
         that.requestgroups = data;
-        that.errors = [];
+        that.clearErrors();
       }).fail(function(data) {
         that.requestgroups = {count: 0, results: []};
         that.currentPage = 1;
-        that.errors = [];
+        that.clearErrors();
         if (data.status === 400) {
-          for (let field in data.responseJSON) {
-            that.errors.push(field + ': ' + data.responseJSON[field]);
-          }
+          that.setErrors(data.responseJSON);
         } else {
-          that.errors.push('There was a problem retrieving observation requests, please try again.');
+          that.setErrors({'retrieving': 'There was a problem retrieving observation requests, please try again.'})
         }
       }).always(function() {
         that.isBusy = false;

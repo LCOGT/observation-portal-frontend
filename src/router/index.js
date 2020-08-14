@@ -12,7 +12,7 @@ import AccountsForm from '../views/AccountsForm.vue';
 import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
-import $ from 'jquery';
+// import $ from 'jquery';
 
 Vue.use(VueRouter);
 
@@ -124,7 +124,10 @@ const routes = [
   {
     path: '/accounts/removalrequest',
     name: 'accountRemovalRequest',
-    component: AccountRemovalRequest
+    component: AccountRemovalRequest,
+    meta: {
+      keepMessages: true
+    }
   },
   {
     path: '/accounts/acceptterms',
@@ -170,20 +173,23 @@ router.beforeEach((to, from, next) => {
 router.beforeEach((to, from, next) => {
   // Redirect to the Accept Terms page if the user is logged in but has not
   // yet accepted the terms.
-  $.ajax({
-    url: store.state.urls.observationPortalApi + '/api/profile/',
-    success: function (response) {
-      store.commit('setProfileData', response);
-    },
-    // Need to wait for profile information to load before moving on to the next step as
-    // that contains whether a user has accepted terms or not.
-    async: false
-  });
-  if (store.state.userIsAuthenticated && !store.state.profile.profile.is_staff && !store.state.userAcceptedTerms && to.name !== 'acceptTerms') {
+  if (store.state.userIsAuthenticated && !store.state.userAcceptedTerms && to.name !== 'acceptTerms') {
     next({ name: 'acceptTerms' });
   } else {
     next();
   }
 });
+
+router.beforeEach((to, from, next) => {
+  // If we used the router to navigate to a page, and set in the params to persist
+  // the messages, keep them. This is useful for when a success message should be displayed on
+  // the page that is navigated to on successful form submission. By default though, messages
+  // should be cleared.
+  if (to.name !== from.name && !to.params.persistMessage) {
+    store.commit('clearAllMessages');
+  }
+  next();
+});
+
 
 export default router;

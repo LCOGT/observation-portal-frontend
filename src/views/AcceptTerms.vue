@@ -75,8 +75,8 @@ export default {
             let homePath = that.$router.resolve({ name: "home" });
             window.location.pathname = homePath.href;
           },
-          error: function (response) {
-            console.log('something went wrong', response);
+          error: function () {
+            that.$store.commit('addMessage', {text: 'There was a problem accepting the terms, please try again', variant: 'danger'});
           },
         });
       }

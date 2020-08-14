@@ -83,7 +83,16 @@
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <div class="messages">{{ bootstrap_messages }}</div>
+          <b-alert
+            v-for="message in messages"
+            :variant="message.variant"
+            :key="message.text"
+            dismissible
+            @dismissed="deleteMessage(message.text)"
+            show
+          >
+            {{ message.text }}
+          </b-alert>
         </div>
       </div>
       <router-view></router-view>
@@ -115,7 +124,6 @@ export default {
   },
   data: function() {
     return {
-      bootstrap_messages: '',
       year: moment.utc().format('YYYY'),
     };
   },
@@ -128,6 +136,14 @@ export default {
     },
     simpleInterface: function() {
       return this.profile && this.profile.profile && this.profile.profile.simple_interface;
+    },
+    messages: function() {
+      return this.$store.state.messages;
+    }
+  },
+  methods: {
+    deleteMessage: function(messageText) {
+      this.$store.commit('deleteMessage', messageText);
     }
   }
 };

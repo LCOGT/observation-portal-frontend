@@ -33,10 +33,14 @@ getRuntimeConfig().then(function(json) {
     simbadService: process.env.VUE_APP_SIMBAD_SERVICE_URL || json.simbadServiceUrl,
   });
 
-  new Vue({
-    router,
-    store,
-    render: h => h(App)
-  }).$mount('#app')
-
+  store.dispatch('getProfileData').then(() => {
+    new Vue({
+      router,
+      store,
+      render: h => h(App)
+    }).$mount('#app')
+  }).catch(() => {
+    // TODO: Display error page
+    console.log('Error getting profile data')
+  })
 });

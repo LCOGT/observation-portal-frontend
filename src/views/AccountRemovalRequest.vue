@@ -8,10 +8,14 @@
           id="textarea"
           v-model="formData.reason"
           placeholder="Enter the reason for your request"
+          :state="error.state"
           required
         ></b-form-textarea>
+          <b-form-invalid-feedback id="input-reason-state">
+            <span v-for="msg in error.messages" :key="msg">{{ msg }}</span>
+          </b-form-invalid-feedback>
       </b-form-group>
-      <b-button type="submit" class="variant-info">Submit request</b-button>
+      <b-button type="submit" variant="info">Submit request</b-button>
     </b-form>
   </b-col>
 </template>
@@ -24,6 +28,10 @@ export default {
     return {
       formData: {
         reason: ''
+      },
+      error: {
+        state: null,
+        messages: []
       }
     }
   },
@@ -41,12 +49,16 @@ export default {
         url: this.url,
         data: this.formData,
         success: function() {
-          // TODO: Add success message
-          let homePath = that.$router.resolve({ name: "profile" });
-          window.location.pathname = homePath.href;
+          that.$store.commit('clearAllMessages');
+          that.$store.commit('addMessage', {text: 'Account removal request successfully submitted', variant: 'success'});
+          that.$router.push({ name: 'profile', params: { persistMessage: true }})
         },
-        error: function() {
-          // TODO: Add error message
+        error: function(response) {
+          if (response.status === 400) {
+            that.error = {state: false, messages: response.responseJSON.reason};
+          } else {
+            that.$store.commit('addMessage', {text: 'Account removal request submission was not successful, please try again', variant: 'danger'});
+          }
         }
       })
     }
