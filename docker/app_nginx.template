@@ -41,7 +41,7 @@ http {
       }
       # If a redirect is sent from the backend, add the "passthrough" query param to the location,
       # preserving any other query params that may already be present
-      proxy_redirect ~\/accounts\/(.*)\?(.*) /accounts/$1?passthrough=true&$2;
+      proxy_redirect ~\/accounts\/(.*) /accounts/$1?passthrough=true;
       proxy_redirect ~\/accounts\/(.*)\?(.*) /accounts/$1?passthrough=true&$2;
       absolute_redirect off;
 
