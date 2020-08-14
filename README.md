@@ -23,7 +23,23 @@ when both the frontend and backend hostnames are the same. The kubernetes in-clu
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Local Development
+
+If you are developing locally, you will probably need to set a few variables in your development Observation
+Portal Django local settings file to handle cross site requests. For example, if your frontend is running at
+`http://127.0.0.1:8080`, you would set the following:
+
+```
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:8080'
+]
+CSRF_TRUSTED_ORIGINS = [
+    '127.0.0.1:8080'
+]
+```
+
+Then, to run a hot-reload server for developing on the frontend:
 ```
 npm run serve
 ```

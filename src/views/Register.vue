@@ -3,9 +3,10 @@
     <b-col>
       <passthrough-form
         endpoint="/accounts/register/"
-      ></passthrough-form>
-      <!-- TODO: Translate this -->
-      <p>Read the <a href="https://lco.global/observatory/termsofservice/" target="_blank">Terms of Service</a>.</p>
+      >
+        <!-- TODO: Translate this -->
+        <p>Read the <a href="https://lco.global/observatory/termsofservice/" target="_blank">Terms of Service</a>.</p>
+      </passthrough-form>
     </b-col>
   </b-row>
 </template>

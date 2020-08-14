@@ -1,6 +1,7 @@
 <template>
   <div id="form-container">
     <b-form></b-form>
+    <slot></slot>
   </div>
 </template>
 <script>
