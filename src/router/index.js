@@ -12,7 +12,6 @@ import AccountsForm from '../views/AccountsForm.vue';
 import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
-// import $ from 'jquery';
 
 Vue.use(VueRouter);
 

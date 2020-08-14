@@ -11,10 +11,7 @@
 <script>
 export default {
   name: 'NotFound',
-    computed: {
-    profile: function() {
-      return this.$store.state.profile;
-    },
+  computed: {
     userIsAuthenticated: function() {
       return this.$store.state.userIsAuthenticated;
     },

@@ -1,6 +1,6 @@
 <template>
   <b-row>
-    <b-col id="form-container">
+    <b-col>
       <h1>Terms of Service</h1>
       <ul>
         <li>
@@ -56,8 +56,8 @@ export default {
     }
   },
   computed: {
-    observationPortalApiUrl: function() {
-      return this.$store.state.urls.observationPortalApi;
+    url: function() {
+      return this.$store.state.urls.observationPortalApi + "/api/profile/";
     }
   },
   methods: {
@@ -68,7 +68,7 @@ export default {
         let that = this;
         $.ajax({
           method: "PATCH",
-          url: this.observationPortalApiUrl + "/api/profile/",
+          url: this.url,
           data: JSON.stringify({profile: {terms_accepted: dateAccepted}}),
           contentType: "application/json",
           success: function () {
