@@ -46,8 +46,6 @@
 <script>
 import $ from 'jquery';
 
-import { getUtcNow } from '@/utils.js';
-
 export default {
   name: 'AcceptTerms',
   data: function() {
@@ -64,12 +62,11 @@ export default {
     updateTermsAccepted: function(evt) {
       evt.preventDefault();
       if (this.acceptTerms) {
-        let dateAccepted = getUtcNow();
         let that = this;
         $.ajax({
           method: "PATCH",
           url: this.url,
-          data: JSON.stringify({profile: {terms_accepted: dateAccepted}}),
+          data: JSON.stringify({profile: {accept_terms: true}}),
           contentType: "application/json",
           success: function () {
             let homePath = that.$router.resolve({ name: "home" });

@@ -169,10 +169,6 @@ function timeFromNow(date) {
   }
 }
 
-function getUtcNow() {
-  return moment.utc().format(datetimeFormat);
-}
-
 function julianToModifiedJulian(jd){
   if(jd && jd >= 2400000.5){
     let precision = (jd + "").split(".")[1].length;
@@ -389,5 +385,5 @@ export {
   formatDate, copyObject, formatField, datetimeFormat, timeFromNow, collapseMixin, siteToColor, siteCodeToName, arcDefaultExposureTime, 
   lampFlatDefaultExposureTime, observatoryCodeToNumber, telescopeCodeToName, colorPalette, julianToModifiedJulian, 
   getFieldDescription, decimalRaToSexigesimal, decimalDecToSexigesimal, tooltipConfig, addCsrfProtection,
-  extractTopLevelErrors, stateToBsClass, getUtcNow
+  extractTopLevelErrors, stateToBsClass
 };
