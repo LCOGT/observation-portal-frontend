@@ -10,6 +10,7 @@ import AcceptTerms from '../views/AcceptTerms.vue';
 import AccountsGet from '../views/AccountsGet.vue';
 import AccountsForm from '../views/AccountsForm.vue';
 import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
+import Request from '../views/Request.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
 
@@ -43,15 +44,23 @@ const routes = [
   },
   {
     path: '/proposals/:id',
-    name: 'proposalsDetail',
+    name: 'proposalDetail',
     // TODO: Update component
     component: NotFound
   },
   {
     path: '/requestgroups/:id',
-    name: 'requestgroupsDetail',
+    name: 'requestgroupDetail',
     // TODO: Update component
     component: NotFound
+  },
+  {
+    path: '/requests/:id',
+    name: 'requestDetail',
+    component: Request,
+    meta: {
+      title: 'Request'
+    }
   },
   {
     path: '/apply',

@@ -220,7 +220,7 @@
                 </b-col>
                 <b-col class="p-0">
                   <div class="requestgroup-details requestgroup-block">
-                    <div :class="data.item.state | stateToBsClass('text')"><i class="fa fa-fw" :class="data.item.state | startToIcon"></i>{{ data.item.state }}</div>
+                    <div :class="data.item.state | stateToBsClass('text')"><i :class="data.item.state | stateToIcon"></i>{{ data.item.state }}</div>
                     <div><i class="fa fa-fw fa-calendar"></i> <span class="tool-tip" :title="data.item.modified | timeFromNow">{{ data.item.modified | formatDate }}</span></div>
                   </div>
                 </b-col>
@@ -272,7 +272,7 @@
 import $ from 'jquery';
 import _ from 'lodash';
 
-import { timeFromNow, formatDate, copyObject, stateToBsClass } from '@/utils.js';
+import { timeFromNow, formatDate, copyObject, stateToBsClass, stateToIcon } from '@/utils.js';
 
 export default {
   name: 'RequestgroupsList',
@@ -289,15 +289,8 @@ export default {
     stateToBsClass: function(state, prefix) {
       return stateToBsClass(state, prefix);
     },
-    startToIcon: function(state) {
-      let stateMap = {
-          'PENDING': 'sync',
-          'SCHEDULED': 'sync',
-          'COMPLETED': 'check',
-          'WINDOW_EXPIRED': 'times',
-          'CANCELED': 'times',
-      }
-      return 'fa-' + stateMap[state]
+    stateToIcon: function(state) {
+      return stateToIcon(state);
     },
     valueOrDefault: function(value, defaultValue) {
       return value || defaultValue;

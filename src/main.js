@@ -11,11 +11,6 @@ import $ from 'jquery';
 import { addCsrfProtection } from '@/utils.js';
 
 $(document).ajaxSend(addCsrfProtection);
-$.ajaxSetup({
-  xhrFields: {
-     withCredentials: true
-  }
-});
 
 Vue.use(BootstrapVue);
 
@@ -30,7 +25,25 @@ getRuntimeConfig().then(function(json) {
   store.commit('setRuntimeConfig', {
     observationPortalApi: process.env.VUE_APP_OBSERVATION_PORTAL_API_URL || json.observationPortalApiUrl,
     archiveApi: process.env.VUE_APP_ARCHIVE_API_URL || json.archiveApiUrl,
+    archiveUi: process.env.VUE_APP_ARCHIVE_UI_URL || json.archiveUiUrl,
     simbadService: process.env.VUE_APP_SIMBAD_SERVICE_URL || json.simbadServiceUrl,
+    thumbnailService: process.env.VUE_APP_THUMBNAILS_SERVICE_URL || json.thumbnailServiceUrl,
+  });
+
+  // Include credentials when sending requests to the observation portal.
+  $(document).ajaxSend(function(event, xhr, settings) {
+    if (settings.url.startsWith(store.state.urls.observationPortalApi)) {
+      settings.xhrFields = {
+        withCredentials: true
+      };
+    }
+  });
+
+  // Add the archive token to a request being sent to the archive api or the thumbservice
+  $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+    if ((options.url.indexOf(store.state.urls.archiveApi) >= 0 || options.url.indexOf(store.state.urls.thumbnailService) >= 0) && store.state.archiveAuthToken) {
+      jqXHR.setRequestHeader('Authorization', 'Token ' + store.state.archiveAuthToken);
+    }
   });
 
   store.dispatch('getProfileData').then(() => {

@@ -316,6 +316,17 @@ function stateToBsClass(state, classPrefix) {
   return classPrefix + '-' + state_map[state]
 }
 
+function stateToIcon(state) {
+  let stateMap = {
+    'PENDING': 'sync',
+    'SCHEDULED': 'sync',
+    'COMPLETED': 'check',
+    'WINDOW_EXPIRED': 'times',
+    'CANCELED': 'times',
+  }
+  return 'fa fa-fw fa-' + stateMap[state]
+}
+
 let siteToColor = {
   'tfn': '#263c6f',  // dark blue
   'elp': '#700000',  // dark red
@@ -385,5 +396,5 @@ export {
   formatDate, copyObject, formatField, datetimeFormat, timeFromNow, collapseMixin, siteToColor, siteCodeToName, arcDefaultExposureTime, 
   lampFlatDefaultExposureTime, observatoryCodeToNumber, telescopeCodeToName, colorPalette, julianToModifiedJulian, 
   getFieldDescription, decimalRaToSexigesimal, decimalDecToSexigesimal, tooltipConfig, addCsrfProtection,
-  extractTopLevelErrors, stateToBsClass
+  extractTopLevelErrors, stateToBsClass, stateToIcon
 };
