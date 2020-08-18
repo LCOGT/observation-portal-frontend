@@ -20,5 +20,9 @@ then
     check_and_set_config "${VUE_APP_SIMBAD_SERVICE_URL}" "simbadServiceUrl" "${CONFIG_FILE_PATH}"
 fi
 
-# Run the default nginx entrypoint
+# Copy the internal observation portal url into the nginx configuration file and run the nginx entrypoint.
+mkdir /init
+export INTERNAL_OBSERVATION_PORTAL_API_URL=${INTERNAL_OBSERVATION_PORTAL_API_URL:-http://127.0.0.1:8000}
+echo "Setting INTERNAL_OBSERVATION_PORTAL_API_URL to ${INTERNAL_OBSERVATION_PORTAL_API_URL}"
+envsubst '$${INTERNAL_OBSERVATION_PORTAL_API_URL}' < /etc/nginx/app_nginx.template > /init/app_nginx.conf
 exec nginx -g 'daemon off;'

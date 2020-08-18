@@ -3,9 +3,17 @@ import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import Tools from '../views/Tools.vue';
 import NotFound from '../views/NotFound.vue';
+import Login from '../views/Login.vue';
+import Profile from '../views/Profile.vue';
+import Register from '../views/Register.vue'
+import AcceptTerms from '../views/AcceptTerms.vue';
+import AccountsGet from '../views/AccountsGet.vue';
+import AccountsForm from '../views/AccountsForm.vue';
+import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
+import store from '../store/index.js';
 import _ from 'lodash';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
@@ -46,30 +54,6 @@ const routes = [
     component: NotFound
   },
   {
-    path: '/accounts/profile',
-    name: 'profile',
-    // TODO: Update with profile component
-    component: NotFound
-  },
-  {
-    path: '/login',
-    name: 'login',
-    // TODO: Update with login component
-    component: NotFound
-  },
-  {
-    path: '/logout',
-    name: 'logout',
-    // TODO: Update with logout component
-    component: NotFound
-  },
-  {
-    path: '/register',
-    name: 'register',
-    // TODO: Update component
-    component: NotFound
-  },
-  {
     path: '/apply',
     name: 'apply',
     // TODO: Update with sciapplications component
@@ -89,8 +73,79 @@ const routes = [
       title: 'Planning Tools'
     }
   },
+  {
+    path: '/accounts/profile',
+    name: 'profile',
+    component: Profile,
+    meta: {
+      title: 'Profile'
+    }
+  },
+  {
+    path: '/accounts/login',
+    name: 'login',
+    component: Login,
+    meta: {
+      title: 'Log in'
+    }
+  },
+  {
+    path: '/accounts/register',
+    name: 'register',
+    component: Register,
+    meta: {
+      title: 'Register for an account'
+    }
+  },
+  {
+    path: '/accounts/password/reset/confirm/:id/set-password',
+    name: 'passwordResetConfirmSetPassword',
+    component: AccountsForm
+  },
+  {
+    path: '/accounts/password/reset/confirm/:id/:anotherId',
+    name: 'passwordResetConfirm',
+    component: AccountsGet,
+    props: {
+      successRedirectViewName: 'passwordResetConfirmSetPassword'
+    }
+  },
+  {
+    path: '/accounts/password/reset',
+    name: 'passwordReset',
+    component: AccountsForm
+  },
+  {
+    path: '/accounts/password/change',
+    name: 'passwordChange',
+    component: AccountsForm
+  },
+  {
+    path: '/accounts/removalrequest',
+    name: 'accountRemovalRequest',
+    component: AccountRemovalRequest,
+    meta: {
+      keepMessages: true
+    }
+  },
+  {
+    path: '/accounts/acceptterms',
+    name: 'acceptTerms',
+    component: AcceptTerms,
+    meta: {
+      title: 'Accept Terms'
+    }
+  },
+  {
+    path: '/accounts/*',
+    component: AccountsGet,
+    meta: {
+      title: 'Accounts'
+    }
+  },
   { 
     path: '*',
+    name: 'notFound',
     component: NotFound
   }
 ]
@@ -112,6 +167,28 @@ router.beforeEach((to, from, next) => {
     document.title = baseTitle;
   }
   next();
+})
+
+router.beforeEach((to, from, next) => {
+  // Redirect to the Accept Terms page if the user is logged in but has not
+  // yet accepted the terms.
+  if (store.state.userIsAuthenticated && !store.state.userAcceptedTerms && to.name !== 'acceptTerms') {
+    next({ name: 'acceptTerms' });
+  } else {
+    next();
+  }
 });
+
+router.beforeEach((to, from, next) => {
+  // If we used the router to navigate to a page, and set in the params to persist
+  // the messages, keep them. This is useful for when a success message should be displayed on
+  // the page that is navigated to on successful form submission. By default though, messages
+  // should be cleared.
+  if (to.name !== from.name && !to.params.persistMessage) {
+    store.commit('clearAllMessages');
+  }
+  next();
+});
+
 
 export default router;

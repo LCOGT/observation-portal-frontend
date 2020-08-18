@@ -154,9 +154,6 @@
           </b-dropdown-form>
         </b-dropdown>
       </b-col>
-      <b-alert v-for="error in errors" :key="error" show variant="danger" class="w-100">
-        <i class="fas fa-exclamation-circle"></i> {{ error }}
-      </b-alert>
     </b-row>
     <div>
       <b-table 
@@ -276,7 +273,6 @@ import $ from 'jquery';
 import _ from 'lodash';
 
 import { timeFromNow, formatDate, copyObject, stateToBsClass } from '@/utils.js';
-import { getTestProfileData } from '@/testData.js';
 
 export default {
   name: 'RequestgroupsList',
@@ -346,7 +342,6 @@ export default {
     }
     let rgQueryParams = this.getMergedRgQueryParams(defaultRgQueryParams);
     let currentPage = this.calculateCurrentPage(rgQueryParams.offset, rgQueryParams.limit)
-    let testProfileData = getTestProfileData(this.$route.query);
     return {
       orderOptions: orderOptions,
       stateOptions: stateOptions,
@@ -356,10 +351,8 @@ export default {
       fields: [
         { key: 'requestgroupInfo', tdClass: 'p-0 m-0', thClass: 'border-0' },
       ],
-      // TODO: Replace with actual profile data
-      profile: testProfileData[0],
+      rgQueryErrors: [],
       isBusy: false,
-      errors: [],
       currentPage: currentPage,
       perPageOptions: [
         { value: '5', text: 'Show: 5'},
@@ -374,6 +367,12 @@ export default {
     this.updateRequestgroups();
   },
   computed: {
+    profile: function() {
+      return this.$store.state.profile;
+    },
+    observationPortalApiUrl: function() {
+      return this.$store.state.urls.observationPortalApi;
+    },
     proposalOptions: function() {
       let selected = this.rgQueryParams.proposal;
       let proposalInQuery = _.get(this.$route, 'query.proposal', '');
@@ -425,6 +424,24 @@ export default {
         this.rgQueryParams.user = this.profile.username;
       }
     },
+    clearErrors: function() {
+      for (let error of this.rgQueryErrors) {
+        this.$store.commit('deleteMessage', error);
+      }
+      this.rgQueryErrors = [];
+    },
+    setErrors: function(errorsObject) {
+      for (let field in errorsObject) {
+        let message = '';
+        if (field === 'retrieving') {
+          message = errorsObject[field];
+        } else {
+          message = field + ': ' + errorsObject[field];
+        }
+        this.rgQueryErrors.push(message);
+        this.$store.commit('addMessage', {text: message, variant: 'danger'});
+      }
+    },
     getRequestgroups: function() {
       // TODO: Cancel any currently running request
       this.isBusy = true;
@@ -432,17 +449,15 @@ export default {
       let that = this;
       $.getJSON(url, this.rgQueryParams).done(function(data) {
         that.requestgroups = data;
-        that.errors = [];
+        that.clearErrors();
       }).fail(function(data) {
         that.requestgroups = {count: 0, results: []};
         that.currentPage = 1;
-        that.errors = [];
+        that.clearErrors();
         if (data.status === 400) {
-          for (let field in data.responseJSON) {
-            that.errors.push(field + ': ' + data.responseJSON[field]);
-          }
+          that.setErrors(data.responseJSON);
         } else {
-          that.errors.push('There was a problem retrieving observation requests, please try again.');
+          that.setErrors({'retrieving': 'There was a problem retrieving observation requests, please try again.'})
         }
       }).always(function() {
         that.isBusy = false;

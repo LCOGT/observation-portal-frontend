@@ -7,6 +7,15 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import '@/assets/css/main.css';
+import $ from 'jquery';
+import { addCsrfProtection } from '@/utils.js';
+
+$(document).ajaxSend(addCsrfProtection);
+$.ajaxSetup({
+  xhrFields: {
+     withCredentials: true
+  }
+});
 
 Vue.use(BootstrapVue);
 
@@ -18,22 +27,20 @@ const getRuntimeConfig = async () => {
 }
 
 getRuntimeConfig().then(function(json) {
-
-  Vue.mixin({
-    data() {
-      return {
-        // Distribute configs into every Vue component.
-        observationPortalApiUrl: process.env.VUE_APP_OBSERVATION_PORTAL_API_URL || json.observationPortalApiUrl,
-        archiveApiUrl: process.env.VUE_APP_ARCHIVE_API_URL || json.archiveApiUrl,
-        simbadServiceUrl: process.env.VUE_APP_SIMBAD_SERVICE_URL || json.simbadServiceUrl,
-      }
-    },
+  store.commit('setRuntimeConfig', {
+    observationPortalApi: process.env.VUE_APP_OBSERVATION_PORTAL_API_URL || json.observationPortalApiUrl,
+    archiveApi: process.env.VUE_APP_ARCHIVE_API_URL || json.archiveApiUrl,
+    simbadService: process.env.VUE_APP_SIMBAD_SERVICE_URL || json.simbadServiceUrl,
   });
 
-  new Vue({
-    router,
-    store,
-    render: h => h(App)
-  }).$mount('#app')
-
+  store.dispatch('getProfileData').then(() => {
+    new Vue({
+      router,
+      store,
+      render: h => h(App)
+    }).$mount('#app')
+  }).catch(() => {
+    // TODO: Display error page
+    console.log('Error getting profile data')
+  })
 });

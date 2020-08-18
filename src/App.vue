@@ -60,7 +60,13 @@
             >{{ profile.username }}</a>
             <div class="dropdown-menu" aria-labelledby="userNavOptions">
               <router-link class="dropdown-item" :to="{name: 'profile'}">Profile</router-link>
-              <router-link class="dropdown-item" :to="{name: 'logout'}">Logout</router-link>
+              <passthrough-get
+                endpoint="/accounts/logout/"
+                :asLink="true"
+                linkText="Logout"
+                successRedirectViewName="home"
+                linkClasses="dropdown-item"
+              ></passthrough-get>
             </div>
           </li>
           <li v-else class="nav-item">
@@ -77,7 +83,16 @@
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <div class="messages">{{ bootstrap_messages }}</div>
+          <b-alert
+            v-for="message in messages"
+            :variant="message.variant"
+            :key="message.text"
+            dismissible
+            @dismissed="deleteMessage(message.text)"
+            show
+          >
+            {{ message.text }}
+          </b-alert>
         </div>
       </div>
       <router-view></router-view>
@@ -100,27 +115,35 @@
 <script>
 import moment from 'moment';
 
-import { getTestProfileData } from '@/testData.js';
+import PassthroughGet from '@/components/PassthroughGet.vue';
 
 export default {
-  name: "App",
+  name: 'App',
+  components: {
+    PassthroughGet
+  },
   data: function() {
-    let testProfileData = getTestProfileData(this.$route.query);
     return {
-      bootstrap_messages: "",
-      year: moment.utc().format("YYYY"),
-      // TODO: Update to derive from actual profile data
-      profile: testProfileData[0],
-      userIsAuthenticated: testProfileData[1]
+      year: moment.utc().format('YYYY'),
     };
   },
   computed: {
+    profile: function() {
+      return this.$store.state.profile;
+    },
+    userIsAuthenticated: function() {
+      return this.$store.state.userIsAuthenticated;
+    },
     simpleInterface: function() {
-      if (this.profile.profile && this.profile.profile.simple_interface) {
-        return true;
-      } else {
-        return false;
-      }
+      return this.profile && this.profile.profile && this.profile.profile.simple_interface;
+    },
+    messages: function() {
+      return this.$store.state.messages;
+    }
+  },
+  methods: {
+    deleteMessage: function(messageText) {
+      this.$store.commit('deleteMessage', messageText);
     }
   }
 };

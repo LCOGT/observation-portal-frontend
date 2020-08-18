@@ -6,3 +6,4 @@ web:
     - VUE_APP_OBSERVATION_PORTAL_API_URL=http://observation-portal-dev.lco.gtn
     - VUE_APP_ARCHIVE_API_URL=http://archive-api-dev.lco.gtn
     - VUE_APP_SIMBAD_SERVICE_URL=https://simbad2k.lco.global
+    - INTERNAL_OBSERVATION_PORTAL_API_URL=http://observation-portal-dev.lco.gtn

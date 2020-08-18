@@ -68,8 +68,6 @@
   </b-container>
 </template>
 <script>
-import { getTestProfileData } from '@/testData.js';
-
 import RequestgroupsList from '@/components/RequestgroupsList.vue';
 import TelescopeAvailabilityChart from '@/components/TelescopeAvailabilityChart.vue';
 
@@ -79,15 +77,13 @@ export default {
     RequestgroupsList,
     TelescopeAvailabilityChart
   },
-  data: function() {
-    let testProfileData = getTestProfileData(this.$route.query);
-    return {
-      // TODO: Update to derive from actual profile data
-      profile: testProfileData[0],
-      userIsAuthenticated: testProfileData[1]
-    }
-  },
   computed: {
+    profile: function() {
+      return this.$store.state.profile;
+    },
+    userIsAuthenticated: function() {
+      return this.$store.state.userIsAuthenticated;
+    },
     currentProposals: function() {
       let currentProposals = [];
       if (this.profile.proposals) {

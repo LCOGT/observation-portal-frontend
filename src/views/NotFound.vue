@@ -9,17 +9,12 @@
   </div>
 </template>
 <script>
-import { getTestProfileData } from '@/testData.js';
-
 export default {
   name: 'NotFound',
-    data: function() {
-    let testProfileData = getTestProfileData(this.$route.query);
-    return {
-      // TODO: Update to derive from actual profile data
-      profile: testProfileData[0],
-      userIsAuthenticated: testProfileData[1]
-    }
+  computed: {
+    userIsAuthenticated: function() {
+      return this.$store.state.userIsAuthenticated;
+    },
   }
 }
 </script>

@@ -101,6 +101,9 @@
       };
     },
     computed: {
+      observationPortalApiUrl: function() {
+        return this.$store.state.urls.observationPortalApi;
+      },
       instrumentTypeOptions: function() {
         let options = [{value: '', text: 'All'}]
         for (let idx in this.instruments) {
