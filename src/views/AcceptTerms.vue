@@ -55,7 +55,7 @@ export default {
   },
   computed: {
     url: function() {
-      return this.$store.state.urls.observationPortalApi + "/api/profile/";
+      return this.$store.state.urls.observationPortalApi + "/api/profile/accept_terms/";
     }
   },
   methods: {
@@ -64,10 +64,8 @@ export default {
       if (this.acceptTerms) {
         let that = this;
         $.ajax({
-          method: "PATCH",
+          method: "POST",
           url: this.url,
-          data: JSON.stringify({profile: {accept_terms: true}}),
-          contentType: "application/json",
           success: function () {
             let homePath = that.$router.resolve({ name: "home" });
             window.location.pathname = homePath.href;
