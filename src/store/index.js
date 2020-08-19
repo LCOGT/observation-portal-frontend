@@ -88,7 +88,7 @@ export default new Vuex.Store({
     },
     getArchiveToken(context) {
       return new Promise((resolve, reject) => {
-        if (context.state.archiveToken === '') {
+        if (context.state.userIsAuthenticated && context.state.archiveToken === '') {
           // TODO: Should I pull new profile info if the bearer token isnt present?
           $.ajax({
             method: 'POST',
@@ -107,7 +107,8 @@ export default new Vuex.Store({
             }
           })
         } else {
-          // The archive token is already in the store, no need to retrieve it again
+          // The archive token is already in the store, or the user is not authenticated, no
+          // need to retrieve the token
           resolve();
         }
       })

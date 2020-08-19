@@ -3,7 +3,7 @@
     <b-row>
       <b-col>
         <h2>
-          {{ requestgroup.name }}
+          {{ requestgroup.name }}<br/>
           <small>RequestGroup # {{ requestgroup.id }}</small>
         </h2>
       </b-col>

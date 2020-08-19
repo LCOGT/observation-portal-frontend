@@ -208,14 +208,14 @@
         <template v-slot:cell(requestgroupInfo)="data">
           <b-row class="mx-0">
             <b-col md="8" cols="12" class="px-3">
-              <router-link class="requestgroup-title" :to="{name: 'requestgroupsDetail', params: {id: data.item.id} }">
+              <router-link class="requestgroup-title" :to="{name: 'requestgroupDetail', params: {id: data.item.id} }">
                 {{ data.item.name | valueOrDefault('Unnamed Request')}}
               </router-link>
               <b-row>
                 <b-col class="pr-1">
                   <div class="requestgroup-details requestgroup-block border-right">
                     <div><i class="fa fa-fw fa-user"></i> {{ data.item.submitter }}</div>
-                    <div><i class="fa fa-fw fa-users"></i> <router-link :to="{name: 'proposalsDetail', params: {id: data.item.proposal}}">{{ data.item.proposal }}</router-link></div>
+                    <div><i class="fa fa-fw fa-users"></i> <router-link :to="{name: 'proposalDetail', params: {id: data.item.proposal}}">{{ data.item.proposal }}</router-link></div>
                   </div>
                 </b-col>
                 <b-col class="p-0">

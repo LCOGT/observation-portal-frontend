@@ -1,12 +1,12 @@
 <template>
   <b-col>
-    <template v-if="!hasLoaded">
+    <template v-if="!requestLoaded">
       <p>Loading request</p>
     </template>
-    <template v-else-if="loadingError">
+    <template v-else-if="requestLoadingError">
       <p>Oops, there was a problem getting your request, please try again</p>
     </template>
-    <template v-else-if="hasLoaded && !request.id">
+    <template v-else-if="requestLoaded && !request.id">
       <not-found></not-found>
     </template>
     <template v-else>
@@ -23,7 +23,8 @@
           </b-breadcrumb>
         </b-col>
       </b-row>
-      <request-row :request="request"></request-row>
+      <request-row :request="request" :instruments="instruments"></request-row>
+      <!-- Add request details -->
     </template>
   </b-col>
 </template>
@@ -43,26 +44,38 @@ export default {
   },
   data: function() {
     return {
+      id: this.$route.params.id,
       requestgroup: {},
       request: {},
-      id: this.$route.params.id,
-      hasLoaded: false,
-      loadingError: false
+      instruments: {},
+      requestLoadingError: false,
+      requestLoaded: false,
     }
   },
   computed: {
-    url: function() {
-      return this.$store.state.urls.observationPortalApi + '/api/requestgroups/?request_id=' + this.id;
+    observationPortalApiUrl: function() {
+      return this.$store.state.urls.observationPortalApi;
     }
   },
   created: function() {
     this.getRequest();
+    this.getInstruments();
   },
   methods: {
+    getInstruments: function() {
+      let that = this;
+      $.ajax({
+        url: this.observationPortalApiUrl + '/api/instruments/',
+        dataType: 'json'
+      }).done(function(response) {
+        that.instruments = response;
+      })
+    },
     getRequest: function() {
       let that = this;
       $.ajax({
-        url: this.url
+        url: this.observationPortalApiUrl + '/api/requestgroups/?request_id=' + this.id,
+        dataType: 'json'
       }).done(function(response) {
         let requestgroup = response.results;
         if (requestgroup.length > 0) {
@@ -76,12 +89,11 @@ export default {
           }
         }
       }).fail(function() {
-        that.loadingError = true;
+        that.requestLoadingError = true;
       }).always(function() {
-        that.hasLoaded = true;
+        that.requestLoaded = true;
       })
     }
   }
-  
 }
 </script>

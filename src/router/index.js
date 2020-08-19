@@ -11,6 +11,7 @@ import AccountsGet from '../views/AccountsGet.vue';
 import AccountsForm from '../views/AccountsForm.vue';
 import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
 import Request from '../views/Request.vue';
+import Requestgroup from '../views/Requestgroup.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
 
@@ -51,15 +52,17 @@ const routes = [
   {
     path: '/requestgroups/:id',
     name: 'requestgroupDetail',
-    // TODO: Update component
-    component: NotFound
+    component: Requestgroup,
+    meta: {
+      title: 'Request Group Detail'
+    }
   },
   {
     path: '/requests/:id',
     name: 'requestDetail',
     component: Request,
     meta: {
-      title: 'Request'
+      title: 'Request Detail'
     }
   },
   {

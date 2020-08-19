@@ -1,11 +1,11 @@
 <template>
-  <div
-    class="row requestgroup"
+  <b-row
+    class="requestgroup"
     :class="request.state | stateToBsClass('requestgroup')"
   >
-    <div class="col-md-10">
-      <div class="row">
-        <div class="col-md-4 requestgroup-block border-right">
+    <b-col md="10">
+      <b-row>
+        <b-col md="4" class="requestgroup-block border-right">
           <router-link
             v-if="link"
             class="requestgroup-title"
@@ -26,8 +26,8 @@
             <i class="fa fa-camera"></i>
             Instrument: {{ instrumentName }}
           </p>
-        </div>
-        <div class="col-md-4 requestgroup-block border-right">
+        </b-col>
+        <b-col md="4" class="requestgroup-block border-right">
           <p>
             <span :class="request.state | stateToBsClass('text')">
               <i :class="request.state | stateToIcon"></i>
@@ -42,10 +42,10 @@
             <i class="fa fa-calendar"></i>
             {{ request.modified | formatDate }}
           </p>
-        </div>
-        <div class="col-md-4 requestgroup-block">
+        </b-col>
+        <b-col md="4" class="requestgroup-block">
           <br />
-          <div class="row margin-top-md border-right mx-auto">
+          <b-row class="margin-top-md border-right mx-auto">
             <div>
               <div class="btn-group mr-2" role="group" aria-label="button group">
                 <a
@@ -65,11 +65,11 @@
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-2 text-center">
+          </b-row>
+        </b-col>
+      </b-row>
+    </b-col>
+    <b-col md="2" class="text-center">
       <template v-if="request.state == 'COMPLETED'">
         <b-img v-if="thumbnailUrl" :src="thumbnailUrl" fluid :alt="frame.filename" :title="frame.filename"></b-img>
         <div v-else-if="thumbnailError">{{ thumbnailError }}</div>
@@ -89,8 +89,8 @@
           <i v-else class="fa fa-spinner fa-spin"></i>
         </div>
       </template>
-    </div>
-  </div>
+    </b-col>
+  </b-row>
 </template>
 <script>
 import $ from 'jquery';
@@ -105,6 +105,9 @@ export default {
     request: {
       type: Object,
     },
+    instruments: {
+      type: Object
+    },
     link: {
       type: Boolean,
       default: false
@@ -112,8 +115,6 @@ export default {
   },
   data: function() {
     return {
-      instruments: {},
-      thumbnailSize: 75,
       thumbnailUrl: '',
       thumbnailError: '',
       archiveError: '',
@@ -171,27 +172,19 @@ export default {
   },
   created: function() {
     let that = this;
-    // TODO: Check if we already have the token
-    if (this.$store.state.archiveToken) {
+    this.$store.dispatch('getArchiveToken').then(() => {
       that.loadThumbnail();
-    } else {
-      this.$store.dispatch('getArchiveToken').then(() => {
-        that.loadThumbnail();
-      })
+    });
+    if (this.request.state === 'PENDING') {
+      this.getPendingDetails();
     }
-    this.getPendingDetails();
-    $.ajax({
-      url: this.observationPortalApiUrl + '/api/instruments/',
-      success: function(response) {
-        that.instruments = response;
-      }
-    })
   },
   methods: {
     downloadAllData: function() {
       downloadAll(this.request.id, this.archiveApiUrl, this.archiveClientUrl, this.archiveToken);
     },
     loadThumbnail: function() {
+      const thumbnailSize = 75;
       let that = this;
       $.ajax({
         method: 'GET',
@@ -203,7 +196,7 @@ export default {
           } else {
             that.frame = response.results[0];
             $.ajax({
-              url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + that.thumbnailSize,
+              url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
               dataType: 'json',
               success: function(response) {
                 that.thumbnailUrl = response.url
