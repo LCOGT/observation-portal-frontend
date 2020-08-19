@@ -1,26 +1,15 @@
 <template>
-  <b-row
-    class="requestgroup"
-    :class="request.state | stateToBsClass('requestgroup')"
-  >
+  <b-row class="requestgroup" :class="request.state | stateToBsClass('requestgroup')">
     <b-col md="10">
       <b-row>
         <b-col md="4" class="requestgroup-block border-right">
-          <router-link
-            v-if="link"
-            class="requestgroup-title"
-            :to="{ name: 'requestDetail',  params: { id: request.id } }"
+          <router-link v-if="link" class="requestgroup-title" :to="{ name: 'requestDetail', params: { id: request.id } }"
+            ># {{ request.id }}</router-link
           >
-            # {{ request.id }}
-          </router-link>
           <span v-else class="requestgroup-title"># {{ request.id }}</span>
           <p>
             <i class="far fa-clock"></i>
-            <span
-              title="Total exposure time + observing overhead"
-            >
-              Duration: {{ request.duration }} seconds
-            </span>
+            <span title="Total exposure time + observing overhead">Duration: {{ request.duration }} seconds</span>
           </p>
           <p>
             <i class="fa fa-camera"></i>
@@ -48,12 +37,7 @@
           <b-row class="margin-top-md border-right mx-auto">
             <div>
               <div class="btn-group mr-2" role="group" aria-label="button group">
-                <a
-                  :href="requestApiUrl"
-                  class="btn btn-outline-secondary btn-sm"
-                >
-                  <i class="fa fa-fw fa-code"></i> View in API
-                </a>
+                <a :href="requestApiUrl" class="btn btn-outline-secondary btn-sm"> <i class="fa fa-fw fa-code"></i> View in API </a>
                 <button
                   v-if="request.state === 'COMPLETED'"
                   class="btn btn-outline-secondary btn-sm"
@@ -81,11 +65,14 @@
           <template v-if="schedulingInformation.found">
             <div>
               <strong>{{ schedulingInformation.site }}</strong>
-              <br/>
-              {{ schedulingInformation.start | formatDate }} to {{ schedulingInformation.end | formatDate }}
+              <br />
+              {{ schedulingInformation.start | formatDate }} to
+              {{ schedulingInformation.end | formatDate }}
             </div>
           </template>
-          <div v-else-if="schedulingInformation.error">{{ schedulingInformation.error }}</div>
+          <div v-else-if="schedulingInformation.error">
+            {{ schedulingInformation.error }}
+          </div>
           <i v-else class="fa fa-spinner fa-spin"></i>
         </div>
       </template>
@@ -100,20 +87,20 @@ import { stateToBsClass, stateToIcon, formatDate } from '@/utils.js';
 import { downloadAll } from '@/archive.js';
 
 export default {
-  name: "RequestRow",
+  name: 'RequestRow',
   props: {
     request: {
       type: Object,
     },
     instruments: {
-      type: Object
+      type: Object,
     },
     link: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data: function() {
+  data: function () {
     return {
       thumbnailUrl: '',
       thumbnailError: '',
@@ -121,9 +108,9 @@ export default {
       frame: {},
       schedulingInformation: {
         found: false,
-        error: ''
-      }
-    }
+        error: '',
+      },
+    };
   },
   filters: {
     stateToBsClass: function (state, prefix) {
@@ -134,31 +121,31 @@ export default {
     },
     formatDate(value) {
       return formatDate(value);
-    }
+    },
   },
   computed: {
     userIsAuthenticated: function () {
       return this.$store.state.userIsAuthenticated;
     },
-    observationPortalApiUrl: function() {
+    observationPortalApiUrl: function () {
       return this.$store.state.urls.observationPortalApi;
     },
-    archiveApiUrl: function() {
+    archiveApiUrl: function () {
       return this.$store.state.urls.archiveApi;
     },
-    thumbnailServiceUrl: function() {
+    thumbnailServiceUrl: function () {
       return this.$store.state.urls.thumbnailService;
     },
-    archiveClientUrl: function() {
+    archiveClientUrl: function () {
       return this.$store.state.urls.archiveClient;
     },
-    archiveToken: function() {
+    archiveToken: function () {
       return this.$store.state.archiveToken;
     },
-    requestApiUrl: function() {
+    requestApiUrl: function () {
       return this.$store.state.urls.observationPortalApi + '/api/requests/' + this.request.id + '/';
     },
-    instrumentName: function() {
+    instrumentName: function () {
       let instrumentType = _.get(this.request, ['configurations', 0, 'instrument_type']);
       if (instrumentType && instrumentType in this.instruments) {
         return this.instruments[instrumentType].name;
@@ -166,11 +153,11 @@ export default {
         return instrumentType;
       }
     },
-    archiveDataIsAvailable: function() {
+    archiveDataIsAvailable: function () {
       return this.frame.id ? true : false;
-    }
+    },
   },
-  created: function() {
+  created: function () {
     let that = this;
     this.$store.dispatch('getArchiveToken').then(() => {
       that.loadThumbnail();
@@ -180,17 +167,17 @@ export default {
     }
   },
   methods: {
-    downloadAllData: function() {
+    downloadAllData: function () {
       downloadAll(this.request.id, this.archiveApiUrl, this.archiveClientUrl, this.archiveToken);
     },
-    loadThumbnail: function() {
+    loadThumbnail: function () {
       const thumbnailSize = 75;
       let that = this;
       $.ajax({
         method: 'GET',
         dataType: 'json',
         url: this.archiveApiUrl + '/frames/?ordering=-id&limit=1&REQNUM=' + this.request.id,
-        success: function(response) {
+        success: function (response) {
           if (response.results.length === 0) {
             that.archiveError = 'Waiting on data to become available';
           } else {
@@ -198,36 +185,36 @@ export default {
             $.ajax({
               url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
               dataType: 'json',
-              success: function(response) {
-                that.thumbnailUrl = response.url
+              success: function (response) {
+                that.thumbnailUrl = response.url;
               },
-              error: function() {
+              error: function () {
                 that.thumbnailError = 'Could not load thumbnail for this file';
-              }
-            })
+              },
+            });
           }
-        }
-      })
+        },
+      });
     },
-    getPendingDetails: function() {
+    getPendingDetails: function () {
       let that = this;
-      $.getJSON(this.observationPortalApiUrl + '/api/requests/' + this.request.id + '/observations/?exclude_canceled=true', function(data) {
+      $.getJSON(this.observationPortalApiUrl + '/api/requests/' + this.request.id + '/observations/?exclude_canceled=true', function (data) {
         if (data.length > 0) {
           data = data.reverse(); // get the latest non canceled block
           that.schedulingInformation = {
             found: true,
             site: data[0].site,
             start: data[0].start,
-            end: data[0].end
-          }
+            end: data[0].end,
+          };
         } else {
           that.schedulingInformation = {
             found: false,
-            error: 'No scheduling information found'
-          }
+            error: 'No scheduling information found',
+          };
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>

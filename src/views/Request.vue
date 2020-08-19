@@ -17,14 +17,12 @@
             <b-breadcrumb-item :to="{ name: 'requestgroupDetail', params: { id: requestgroup.id } }">
               Sub-requests
             </b-breadcrumb-item>
-            <b-breadcrumb-item active>
-              #{{ request.id }}
-            </b-breadcrumb-item>
+            <b-breadcrumb-item active> #{{ request.id }} </b-breadcrumb-item>
           </b-breadcrumb>
         </b-col>
       </b-row>
       <request-row :request="request" :instruments="instruments"></request-row>
-      <!-- Add request details -->
+      <request-detail :request="request"></request-detail>
     </template>
   </b-col>
 </template>
@@ -32,6 +30,7 @@
 import $ from 'jquery';
 
 import RequestgroupHeader from '@/components/RequestgroupHeader.vue';
+import RequestDetail from '@/components/RequestDetail.vue';
 import RequestRow from '@/components/RequestRow.vue';
 import NotFound from '@/views/NotFound.vue';
 
@@ -39,10 +38,11 @@ export default {
   name: 'Request',
   components: {
     RequestgroupHeader,
+    RequestDetail,
     RequestRow,
-    NotFound
+    NotFound,
   },
-  data: function() {
+  data: function () {
     return {
       id: this.$route.params.id,
       requestgroup: {},
@@ -50,50 +50,53 @@ export default {
       instruments: {},
       requestLoadingError: false,
       requestLoaded: false,
-    }
+    };
   },
   computed: {
-    observationPortalApiUrl: function() {
+    observationPortalApiUrl: function () {
       return this.$store.state.urls.observationPortalApi;
-    }
+    },
   },
-  created: function() {
+  created: function () {
     this.getRequest();
     this.getInstruments();
   },
   methods: {
-    getInstruments: function() {
+    getInstruments: function () {
       let that = this;
       $.ajax({
         url: this.observationPortalApiUrl + '/api/instruments/',
-        dataType: 'json'
-      }).done(function(response) {
+        dataType: 'json',
+      }).done(function (response) {
         that.instruments = response;
-      })
+      });
     },
-    getRequest: function() {
+    getRequest: function () {
       let that = this;
       $.ajax({
         url: this.observationPortalApiUrl + '/api/requestgroups/?request_id=' + this.id,
-        dataType: 'json'
-      }).done(function(response) {
-        let requestgroup = response.results;
-        if (requestgroup.length > 0) {
-          that.requestgroup = requestgroup[0];
-          for (let request of requestgroup[0].requests) {
-            // TODO: Is there a better way to check this
-            if (String(request.id) === String(that.id)) {
-              that.request = request;
-              break;
+        dataType: 'json',
+      })
+        .done(function (response) {
+          let requestgroup = response.results;
+          if (requestgroup.length > 0) {
+            that.requestgroup = requestgroup[0];
+            for (let request of requestgroup[0].requests) {
+              // TODO: Is there a better way to check this
+              if (String(request.id) === String(that.id)) {
+                that.request = request;
+                break;
+              }
             }
           }
-        }
-      }).fail(function() {
-        that.requestLoadingError = true;
-      }).always(function() {
-        that.requestLoaded = true;
-      })
-    }
-  }
-}
+        })
+        .fail(function () {
+          that.requestLoadingError = true;
+        })
+        .always(function () {
+          that.requestLoaded = true;
+        });
+    },
+  },
+};
 </script>
