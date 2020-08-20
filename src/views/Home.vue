@@ -48,7 +48,7 @@
             <h3>Active Proposals</h3>
             <div v-for="proposal in currentProposals" :key="proposal.id">
               <p>
-                <router-link :to="{name: 'proposalsDetail', params: {id: proposal.id}}">{{ proposal.id }}</router-link>
+                <router-link :to="{name: 'proposalDetail', params: {id: proposal.id}}">{{ proposal.id }}</router-link>
                 <br/>
                 <small>{{ proposal.title }}</small>
               </p>

@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import Tools from '../views/Tools.vue';
-import NotFound from '../views/NotFound.vue';
 import Login from '../views/Login.vue';
 import Profile from '../views/Profile.vue';
 import Register from '../views/Register.vue'
@@ -10,9 +9,9 @@ import AcceptTerms from '../views/AcceptTerms.vue';
 import AccountsGet from '../views/AccountsGet.vue';
 import AccountsForm from '../views/AccountsForm.vue';
 import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
-import Request from '../views/Request.vue';
-import Requestgroup from '../views/Requestgroup.vue';
+import RequestgroupDetail from '../views/RequestgroupDetail.vue';
 import Compose from '../views/Compose.vue';
+import NotFound from '../components/NotFound.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
 
@@ -53,7 +52,7 @@ const routes = [
   {
     path: '/requestgroups/:id',
     name: 'requestgroupDetail',
-    component: Requestgroup,
+    component: RequestgroupDetail,
     meta: {
       title: 'Request Group Detail'
     }
@@ -61,7 +60,7 @@ const routes = [
   {
     path: '/requests/:id',
     name: 'requestDetail',
-    component: Request,
+    component: RequestgroupDetail,
     meta: {
       title: 'Request Detail'
     }

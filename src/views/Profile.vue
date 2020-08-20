@@ -266,10 +266,11 @@ export default {
         data: JSON.stringify(that.formData),
         contentType: "application/json",
         success: function () {
-          that.$store.dispatch('getProfileData');
           that.$store.commit('clearAllMessages');
           that.$store.commit('addMessage', {text: 'Profile successfully updated', variant: 'success'});
-          that.$router.push({ name: 'home', params: { persistMessage: true } });
+          that.$store.dispatch('getProfileData').then(() => {
+            that.$router.push({ name: 'home', params: { persistMessage: true } });
+          });
         },
         error: function (response) {
           if (response.status === 400) {
