@@ -22,14 +22,16 @@
       'dec'
     ],
     data: function() {
-      return {resultCount: 0};
+      return {
+        resultCount: 0
+      };
     },
-    created: function() {
+    mounted: function() {
       this.setResultCount();
     },
     computed: {
       guiLink: function() {
-        return this.$store.state.urls.archiveClient + '/?OBSTYPE=EXPOSE&OBSTYPE=REPEAT_EXPOSE&start=2014-05-01&covers=POINT(' + this.ra + ' ' + this.dec +')';
+        return this.$store.state.urls.archiveClient + '/?OBSTYPE=EXPOSE&start=2014-05-01&covers=POINT(' + this.ra + ' ' + this.dec +')';
       },
       archiveApiUrl: function() {
         return this.$store.state.urls.archiveApi;

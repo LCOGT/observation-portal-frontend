@@ -8,9 +8,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import '@/assets/css/main.css';
 import $ from 'jquery';
-import { addCsrfProtection } from '@/utils.js';
-
-$(document).ajaxSend(addCsrfProtection);
+import { getCookie, csrfSafeMethod } from '@/utils.js';
 
 Vue.use(BootstrapVue);
 
@@ -30,9 +28,13 @@ getRuntimeConfig().then(function(json) {
     thumbnailService: process.env.VUE_APP_THUMBNAILS_SERVICE_URL || json.thumbnailServiceUrl,
   });
 
-  // Include credentials when sending requests to the observation portal.
+  // Add csrf protection and credentials to requests sent to the observation portal API
   $(document).ajaxSend(function(event, xhr, settings) {
     if (settings.url.startsWith(store.state.urls.observationPortalApi)) {
+      if (!csrfSafeMethod(settings.type)) {
+        var csrftoken = getCookie('csrftoken');
+        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+      }
       settings.xhrFields = {
         withCredentials: true
       };
@@ -41,7 +43,7 @@ getRuntimeConfig().then(function(json) {
 
   // Add the archive token to a request being sent to the archive api or the thumbservice
   $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-    if ((options.url.indexOf(store.state.urls.archiveApi) >= 0 || options.url.indexOf(store.state.urls.thumbnailService) >= 0) && store.state.archiveToken) {
+    if ((options.url.startsWith(store.state.urls.archiveApi) || options.url.startsWith(store.state.urls.thumbnailService)) && store.state.archiveToken) {
       jqXHR.setRequestHeader('Authorization', 'Token ' + store.state.archiveToken);
     }
   });
