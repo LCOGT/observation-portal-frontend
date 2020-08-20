@@ -11,13 +11,17 @@
           variant="warning" 
           @click="clear"
         >
-          <span v-if="navigationIsExpanded">
-            <span class="float-right"><i class="fa fa-times mx-2"></i></span>
-            <span class="float-right">Clear Form</span>
-          </span>
-          <span v-else>
-            <i class="fa fa-times mx-2"></i>
-          </span>
+          <template v-if="navigationIsExpanded">
+            <span>
+              <span class="float-right"><i class="fa fa-times mx-2"></i></span>
+              <span class="float-right">Clear Form</span>
+            </span>
+          </template>
+          <template v-else>
+            <span>
+              <i class="fa fa-times mx-2"></i>
+            </span>
+          </template>
         </b-button>
         <b-dropdown 
           v-if="draftExists" 
@@ -46,13 +50,17 @@
           variant="info" 
           @click="saveDraft(true)"
         >
-          <span v-if="navigationIsExpanded">
-            <span class="float-right"><i class="fa fa-save mx-2"></i></span>
-            <span class="float-right">Save Draft</span>
-          </span>
-          <span v-else>
-            <i class="fa fa-save mx-2"></i>
-          </span>
+          <template v-if="navigationIsExpanded">
+            <span>
+              <span class="float-right"><i class="fa fa-save mx-2"></i></span>
+              <span class="float-right">Save Draft</span>
+            </span>
+          </template>
+          <template v-else>
+            <span>
+              <i class="fa fa-save mx-2"></i>
+            </span>
+          </template>
         </b-button>
         <b-button
           block 
@@ -60,30 +68,30 @@
           :disabled="hasRootError"
           @click="submit" 
         >
-          <span v-if="navigationIsExpanded">
-            <span class="float-right"><i class="fa fa-check mx-2"></i></span>
-            <span class="float-right">Submit Request</span>
-          </span>
-          <span v-else>
-            <i class="fa fa-check mx-2"></i>
-          </span>
+          <template v-if="navigationIsExpanded">
+            <span>
+              <span class="float-right"><i class="fa fa-check mx-2"></i></span>
+              <span class="float-right">Submit Request</span>
+            </span>
+          </template>
+          <template v-else>
+            <span>
+              <i class="fa fa-check mx-2"></i>
+            </span>
+          </template>
         </b-button>
-        <b-button 
-          block
-          v-b-toggle.my-collapse
-          @click="toggleNav()" 
-        >
-          <span class="when-opened">
-            <span class="float-right"><i class="fas fa-angle-double-right mx-2"></i></span>
-            <span class="float-right">Toggle Navigation</span>
-          </span> 
-          <span class="when-closed">
-            <i class="fas fa-angle-double-left mx-2"></i>
-          </span>
-        </b-button>
+          <b-button v-b-toggle:sidenav-collapse>
+            <span class="when-open">
+              <span class="float-right"><i class="fas fa-angle-double-right mx-2"></i></span>
+              <span class="float-right">Toggle Navigation</span>
+            </span>
+            <span class="when-closed">
+              <i class="fas fa-angle-double-left mx-2"></i>
+            </span>
+          </b-button>
       </b-button-group>
     </b-nav-form>
-    <b-collapse id="my-collapse" visible>
+    <b-collapse id="sidenav-collapse" visible>
       <hr>
       <b-nav vertical>
         <b-nav-item href="#general">
@@ -223,6 +231,13 @@
         return this.draftId > -1;
       }
     },
+    mounted: function() {
+      this.$root.$on('bv::collapse::state', (collapseId, isJustShown) => {
+        if (collapseId === 'sidenav-collapse') {
+          this.navigationIsExpanded = isJustShown;
+        }
+      })
+    },
     methods: {
       getErrors: function(path) {
         return _.get(this.errors, path, []);
@@ -236,9 +251,6 @@
           saveId = this.draftId;
         }
         this.$emit('savedraft', {draftId: saveId});
-      },
-      toggleNav: function() {
-        this.navigationIsExpanded = !this.navigationIsExpanded;
       },
       submit: function() {
         this.$emit('submit');
@@ -277,8 +289,8 @@
   }
   /* Display different things on the buttons when the 
   nav is collapsed vs when it is open */
-  .collapsed > .when-opened,
-  :not(.collapsed) > .when-closed {
+  .collapsed > .when-open,
+  .not-collapsed > .when-closed {
     display: none;
   }
   /* Control the nav width for predictability */
