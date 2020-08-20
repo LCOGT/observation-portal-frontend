@@ -11,7 +11,7 @@
       :show-empty="tableIsEmpty"
       empty-text="You have no draft observation requests"
     >
-      <template slot="load" slot-scope="data" class="text-center">
+      <template v-slot:cell(load)="data">
         <b-button 
           variant="info" 
           size="sm" 
@@ -20,7 +20,7 @@
           <i class="fa fa-download"></i>
         </b-button>
       </template>
-      <template slot="delete" slot-scope="data">
+      <template v-slot:cell(delete)="data">
         <b-button 
           variant="danger" 
           size="sm" 
@@ -113,7 +113,7 @@
           let that = this;
           $.ajax({
             type: 'DELETE',
-            url: '/api/drafts/' + id + '/'
+            url: this.observationPortalApiUrl + '/api/drafts/' + id + '/'
           }).done(function() {
             that.fetchDrafts();
           });

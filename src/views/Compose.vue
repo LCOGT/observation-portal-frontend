@@ -342,7 +342,7 @@
         this.draftId = id;
         this.tab = 1;
         let that = this;
-        $.getJSON('/api/drafts/' + id + '/', function(data) {
+        $.getJSON(this.observationPortalApiUrl + '/api/drafts/' + id + '/', function(data) {
           that.requestgroup = {};
           Vue.nextTick(function() {
             that.requestgroup = JSON.parse(data.content);
