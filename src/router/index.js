@@ -12,6 +12,7 @@ import AccountsForm from '../views/AccountsForm.vue';
 import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
 import Request from '../views/Request.vue';
 import Requestgroup from '../views/Requestgroup.vue';
+import Compose from '../views/Compose.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
 
@@ -74,8 +75,10 @@ const routes = [
   {
     path: '/create',
     name: 'create',
-    // TODO: Update with create component
-    component: NotFound
+    component: Compose,
+    meta: {
+      title: 'Create New Request'
+    }
   },
   {
     path: '/tools',
