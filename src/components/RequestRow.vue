@@ -84,7 +84,7 @@ import $ from 'jquery';
 import _ from 'lodash';
 
 import { stateToBsClass, stateToIcon, formatDate } from '@/utils.js';
-import { downloadAll } from '@/archive.js';
+import { downloadAll, getLatestFrame } from '@/archive.js';
 
 export default {
   name: 'RequestRow',
@@ -124,9 +124,6 @@ export default {
     },
   },
   computed: {
-    userIsAuthenticated: function () {
-      return this.$store.state.userIsAuthenticated;
-    },
     observationPortalApiUrl: function () {
       return this.$store.state.urls.observationPortalApi;
     },
@@ -160,7 +157,7 @@ export default {
   created: function () {
     let that = this;
     this.$store.dispatch('getArchiveToken').then(() => {
-      that.loadThumbnail();
+      that.loadLatestThumbnail();
     });
     if (this.request.state === 'PENDING') {
       this.getPendingDetails();
@@ -170,31 +167,24 @@ export default {
     downloadAllData: function () {
       downloadAll(this.request.id, this.archiveApiUrl, this.archiveClientUrl, this.archiveToken);
     },
-    loadThumbnail: function () {
+    loadLatestThumbnail: function () {
       const thumbnailSize = 75;
       let that = this;
-      $.ajax({
-        method: 'GET',
-        dataType: 'json',
-        url: this.archiveApiUrl + '/frames/?ordering=-id&limit=1&REQNUM=' + this.request.id,
-        success: function (response) {
-          if (response.results.length === 0) {
-            that.archiveError = 'Waiting on data to become available';
-          } else {
-            that.frame = response.results[0];
-            $.ajax({
-              url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
-              dataType: 'json',
-              success: function (response) {
-                that.thumbnailUrl = response.url;
-              },
-              error: function () {
-                that.thumbnailError = 'Could not load thumbnail for this file';
-              },
-            });
-          }
-        },
-      });
+      getLatestFrame(this.request.id, this.archiveApiUrl, function(frame) {
+        if (!frame) {
+          that.archiveError = 'Waiting on data to become available';
+        } else {
+          that.frame = frame;
+          $.ajax({
+            url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
+            dataType: 'json',
+          }).done(function(response) {
+            that.thumbnailUrl = response.url;
+          }).fail(function() {
+            that.thumbnailError = 'Could not load thumbnail for this file';
+          })
+        }
+      })
     },
     getPendingDetails: function () {
       let that = this;

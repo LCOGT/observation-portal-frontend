@@ -9,14 +9,14 @@ function downloadZip(frameIds, archiveRoot, archiveToken) {
     postData['frame_ids[' + i + ']'] = frameIds[i];
   }
   postData['auth_token'] = archiveToken;
-  $.fileDownload(archiveRoot + 'frames/zip/', {
+  $.fileDownload(archiveRoot + '/frames/zip/', {
     httpMethod: 'POST',
     data: postData,
   });
 }
 
 function downloadAll(requestId, archiveRoot, archiveClientUrl, archiveToken) {
-  $.getJSON(archiveRoot + 'frames/?limit=1000&REQNUM=' + requestId, function(data) {
+  $.getJSON(archiveRoot + '/frames/?limit=1000&REQNUM=' + requestId, function(data) {
     if (data.count > 1000) {
       alert('Over 1000 products found. Please use ' + archiveClientUrl + ' to download your data');
       return false;
@@ -30,7 +30,10 @@ function downloadAll(requestId, archiveRoot, archiveClientUrl, archiveToken) {
 }
 
 function getLatestFrame(requestId, archiveRoot, callback) {
-  $.getJSON(archiveRoot + 'frames/?ordering=-id&limit=1&REQNUM=' + requestId, function(data) {
-    callback(data.results[0]);
+  $.ajax({
+    url: archiveRoot + '/frames/?ordering=-id&limit=1&REQNUM=' + requestId,
+    dataType: 'json',
+  }).done(function(response) {
+    callback(response.results[0]);
   });
 }

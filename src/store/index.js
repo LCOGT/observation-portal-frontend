@@ -33,8 +33,8 @@ export default new Vuex.Store({
     },
     setUserAcceptedTerms (state, profileData) {
       let acceptedTerms = false;
-      if (profileData.profile.terms_accepted || profileData.profile.is_staff) {
-        acceptedTerms = true
+      if (profileData.profile.terms_accepted || profileData.is_staff) {
+        acceptedTerms = true;
       }
       state.userAcceptedTerms = acceptedTerms;
     },
@@ -102,7 +102,10 @@ export default new Vuex.Store({
               resolve();
             },
             error: function(response) {
-              console.log('failed to get token', response)
+              if (response.status === 401) {
+                // No such user, but that is ok
+                resolve();
+              }
               reject();
             }
           })

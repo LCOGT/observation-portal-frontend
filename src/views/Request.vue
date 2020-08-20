@@ -58,7 +58,9 @@ export default {
     },
   },
   created: function () {
-    this.getRequest();
+    this.$store.dispatch('getArchiveToken').finally(() => {
+      this.getRequest();
+    });
     this.getInstruments();
   },
   methods: {

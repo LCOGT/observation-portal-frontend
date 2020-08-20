@@ -62,7 +62,7 @@ export default {
       return this.$store.state.archiveToken;
     },
     archiveLink: function () {
-      return this.archiveApiUrl + '?REQNUM=' + this.requestid + '&start=2014-01-01';
+      return this.archiveClientUrl + '/?REQNUM=' + this.requestid + '&start=2014-01-01';
     },
   },
   mounted: function () {
@@ -90,7 +90,7 @@ export default {
       classes: 'table table-hover',
       sortName: 'filename',
       sortOrder: 'asc',
-      maintainSelected: true,
+      maintainMetaData: true,
       checkboxHeader: true,
       toolbar: '#archive-table-toolbar',
       columns: [

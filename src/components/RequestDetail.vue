@@ -281,7 +281,7 @@ export default {
     let that = this;
     this.$store.dispatch('getArchiveToken').then(() => {
       if (that.request.state === 'COMPLETED') {
-        getLatestFrame(that.request.id, function (frame) {
+        getLatestFrame(that.request.id, that.archiveApiUrl, function (frame) {
           that.curFrame = frame;
         });
       }
@@ -317,6 +317,9 @@ export default {
   computed: {
     observationPortalApiUrl: function () {
       return this.$store.state.urls.observationPortalApi;
+    },
+    archiveApiUrl: function() {
+      return this.$store.state.urls.archiveApi;
     },
     thumbnailServiceUrl: function () {
       return this.$store.state.urls.thumbnailService;
