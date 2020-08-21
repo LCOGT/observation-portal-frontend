@@ -32,9 +32,8 @@
             {{ request.modified | formatDate }}
           </p>
         </b-col>
-        <b-col md="4" class="requestgroup-block">
-          <br />
-          <b-row class="margin-top-md border-right mx-auto">
+        <b-col md="4" class="requestgroup-block my-auto">
+          <b-row class="border-right mx-auto">
             <div>
               <div class="btn-group mr-2" role="group" aria-label="button group">
                 <a :href="requestApiUrl" class="btn btn-outline-secondary btn-sm"> <i class="fa fa-fw fa-code"></i> View in API </a>
@@ -53,12 +52,12 @@
         </b-col>
       </b-row>
     </b-col>
-    <b-col md="2" class="text-center">
+    <b-col md="2" class="text-center my-auto">
       <template v-if="request.state == 'COMPLETED'">
         <b-img v-if="thumbnailUrl" :src="thumbnailUrl" fluid :alt="frame.filename" :title="frame.filename"></b-img>
         <div v-else-if="thumbnailError">{{ thumbnailError }}</div>
         <div v-else-if="archiveError">{{ archiveError }}</div>
-        <i v-else class="fa fa-spinner fa-spin"></i>
+        <i v-else class="fa fa-spin fa-spinner"></i>
       </template>
       <template v-else-if="request.state == 'PENDING'">
         <div>

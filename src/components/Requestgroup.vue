@@ -253,10 +253,6 @@
         }
         return _.sortBy(options, 'text');
       },
-      random: function () {
-        console.log('in random', this.proposalOptions)
-        return this.proposalOptions;
-      },
       durationDisplay: function() {
         let duration = moment.duration(this.duration_data.duration, 'seconds');
         let durationStr = duration.hours() + ' hrs ' + duration.minutes() + ' min ' + duration.seconds() + ' sec';

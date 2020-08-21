@@ -1,7 +1,9 @@
 <template>
   <b-col>
     <template v-if="!dataLoaded">
-      <p>Loading data</p>
+      <div class="text-center my-2">
+        <i class="fa fa-spin fa-spinner"></i>
+      </div>
     </template>
     <template v-else-if="requestgroupLoadError">
       <p>
@@ -142,7 +144,7 @@ export default {
           if (that.requestDetail) {
             if (response.results.length > 0) {
               that.requestgroup = response.results[0];
-              for (let request of that.requestgroup[0].requests) {
+              for (let request of that.requestgroup.requests) {
                 if (String(request.id) === String(that.id)) {
                   that.request = request;
                   break;
