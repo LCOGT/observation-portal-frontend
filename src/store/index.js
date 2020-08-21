@@ -89,7 +89,6 @@ export default new Vuex.Store({
     getArchiveToken(context) {
       return new Promise((resolve, reject) => {
         if (context.state.userIsAuthenticated && context.state.archiveToken === '') {
-          // TODO: Should I pull new profile info if the bearer token isnt present?
           $.ajax({
             method: 'POST',
             dataType: 'json',

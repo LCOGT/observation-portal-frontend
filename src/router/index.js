@@ -76,7 +76,8 @@ const routes = [
     name: 'create',
     component: Compose,
     meta: {
-      title: 'Create New Request'
+      title: 'Create New Request',
+      requiresAuth: true
     }
   },
   {
@@ -204,5 +205,17 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // Route requires the user to be logged in, check if logged in and if not, redirect to login page.
+    if (!store.state.userIsAuthenticated) {
+      next({ name: 'login', query: { next: to.name }})
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})
 
 export default router;

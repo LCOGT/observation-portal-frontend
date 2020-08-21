@@ -72,7 +72,7 @@ export default {
           } else if (that.successRedirectViewName) {
             // Successful submission, and a redirect has been set. Navigate to the specified view name.
             let successPathname = that.$router.resolve({ name: that.successRedirectViewName});
-            window.location.pathname = successPathname.href;
+            window.location = successPathname.href;
           } else {
             // Successful submission, and no redirect has been set. Replace the contents with the main content
             // of the response, if there is anything to show.

@@ -3,7 +3,7 @@
     <b-col>
       <passthrough-form
         endpoint="/accounts/login/"
-        successRedirectViewName="home"
+        :successRedirectViewName="redirectViewName"
       ></passthrough-form>
       <br/>
       <!-- TODO: Translate this -->
@@ -21,6 +21,11 @@ export default {
   name: 'Login',
   components: {
     PassthroughForm
+  },
+  computed: {
+    redirectViewName: function() {
+      return this.$route.query.next || 'home';
+    }
   }
 }
 </script>
