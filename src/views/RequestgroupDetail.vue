@@ -1,14 +1,14 @@
 <template>
   <b-col>
-    <template v-if="!dataLoaded">
+    <template v-if="requestgroupLoadError">
+      <p class="text-center my-2">
+        Oops, there was a problem getting your data, please try again
+      </p>
+    </template>
+    <template v-else-if="!dataLoaded">
       <div class="text-center my-2">
         <i class="fa fa-spin fa-spinner"></i>
       </div>
-    </template>
-    <template v-else-if="requestgroupLoadError">
-      <p>
-        Oops, there was a problem getting your data, please try again
-      </p>
     </template>
     <template v-else-if="dataLoaded && !requestgroup.id">
       <not-found></not-found>
@@ -79,9 +79,7 @@ export default {
   },
   data: function () {
     return {
-      id: this.$route.params.id,
       requestgroup: {},
-      request: {},
       instruments: {},
       requestgroupLoaded: false,
       archiveTokenLoaded: false,
@@ -107,6 +105,21 @@ export default {
     },
     requestDetail: function() {
       return this.$route.name === 'requestDetail';
+    },
+    id: function() {
+      return this.$route.params.id;
+    },
+    request: function() {
+      let requestDict = {};
+      if (this.requestDetail) {
+        for (let request of this.requestgroup.requests) {
+          if (String(request.id) === String(this.id)) {
+            requestDict = request;
+            break;
+          }
+        }
+      }
+      return requestDict;
     }
   },
   created: function () {
@@ -116,7 +129,11 @@ export default {
     // the token is sent.
     this.$store.dispatch('getArchiveToken').finally(() => {
       that.archiveTokenLoaded = true;
-      that.getRequestgroup();
+      if (that.requestDetail) {
+        that.getRequestgroupByRequestId();
+      } else {
+        that.getRequestgroupByRequestgroupId();
+      }
     });
     this.getInstruments();
   },
@@ -130,45 +147,42 @@ export default {
         that.instruments = response;
       });
     },
-    getRequestgroup: function () {
+    getRequestgroupByRequestgroupId: function () {
       let that = this;
-      let url = this.observationPortalApiUrl + '/api/requestgroups/' + this.id + '/';
-      if (this.requestDetail) {
-        url = this.observationPortalApiUrl + '/api/requestgroups/?request_id=' + this.id;
-      }
       $.ajax({
-        url: url,
+        url: this.observationPortalApiUrl + '/api/requestgroups/' + this.id + '/',
         dataType: 'json'
-      })
-        .done(function (response) {
-          if (that.requestDetail) {
-            if (response.results.length > 0) {
-              that.requestgroup = response.results[0];
-              for (let request of that.requestgroup.requests) {
-                if (String(request.id) === String(that.id)) {
-                  that.request = request;
-                  break;
-                }
-              }
-            }
-          } else {
-            that.requestgroup = response;
-            if (response.requests.length == 1) {
-              that.request = response.requests[0];
-              that.$router.replace({
-                name: 'requestDetail',
-                params: { id: that.request.id },
-              });
-            }
-          }
-        })
-        .fail(function () {
+      }).done(function (response) {
+        that.requestgroup = response;
+        if (response.requests.length === 1) {
+          that.$router.replace({
+            name: 'requestDetail',
+            params: { id: response.requests[0].id },
+          });
+        }
+      }).fail(function (response) {
+        if (response.status !== 404) {
           that.requestgroupLoadError = true;
-        })
-        .always(function () {
-          that.requestgroupLoaded = true;
-        });
+        }
+      }).always(function () {
+        that.requestgroupLoaded = true;
+      });
     },
-  },
+    getRequestgroupByRequestId: function () {
+      let that = this;
+      $.ajax({
+        url: this.observationPortalApiUrl + '/api/requestgroups/' + '?request_id=' + this.id,
+        dataType: 'json'
+      }).done(function (response) {
+        if (response.results.length > 0) {
+          that.requestgroup = response.results[0];
+        }
+      }).fail(function () {
+        that.requestgroupLoadError = true;
+      }).always(function () {
+        that.requestgroupLoaded = true;
+      });
+    }
+  }
 };
 </script>
