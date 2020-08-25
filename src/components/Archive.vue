@@ -1,9 +1,9 @@
 <template>
   <b-container v-show="resultCount > 0">
     <h3>
-      <i class="fas fa-info fa-2x fa-border fa-pull-left"></i>
-      <a 
-        :href="guiLink" 
+      <i class="fas fa-info fa-2x fa-border fa-pull-left" />
+      <a
+        :href="guiLink"
         target="_blank"
       >
         {{ resultCount }}
@@ -17,17 +17,20 @@
   import _ from 'lodash';
 
   export default {
-    props: [
-      'ra', 
-      'dec'
-    ],
+    props: {
+      ra: {
+        type: [String, Number],
+        required: true
+      },
+      dec: {
+        type: [String, Number],
+        required: true
+      }
+    },
     data: function() {
       return {
         resultCount: 0
       };
-    },
-    mounted: function() {
-      this.setResultCount();
     },
     computed: {
       guiLink: function() {
@@ -36,14 +39,6 @@
       archiveApiUrl: function() {
         return this.$store.state.urls.archiveApi;
       }
-    },
-    methods:{
-      setResultCount: _.debounce(function() {
-        let that = this;
-        $.getJSON(this.archiveApiUrl + '/frames/?OBSTYPE=EXPOSE&covers=POINT(' + that.ra + ' ' + that.dec +')', function(data) {
-          that.resultCount = data.count;
-        });
-      }, 500)
     },
     watch: {
       ra: function(val) {
@@ -56,6 +51,17 @@
           this.setResultCount();
         }
       }
+    },
+    mounted: function() {
+      this.setResultCount();
+    },
+    methods: {
+      setResultCount: _.debounce(function() {
+        let that = this;
+        $.getJSON(this.archiveApiUrl + '/frames/?OBSTYPE=EXPOSE&covers=POINT(' + that.ra + ' ' + that.dec +')', function(data) {
+          that.resultCount = data.count;
+        });
+      }, 500)
     }
   };
 </script>

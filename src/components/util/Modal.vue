@@ -1,10 +1,10 @@
 <template>
-  <b-modal 
+  <b-modal
+    ref="my-modal"
     size="xl"
-    :title="header" 
-    ref="my-modal" 
+    :title="header"
   >
-    <slot></slot>
+    <slot />
     <div slot="modal-footer">
       <b-button
         v-show="showCancel"
@@ -29,7 +29,10 @@
   export default {
     props: {
       show: Boolean,
-      header: String,
+      header: {
+        type: String,
+        default: ''
+      },
       showAccept: {
         type: Boolean,
         default: true
@@ -37,6 +40,15 @@
       showCancel: {
         type: Boolean,
         default: true
+      }
+    },
+    watch: {
+      show: function(value) {
+        if (value) {
+          this.$refs['my-modal'].show();
+        } else {
+          this.$refs['my-modal'].hide();
+        }
       }
     },
     mounted: function() {
@@ -52,15 +64,6 @@
       submit: function(){
         this.$refs['my-modal'].hide();
         this.$emit('submit');
-      }
-    },
-    watch: {
-      show: function(value) {
-        if (value) {
-          this.$refs['my-modal'].show();
-        } else {
-          this.$refs['my-modal'].hide();
-        }
       }
     },
   };

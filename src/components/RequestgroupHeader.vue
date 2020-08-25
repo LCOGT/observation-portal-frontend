@@ -3,7 +3,7 @@
     <b-row>
       <b-col>
         <h2>
-          {{ requestgroup.name }}<br/>
+          {{ requestgroup.name }}<br>
           <small>RequestGroup # {{ requestgroup.id }}</small>
         </h2>
       </b-col>
@@ -13,7 +13,7 @@
         <!-- TODO: Translate this -->
         <dt>State</dt>
         <dd :class="requestgroup.state | stateToBsClass('text')">
-          <i :class="requestgroup.state | stateToIcon"></i>
+          <i :class="requestgroup.state | stateToIcon" />
           {{ requestgroup.state }}
         </dd>
       </dl>
@@ -33,7 +33,9 @@
         <dd>
           <router-link
             :to="{ name: 'proposalDetail', params: {id: requestgroup.proposal} }"
-          >{{ requestgroup.proposal }}</router-link>
+          >
+            {{ requestgroup.proposal }}
+          </router-link>
         </dd>
       </dl>
       <dl class="col-auto mx-auto px-0">
@@ -53,20 +55,23 @@
       <span class="col-auto mr-0 px-0">
         <div class="dropdown">
           <button
+            id="rgOptionsButton"
             type="button"
             class="btn btn-outline-secondary dropdown-toggle"
-            id="rgOptionsButton"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
           >Options</button>
-          <div class="dropdown-menu" aria-labelledby="rgOptionsButton">
+          <div
+            class="dropdown-menu"
+            aria-labelledby="rgOptionsButton"
+          >
             <router-link
               class="dropdown-item"
               title="Copy this request"
               :to="{ name: 'create', query: { requestgroupid: requestgroup.id} }"
             >
-              <i class="fa fa-copy"></i> Copy
+              <i class="fa fa-copy" /> Copy
             </router-link>
             <a
               v-if="userIsAuthenticated && requestgroup.state == 'PENDING'"
@@ -74,7 +79,7 @@
               title="Cancel this request"
               @click="cancelRequestGroup"
             >
-              <i class="fa fa-times"></i> Cancel
+              <i class="fa fa-times" /> Cancel
             </a>
           </div>
         </div>
@@ -85,15 +90,10 @@
 <script>
 import $ from 'jquery';
 
-import { stateToBsClass, stateToIcon, formatDate } from "@/utils.js";
+import { stateToBsClass, stateToIcon, formatDate } from '@/utils.js';
 
 export default {
-  name: "RequestgroupHeader",
-  props: {
-    requestgroup: {
-      type: Object,
-    },
-  },
+  name: 'RequestgroupHeader',
   filters: {
     stateToBsClass: function (state, prefix) {
       return stateToBsClass(state, prefix);
@@ -111,6 +111,12 @@ export default {
     },
     formatDate: function(date) {
       return formatDate(date);
+    }
+  },
+  props: {
+    requestgroup: {
+      type: Object,
+      required: true
     }
   },
   computed: {

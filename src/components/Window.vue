@@ -1,87 +1,108 @@
 <template>
-  <panel 
-    icon="fas fa-calendar" 
-    title="Window" 
-    :id="'window' + $parent.$parent.index + index" 
-    :index="index" 
-    :errors="errors" 
-    :canremove="this.index > 0" 
-    :cancopy="true" 
+  <panel
+    :id="'window' + $parent.$parent.index + index"
+    icon="fas fa-calendar"
+    title="Window"
+    :index="index"
+    :errors="errors"
+    :canremove="index > 0"
+    :cancopy="true"
+    :show="show"
     @remove="$emit('remove')"
-    @copy="$emit('copy')" :show="show"
+    @copy="$emit('copy')"
     @show="show = $event"
   >
-    <custom-alert 
-      v-for="error in topLevelErrors" 
-      :key="error" 
-      alertclass="danger" 
+    <custom-alert
+      v-for="error in topLevelErrors"
+      :key="error"
+      alertclass="danger"
       :dismissible="false"
     >
       {{ error }}
     </custom-alert>
     <b-container class="p-0">
       <b-row>
-        <b-col md="6" v-show="show">
+        <b-col
+          v-show="show"
+          md="6"
+        >
           <ul>
             <li>
               Try the
-              <a href="https://lco.global/observatory/visibility/" title="Target Visibilty Calculator" target="_blank">
+              <a
+                href="https://lco.global/observatory/visibility/"
+                title="Target Visibilty Calculator"
+                target="_blank"
+              >
                 Target Visibility Calculator.
               </a>
             </li>
-            <li v-show="observation_type === 'RAPID_RESPONSE'">
+            <li v-show="observationType === 'RAPID_RESPONSE'">
               A start time cannot be selected for a Rapid Response observation. It will be scheduled as soon as possible.
             </li>
           </ul>
-          <h4 v-show="showAirmass" class="text-center">Visibility</h4>
-          <airmass v-show="showAirmass" :data="airmassData" :showZoomControls="true"></airmass>
+          <h4
+            v-show="showAirmass"
+            class="text-center"
+          >
+            Visibility
+          </h4>
+          <airmass
+            v-show="showAirmass"
+            :data="airmassData"
+            :show-zoom-controls="true"
+          />
         </b-col>
         <b-col :md="show ? 6 : 12">
           <b-form>
-            <custom-datetime v-show="observation_type != 'RAPID_RESPONSE'"
-              v-model="window.start" 
-              label="Start" 
-              field="start" 
+            <custom-datetime
+              v-show="observationType != 'RAPID_RESPONSE'"
+              v-model="window.start"
+              label="Start"
+              field="start"
               desc="UT time when the observing window opens"
-              :errors="errors.start" 
-              @input="update"              
-            />
-            <custom-datetime 
-              v-model="window.end" 
-              label="End" 
-              field="end" 
-              desc="UT time when the observing window closes"
-              :errors="errors.end" 
+              :errors="errors.start"
               @input="update"
             />
-            <custom-select v-if="!simple_interface"
-              v-model="cadence" 
-              label="Cadence" 
-              field="cadence" 
+            <custom-datetime
+              v-model="window.end"
+              label="End"
+              field="end"
+              desc="UT time when the observing window closes"
+              :errors="errors.end"
+              @input="update"
+            />
+            <custom-select
+              v-if="!simpleInterface"
+              v-model="cadence"
+              label="Cadence"
+              field="cadence"
               desc="A cadence will replace your current observing window with a set of windows, one for each cycle of the cadence."
               :options="[
-                {text:'None', value: 'none'}, 
+                {text:'None', value: 'none'},
                 {text:'Simple Period', value:'simple'}
               ]"
             />
-            <custom-field v-show="cadence === 'simple'" 
-              v-model="period" 
-              label="Period" 
-              field="period" 
+            <custom-field
+              v-show="cadence === 'simple'"
+              v-model="period"
+              label="Period"
+              field="period"
               desc="Decimal hours"
-              :errors="errors.period"               
+              :errors="errors.period"
               @input="update"
             />
-            <custom-field v-show="cadence === 'simple'"
-              v-model="jitter" 
-              label="Jitter" 
-              field="jitter" 
+            <custom-field
+              v-show="cadence === 'simple'"
+              v-model="jitter"
+              label="Jitter"
+              field="jitter"
               desc="Acceptable deviation from strict period (before or after) in decimal hours."
-              :errors="errors.jitter" 
+              :errors="errors.jitter"
               @input="update"
             />
             <b-form-group
-              v-show="cadence != 'none' && this.show"
+              v-show="cadence !== 'none' && show"
               label-size="sm"
               label-align-sm="right"
               label-cols-sm="4"
@@ -89,8 +110,8 @@
               label-for="cadence-button"
             >
               <b-button
+                id="cadence-button"
                 block
-                id="cadence-button" 
                 variant="outline-info"
                 @click="genCadence"
               >
@@ -116,25 +137,41 @@
   import Airmass from '@/components/Airmass.vue';
 
   export default {
-    props: [
-      'window', 
-      'index', 
-      'errors', 
-      'parentshow', 
-      'simple_interface', 
-      'observation_type'
-    ],
     components: {
       CustomDatetime,
-      CustomField, 
-      CustomSelect, 
-      Panel, 
+      CustomField,
+      CustomSelect,
+      Panel,
       CustomAlert,
       Airmass
     },
     mixins: [
       collapseMixin
     ],
+    props: {
+      window: {
+        type: Object,
+        required: true
+      },
+      index: {
+        type: Number,
+        required: true
+      },
+      errors: {
+        type: Object,
+        required: true
+      },
+      parentshow: {
+        type: Boolean
+      },
+      simpleInterface: {
+        type: Boolean
+      },
+      observationType: {
+        type: String,
+        required: true
+      }
+    },
     data: function() {
       return {
         show: this.parentshow,

@@ -1,9 +1,12 @@
 <template>
   <b-container class="pressure my-4">
     <b-row>
-      <b-col cols="auto" class="p-0 pb-1">
+      <b-col
+        cols="auto"
+        class="p-0 pb-1"
+      >
         <b-form-group
-          id="pressure-instrument-formgroup" 
+          id="pressure-instrument-formgroup"
           class="my-auto"
           label="Instrument"
           label-size="sm"
@@ -13,17 +16,20 @@
           label-class="font-weight-bolder"
         >
           <b-form-select
-            id="pressure-instrument-select" 
-            size="sm"
+            id="pressure-instrument-select"
             v-model="instrument"
+            size="sm"
             field="instrument"
             :options="instrumentTypeOptions"
           />
         </b-form-group>
       </b-col>
-      <b-col cols="auto" class="p-0 pb-2">
+      <b-col
+        cols="auto"
+        class="p-0 pb-2"
+      >
         <b-form-group
-          id="pressure-site-formgroup" 
+          id="pressure-site-formgroup"
           class="my-auto"
           label="Site"
           label-size="sm"
@@ -33,9 +39,9 @@
           label-class="font-weight-bolder"
         >
           <b-form-select
-            id="pressure-site-select" 
-            size="sm"
+            id="pressure-site-select"
             v-model="site"
+            size="sm"
             field="site"
             :options="siteOptions"
           />
@@ -43,13 +49,17 @@
       </b-col>
       <b-col>
         <data-load-help
-          :dataAvailable="dataAvailable"
-          :loadingDataFailed="loadingDataFailed"
-          :isLoading="isLoading"
+          :data-available="dataAvailable"
+          :loading-data-failed="loadingDataFailed"
+          :is-loading="isLoading"
         />
       </b-col>
     </b-row>
-    <canvas id="pressureplot" width="400" height="200"></canvas>
+    <canvas
+      id="pressureplot"
+      width="400"
+      height="200"
+    />
   </b-container>
 </template>
 <script>
@@ -61,7 +71,7 @@
   import { colorPalette } from '@/utils.js';
 
   export default {
-    name: 'pressure',
+    name: 'Pressure',
     components: {
       DataLoadHelp
     },
@@ -153,75 +163,6 @@
         return false;
       }
     },
-    created: function() {
-      this.fetchData();
-    },
-    methods: {
-      toSiteNightData: function() {
-        let nights = [];
-        let siteSpacing = 0.6;
-        let height = this.maxY + siteSpacing * 2;
-        for (let i = 0; i < this.rawSiteData.length; i++) {
-          let longSiteName = '';
-          for (let so in this.siteOptions) {
-            if (this.siteOptions[so].value == this.rawSiteData[i].name) {
-              longSiteName = this.siteOptions[so].text;
-              break;
-            }
-          }
-          nights.push({
-            name: longSiteName,
-            start: this.roundToOneQuarter(this.rawSiteData[i].start).toString(),
-            end: this.roundToOneQuarter(this.rawSiteData[i].stop).toString(),
-            height: height
-          });
-          height += siteSpacing;
-        }
-        this.maxY = Math.ceil(height);
-        return nights;
-      },
-      fetchData: function() {
-        if (this.runningQuery){
-          this.runningQuery.abort();
-        }
-        this.isLoading = true;
-        this.rawData = [];
-        this.rawSiteData = [];
-        let urlstring = this.observationPortalApiUrl + '/api/pressure/?x=0';
-        if (this.site) urlstring += ('&site=' + this.site);
-        if (this.instrument) urlstring += ('&instrument=' + this.instrument);
-        let that = this;
-        this.runningQuery = $.getJSON(urlstring, function(data) {
-          that.rawData = data.pressure_data;
-          that.rawSiteData = data.site_nights;
-          that.maxY = that.maxPressureInGraph;
-          that.siteNights = that.toSiteNightData();
-          that.data.datasets = that.toChartData;
-        }).done(function() {
-          that.loadingDataFailed = false;
-          that.runningQuery = null;
-        }).fail(function(res, textStatus) {
-          if (textStatus !== 'abort'){
-            that.loadingDataFailed = true;
-          }
-        }).always(function(res, textStatus) {
-          if (textStatus !== 'abort'){
-            that.isLoading = false;
-          }
-          else{
-            that.runningQuery = null;
-          }
-        });
-      },
-      updateChart: function() {
-        this.chart.options.siteNights = this.siteNights;
-        this.chart.options.scales.yAxes[0].ticks.max = this.maxY;
-        this.chart.update();
-      },
-      roundToOneQuarter: function(n) {
-        return Math.ceil(n * 4) / 4;
-      }
-    },
     watch: {
       instrument: function() {
         this.fetchData();
@@ -229,6 +170,9 @@
       site: function() {
         this.fetchData();
       }
+    },
+    created: function() {
+      this.fetchData();
     },
     updated: function() {
       this.updateChart();
@@ -348,6 +292,72 @@
           }
         }
       });
+    },
+    methods: {
+      toSiteNightData: function() {
+        let nights = [];
+        let siteSpacing = 0.6;
+        let height = this.maxY + siteSpacing * 2;
+        for (let i = 0; i < this.rawSiteData.length; i++) {
+          let longSiteName = '';
+          for (let so in this.siteOptions) {
+            if (this.siteOptions[so].value == this.rawSiteData[i].name) {
+              longSiteName = this.siteOptions[so].text;
+              break;
+            }
+          }
+          nights.push({
+            name: longSiteName,
+            start: this.roundToOneQuarter(this.rawSiteData[i].start).toString(),
+            end: this.roundToOneQuarter(this.rawSiteData[i].stop).toString(),
+            height: height
+          });
+          height += siteSpacing;
+        }
+        this.maxY = Math.ceil(height);
+        return nights;
+      },
+      fetchData: function() {
+        if (this.runningQuery){
+          this.runningQuery.abort();
+        }
+        this.isLoading = true;
+        this.rawData = [];
+        this.rawSiteData = [];
+        let urlstring = this.observationPortalApiUrl + '/api/pressure/?x=0';
+        if (this.site) urlstring += ('&site=' + this.site);
+        if (this.instrument) urlstring += ('&instrument=' + this.instrument);
+        let that = this;
+        this.runningQuery = $.getJSON(urlstring, function(data) {
+          that.rawData = data.pressure_data;
+          that.rawSiteData = data.site_nights;
+          that.maxY = that.maxPressureInGraph;
+          that.siteNights = that.toSiteNightData();
+          that.data.datasets = that.toChartData;
+        }).done(function() {
+          that.loadingDataFailed = false;
+          that.runningQuery = null;
+        }).fail(function(res, textStatus) {
+          if (textStatus !== 'abort'){
+            that.loadingDataFailed = true;
+          }
+        }).always(function(res, textStatus) {
+          if (textStatus !== 'abort'){
+            that.isLoading = false;
+          }
+          else{
+            that.runningQuery = null;
+          }
+        });
+      },
+      updateChart: function() {
+        this.chart.options.siteNights = this.siteNights;
+        this.chart.options.scales.yAxes[0].ticks.max = this.maxY;
+        this.chart.update();
+      },
+      roundToOneQuarter: function(n) {
+        return Math.ceil(n * 4) / 4;
+      }
     }
   };
 </script>

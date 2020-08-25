@@ -1,14 +1,17 @@
 <template>
-  <div class="cadencetimeline"></div>
+  <div class="cadencetimeline" />
 </template>
 <script>
   import vis from 'vis';
   import 'vis/dist/vis.css';
 
   export default {
-    props: [
-      'data'
-    ],
+    props: {
+      data: {
+        type: Array,
+        required: true
+      }
+    },
     data: function() {
       return {
         options: {
@@ -25,9 +28,9 @@
         for (let r in this.data) {
           let request = this.data[r];
           visData.push({
-              id: r, 
-              content: '' + (Number(r) + 1), 
-              start: request.windows[0].start, 
+              id: r,
+              content: '' + (Number(r) + 1),
+              start: request.windows[0].start,
               end: request.windows[0].end,
               style: 'border-radius: 5px;'
             });

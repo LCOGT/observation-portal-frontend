@@ -1,49 +1,49 @@
 <template>
   <span>
     <b-form-group
-      :id="field + '-datetimegroup-' + $parent.id"
       v-show="$parent.show"
+      :id="field + '-datetimegroup-' + $parent.id"
       label-size="sm"
       label-align-sm="right"
       label-cols-sm="4"
       :label-for="field"
     >
-      <template 
+      <template
         slot="label"
       >
         {{ label }}
-        <sup 
+        <sup
           v-if="desc"
-          class="text-primary" 
-          v-b-tooltip=tooltipConfig 
+          v-b-tooltip="tooltipConfig"
+          class="text-primary"
           :title="desc"
         >
           ?
         </sup>
       </template>
-      <VueCtkDateTimePicker 
+      <VueCtkDateTimePicker
+        :id="field + '-datetimefield-' + $parent.id"
         v-model="value"
         label=""
         :format="datetimeFormat"
         :formatted="datetimeFormat"
-        :id="field + '-datetimefield-' + $parent.id" 
         :error="hasErrors"
         :no-header="true"
         :no-button-now="true"
         :no-button="true"
         @input="update($event)"
       />
-      <span 
-        class="errors text-danger" 
-        v-for="error in errors" 
+      <span
+        v-for="error in errors"
         :key="error"
+        class="errors text-danger"
       >
         {{ error }}
-      </span>    
+      </span>
     </b-form-group>
-    <span 
-      class="mr-4" 
+    <span
       v-show="!$parent.show"
+      class="mr-4"
     >
       {{ label }}: <strong>{{ value || '...' }}</strong>
     </span>
@@ -54,18 +54,32 @@
   import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 
   import { datetimeFormat, tooltipConfig } from '@/utils.js';
-  
+
   export default {
-    props: [
-      'value',
-      'label', 
-      'field', 
-      'errors', 
-      'type', 
-      'desc',
-    ],
     components: {
       VueCtkDateTimePicker
+    },
+    props: {
+      value: {
+        type: String,
+        required: true
+      },
+      label: {
+        type: String,
+        default: ''
+      },
+      field: {
+        type: String,
+        default: function () { return _.kebabCase(this.label); }
+      },
+      errors: {
+        validator: () => true,
+        default: function () { return {}; },
+      },
+      desc: {
+        type: String,
+        default: ''
+      }
     },
     data: function() {
       return {
@@ -89,9 +103,9 @@
   @import '~vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
 </style>
 <style>
-  /* 
+  /*
    * Override the default ctk datetime picker styles to look like other
-   * bootstrap 4 input fields, using scoped style does not work 
+   * bootstrap 4 input fields, using scoped style does not work
    */
   .date-time-picker .field .field-input {
     color: inherit !important;

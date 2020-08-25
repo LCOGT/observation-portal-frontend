@@ -1,32 +1,32 @@
 <template>
   <div>
     <b-table
-      id="my-table" 
-      striped 
-      hover 
+      id="my-table"
+      striped
+      hover
       :per-page="perPage"
       :current-page="currentPage"
-      :fields="fields" 
-      :items="items" 
+      :fields="fields"
+      :items="items"
       :show-empty="tableIsEmpty"
       empty-text="You have no draft observation requests"
     >
       <template v-slot:cell(load)="data">
-        <b-button 
-          variant="info" 
-          size="sm" 
+        <b-button
+          variant="info"
+          size="sm"
           @click="loadDraft(data.value)"
         >
-          <i class="fa fa-download"></i>
+          <i class="fa fa-download" />
         </b-button>
       </template>
       <template v-slot:cell(delete)="data">
-        <b-button 
-          variant="danger" 
-          size="sm" 
+        <b-button
+          variant="danger"
+          size="sm"
           @click="deleteDraft(data.value)"
         >
-          <i class="fa fa-trash"></i>
+          <i class="fa fa-trash" />
         </b-button>
       </template>
     </b-table>
@@ -47,9 +47,12 @@
 
   export default {
     name: 'Drafts',
-    props: [
-      'tab'
-    ],
+    props: {
+      tab: {
+        type: Number,
+        required: true
+      }
+    },
     data: function() {
       return {
         'currentPage': 1,
@@ -98,6 +101,11 @@
         return this.items.length;
       }
     },
+    watch: {
+      tab: function(value) {
+        if (value === 3) this.fetchDrafts();
+      }
+    },
     methods: {
       fetchDrafts: function() {
         let that = this;
@@ -118,11 +126,6 @@
             that.fetchDrafts();
           });
         }
-      }
-    },
-    watch: {
-      tab: function(value) {
-        if (value === 3) this.fetchDrafts();
       }
     }
   };

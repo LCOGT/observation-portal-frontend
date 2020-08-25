@@ -1,9 +1,12 @@
 <template>
   <b-container class="contention my-4">
     <b-row>
-      <b-col cols="auto" class="p-0 pb-1">
+      <b-col
+        cols="auto"
+        class="p-0 pb-1"
+      >
         <b-form-group
-          id="contention-instrument-formgroup" 
+          id="contention-instrument-formgroup"
           class="my-auto"
           label="Instrument"
           label-size="sm"
@@ -13,9 +16,9 @@
           label-class="font-weight-bolder"
         >
           <b-form-select
-            id="contention-instrument-select" 
-            size="sm"
+            id="contention-instrument-select"
             v-model="instrument"
+            size="sm"
             field="instrument"
             :options="instruments"
           />
@@ -23,13 +26,17 @@
       </b-col>
       <b-col>
         <data-load-help
-          :dataAvailable="dataAvailable"
-          :loadingDataFailed="loadingDataFailed"
-          :isLoading="isLoading"
+          :data-available="dataAvailable"
+          :loading-data-failed="loadingDataFailed"
+          :is-loading="isLoading"
         />
       </b-col>
     </b-row>
-    <canvas id="contentionplot" width="400" height="200"></canvas>
+    <canvas
+      id="contentionplot"
+      width="400"
+      height="200"
+    />
   </b-container>
 </template>
 <script>
@@ -41,15 +48,15 @@
 
   export default {
     name: 'Contention',
+    components: {
+      DataLoadHelp
+    },
     props: {
       instruments: {
         type: Array,
         required: true,
         description: 'Array of objects with value and text fields, used for instrument select field'
       }
-    },
-    components: {
-      DataLoadHelp
     },
     data: function() {
       return {
@@ -72,7 +79,7 @@
         let datasets = {};
         for (let ra = 0; ra < this.rawData.length; ra++) {
           for (let proposal in this.rawData[ra]) {
-            if (!Object.prototype.hasOwnProperty.call(datasets, proposal)) {  
+            if (!Object.prototype.hasOwnProperty.call(datasets, proposal)) {
               datasets[proposal] = Array.apply(null, Array(24)).map(Number.prototype.valueOf, 0);  // fills array with 0s
             }
             datasets[proposal][ra] = this.rawData[ra][proposal] / 3600;
@@ -96,9 +103,6 @@
         }
         return false;
       }
-    },
-    created: function() {
-      this.instrument = '1M0-SCICAM-SINISTRO';
     },
     watch: {
       instrument: function(instrument) {
@@ -128,6 +132,9 @@
           }
         });
       }
+    },
+    created: function() {
+      this.instrument = '1M0-SCICAM-SINISTRO';
     },
     mounted: function() {
       let that = this;

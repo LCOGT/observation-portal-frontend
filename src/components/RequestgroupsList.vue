@@ -1,20 +1,31 @@
 <template>
   <b-container class="p-0">
     <b-row>
-      <b-col md="9" cols="12">
-        <p class="title">Submitted Observation Requests</p>
+      <b-col
+        md="9"
+        cols="12"
+      >
+        <p class="title">
+          Submitted Observation Requests
+        </p>
       </b-col>
-      <b-col md="3" cols="12">
-        <b-dropdown 
+      <b-col
+        md="3"
+        cols="12"
+      >
+        <b-dropdown
           id="dropdown-rg-query-params"
           variant="outline-secondary"
           block
         >
           <template v-slot:button-content>
-            <i class="fa fa-filter"></i> Filter List
+            <i class="fa fa-filter" /> Filter List
           </template>
           <b-dropdown-form>
-            <b-form @submit="onSubmit" @reset="onReset">
+            <b-form
+              @submit="onSubmit"
+              @reset="onReset"
+            >
               <b-form-group
                 id="input-group-order"
                 label-for="input-order"
@@ -22,14 +33,14 @@
                 class="my-2"
               >
                 <template v-slot:label>
-                  <i class="fa fa-sort"></i> Sort
+                  <i class="fa fa-sort" /> Sort
                 </template>
                 <b-form-select
                   id="input-order"
                   v-model="rgQueryParams.order"
                   :options="orderOptions"
                   size="sm"
-                ></b-form-select>
+                />
               </b-form-group>
               <b-form-group
                 id="input-group-state"
@@ -38,17 +49,17 @@
                 class="my-2"
               >
                 <template v-slot:label>
-                  <i class="fas fa-sync"></i> State
+                  <i class="fas fa-sync" /> State
                 </template>
                 <b-form-select
                   id="input-state"
                   v-model="rgQueryParams.state"
                   :options="stateOptions"
                   size="sm"
-                ></b-form-select>
+                />
               </b-form-group>
-              <b-form-group 
-                id="input-group-name" 
+              <b-form-group
+                id="input-group-name"
                 label-for="input-name"
                 label-class="m-0"
                 class="my-2"
@@ -58,13 +69,13 @@
                   v-model="rgQueryParams.name"
                   placeholder="Name contains"
                   size="sm"
-                ></b-form-input>
+                />
                 <template v-slot:label>
-                  <i class="fa fa-paragraph"></i> Name Contains
+                  <i class="fa fa-paragraph" /> Name Contains
                 </template>
               </b-form-group>
-              <b-form-group 
-                id="input-group-target" 
+              <b-form-group
+                id="input-group-target"
                 label-for="input-target"
                 label-class="m-0"
                 class="my-2"
@@ -74,9 +85,9 @@
                   v-model="rgQueryParams.target"
                   placeholder="Target Name Contains"
                   size="sm"
-                ></b-form-input>
+                />
                 <template v-slot:label>
-                  <i class="fa fa-crosshairs"></i> Target Name Contains
+                  <i class="fa fa-crosshairs" /> Target Name Contains
                 </template>
               </b-form-group>
               <b-form-group
@@ -86,17 +97,17 @@
                 class="my-2"
               >
                 <template v-slot:label>
-                  <i class="fa fa-users"></i> Proposal
+                  <i class="fa fa-users" /> Proposal
                 </template>
                 <b-form-select
                   id="input-proposal"
                   v-model="rgQueryParams.proposal"
                   :options="proposalOptions"
                   size="sm"
-                ></b-form-select>
+                />
               </b-form-group>
-              <b-form-group 
-                id="input-group-created-after" 
+              <b-form-group
+                id="input-group-created-after"
                 label-for="input-created-after"
                 label-class="m-0"
                 class="my-2"
@@ -106,13 +117,13 @@
                   v-model="rgQueryParams.created_after"
                   type="date"
                   size="sm"
-                ></b-form-input>
+                />
                 <template v-slot:label>
-                  <i class="fa fa-calendar"> <i class="fa fa-arrow-right"></i> </i> Submitted After
+                  <i class="fa fa-calendar"> <i class="fa fa-arrow-right" /> </i> Submitted After
                 </template>
               </b-form-group>
-              <b-form-group 
-                id="input-group-created-before" 
+              <b-form-group
+                id="input-group-created-before"
                 label-for="input-created-before"
                 label-class="m-0"
                 class="my-2"
@@ -122,9 +133,9 @@
                   v-model="rgQueryParams.created_before"
                   type="date"
                   size="sm"
-                ></b-form-input>
+                />
                 <template v-slot:label>
-                  <i class="fa fa-arrow-left"></i> <i class="fa fa-calendar"></i> Submitted Before 
+                  <i class="fa fa-arrow-left" /> <i class="fa fa-calendar" /> Submitted Before
                 </template>
               </b-form-group>
               <div v-if="!viewAuthoredRequestsOnly">
@@ -139,16 +150,26 @@
                     v-model="rgQueryParams.user"
                     placeholder="Username Contains"
                     size="sm"
-                  ></b-form-input>
+                  />
                   <template v-slot:label>
-                    <i class="fa fa-user"></i> Username Contains
+                    <i class="fa fa-user" /> Username Contains
                   </template>
                 </b-form-group>
               </div>
-              <b-dropdown-divider></b-dropdown-divider>
+              <b-dropdown-divider />
               <b-button-group class="mx-4">
-                <b-button type="submit" variant="outline-info"><span class="text-nowrap">Filter Results</span></b-button>
-                <b-button type="reset" variant="outline-danger"><span class="text-nowrap">Clear All Fields</span></b-button>
+                <b-button
+                  type="submit"
+                  variant="outline-info"
+                >
+                  <span class="text-nowrap">Filter Results</span>
+                </b-button>
+                <b-button
+                  type="reset"
+                  variant="outline-danger"
+                >
+                  <span class="text-nowrap">Clear All Fields</span>
+                </b-button>
               </b-button-group>
             </b-form>
           </b-dropdown-form>
@@ -156,7 +177,7 @@
       </b-col>
     </b-row>
     <div>
-      <b-table 
+      <b-table
         id="requestgroups-table"
         :items="requestgroups.results"
         :fields="fields"
@@ -167,23 +188,32 @@
       >
         <template v-slot:head(requestgroupInfo)>
           <b-row>
-            <b-col md="4" cols="12">
+            <b-col
+              md="4"
+              cols="12"
+            >
               <small>User Info</small>
             </b-col>
-            <b-col md="4" cols="12">
+            <b-col
+              md="4"
+              cols="12"
+            >
               <small>State Info</small>
             </b-col>
-            <b-col md="4" cols="12">
+            <b-col
+              md="4"
+              cols="12"
+            >
               <small># Requests / Pending / Failed / Complete</small>
             </b-col>
           </b-row>
         </template>
         <template v-slot:table-busy>
-          <br/>
+          <br>
           <div class="text-center my-2">
-            <i class="fa fa-spin fa-spinner"></i> Loading observation requests...
+            <i class="fa fa-spin fa-spinner" /> Loading observation requests...
           </div>
-          <br/>
+          <br>
         </template>
         <template v-slot:empty>
           <div class="empty-requests">
@@ -191,14 +221,25 @@
               <!-- TODO: Translate this -->
               <h2>No observation requests found.</h2>
               <div v-if="profile.proposals.length > 0">
-                <!-- TODO: Translate this, and also, is this really a link to the create page? It was originally href=#, but that doesn't make sense -->
-                <router-link class="btn btn-success btn-lg" :to="{name: 'create'}">Submit an Observation Request</router-link>
+                <!-- TODO: Translate this, and also, is this really a link to the create page?
+                It was originally href=#, but that doesn't make sense -->
+                <router-link
+                  class="btn btn-success btn-lg"
+                  :to="{name: 'create'}"
+                >
+                  Submit an Observation Request
+                </router-link>
               </div>
               <div v-else>
                 <h2> You are not a member of any proposals yet.</h2>
                 <p>Only users with at least one active proposal may submit observation requests.</p>
                 <!-- TODO: Translate this -->
-                <router-link class="btn btn-success btn-lg" :to="{name: 'apply'}">Submit a new proposal</router-link>
+                <router-link
+                  class="btn btn-success btn-lg"
+                  :to="{name: 'apply'}"
+                >
+                  Submit a new proposal
+                </router-link>
               </div>
               <h3>Need help?</h3>
               <a href="https://lco.global/documentation/">View the documentation</a> or <a href="mailto:scisupport@lco.global">contact support</a>.
@@ -207,61 +248,101 @@
         </template>
         <template v-slot:cell(requestgroupInfo)="data">
           <b-row class="mx-0">
-            <b-col md="8" cols="12" class="px-3">
-              <router-link class="requestgroup-title" :to="{name: 'requestgroupDetail', params: {id: data.item.id} }">
-                {{ data.item.name | valueOrDefault('Unnamed Request')}}
+            <b-col
+              md="8"
+              cols="12"
+              class="px-3"
+            >
+              <router-link
+                class="requestgroup-title"
+                :to="{name: 'requestgroupDetail', params: {id: data.item.id} }"
+              >
+                {{ data.item.name | valueOrDefault('Unnamed Request') }}
               </router-link>
               <b-row>
                 <b-col class="pr-1">
                   <div class="requestgroup-details requestgroup-block border-right">
-                    <div><i class="fa fa-fw fa-user"></i> {{ data.item.submitter }}</div>
-                    <div><i class="fa fa-fw fa-users"></i> <router-link :to="{name: 'proposalDetail', params: {id: data.item.proposal}}">{{ data.item.proposal }}</router-link></div>
+                    <div><i class="fa fa-fw fa-user" /> {{ data.item.submitter }}</div>
+                    <div>
+                      <i class="fa fa-fw fa-users" /> <router-link :to="{name: 'proposalDetail', params: {id: data.item.proposal}}">
+                        {{ data.item.proposal }}
+                      </router-link>
+                    </div>
                   </div>
                 </b-col>
                 <b-col class="p-0">
                   <div class="requestgroup-details requestgroup-block">
-                    <div :class="data.item.state | stateToBsClass('text')"><i :class="data.item.state | stateToIcon"></i>{{ data.item.state }}</div>
-                    <div><i class="fa fa-fw fa-calendar"></i> <span class="tool-tip" :title="data.item.modified | timeFromNow">{{ data.item.modified | formatDate }}</span></div>
+                    <div :class="data.item.state | stateToBsClass('text')">
+                      <i :class="data.item.state | stateToIcon" />{{ data.item.state }}
+                    </div>
+                    <div>
+                      <i class="fa fa-fw fa-calendar" /> <span
+                        class="tool-tip"
+                        :title="data.item.modified | timeFromNow"
+                      >{{ data.item.modified | formatDate }}</span>
+                    </div>
                   </div>
                 </b-col>
               </b-row>
             </b-col>
-            <b-col md="1" cols="12" class="request-count request-block">
+            <b-col
+              md="1"
+              cols="12"
+              class="request-count request-block"
+            >
               <center>{{ data.item.requests.length }}</center>
             </b-col>
-            <b-col md="1" cols="12" class="request-count request-block text-neutral">
+            <b-col
+              md="1"
+              cols="12"
+              class="request-count request-block text-neutral"
+            >
               <center>{{ data.item | requestStateCount('PENDING') }}</center>
             </b-col>
-            <b-col md="1" cols="12" class="request-count request-block text-danger">
+            <b-col
+              md="1"
+              cols="12"
+              class="request-count request-block text-danger"
+            >
               <center>{{ data.item | requestStateCount('WINDOW_EXPIRED') }}</center>
             </b-col>
-            <b-col md="1" cols="12" class="request-count request-block text-success">
+            <b-col
+              md="1"
+              cols="12"
+              class="request-count request-block text-success"
+            >
               <center>{{ data.item | requestStateCount('COMPLETED') }}</center>
             </b-col>
           </b-row>
         </template>
       </b-table>
       <b-row class="row">
-        <b-col md="9" cols="12">
+        <b-col
+          md="9"
+          cols="12"
+        >
           <b-pagination
             v-if="requestgroups.count > rgQueryParams.limit"
             :value="currentPage"
             :total-rows="requestgroups.count"
             :per-page="rgQueryParams.limit"
-            @change="onPageChange"
             aria-controls="requestgroups-table"
-          ></b-pagination>
+            @change="onPageChange"
+          />
         </b-col>
-        <b-col md="3" cols="12">
+        <b-col
+          md="3"
+          cols="12"
+        >
           <b-form-group
             label-for="perPageSelect"
           >
             <b-form-select
-              :value="rgQueryParams.limit"
               id="perPageSelect"
+              :value="rgQueryParams.limit"
               :options="perPageOptions"
               @change="onLimitChange"
-            ></b-form-select>
+            />
           </b-form-group>
         </b-col>
       </b-row>
@@ -356,9 +437,6 @@ export default {
       ]
     }
   },
-  created: function() {
-    this.updateRequestgroups();
-  },
   computed: {
     profile: function() {
       return this.$store.state.profile;
@@ -371,7 +449,7 @@ export default {
       let proposalInQuery = _.get(this.$route, 'query.proposal', '');
       let staffView = _.get(this.profile, 'profile.staff_view', false);
       let options = [{value: '', text: '---------', selected: selected === ''}];
-      // If an admin user is checking out proposals for a proposal they don't belong to, allow filtering to work 
+      // If an admin user is checking out proposals for a proposal they don't belong to, allow filtering to work
       if (staffView && proposalInQuery) {
         options.push({value: proposalInQuery, text: proposalInQuery, selected: selected === proposalInQuery});
       }
@@ -386,6 +464,9 @@ export default {
       return this.profile.profile && this.profile.profile.view_authored_requests_only;
     }
   },
+  created: function() {
+    this.updateRequestgroups();
+  },
   methods: {
     requestGroupRowClass: function(item, type) {
       if (type === 'row') {
@@ -395,7 +476,7 @@ export default {
       }
     },
     getMergedRgQueryParams: function(baseRgQueryParams) {
-      // Add any requestgroup query parameters that are in the url to the 
+      // Add any requestgroup query parameters that are in the url to the
       // request query param object so that the API request will include them.
       let mergedRgQueryParams = copyObject(baseRgQueryParams);
       for (let key in this.$route.query) {

@@ -1,9 +1,15 @@
 <template>
   <div>
-    <a v-if="asLink" @click="performGet" :class="linkClasses">{{ linkText }}</a>
-    <div v-else id="passthrough-container">
+    <a
+      v-if="asLink"
+      :class="linkClasses"
+      @click="performGet"
+    >{{ linkText }}</a>
+    <div
+      v-else
+      id="passthrough-container"
+    />
   </div>
-</div>
 </template>
 <script>
 import $ from 'jquery';
@@ -11,7 +17,10 @@ import $ from 'jquery';
 export default {
   name: 'PassthroughGet',
   props: {
-    endpoint: String,
+    endpoint: {
+      type: String,
+      required: true
+    },
     successRedirectViewName: {
       type: String,
       default: ''
@@ -29,15 +38,15 @@ export default {
       default: ''
     }
   },
-  mounted: function() {
-    if (!this.asLink) {
-      this.performGet();
-    }
-  },
   computed: {
     url: function() {
       let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
       return this.$store.state.urls.observationPortalApi + endpoint + '?passthrough=true';
+    }
+  },
+  mounted: function() {
+    if (!this.asLink) {
+      this.performGet();
     }
   },
   methods: {

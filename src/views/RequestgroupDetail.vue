@@ -7,14 +7,14 @@
     </template>
     <template v-else-if="!dataLoaded">
       <div class="text-center my-2">
-        <i class="fa fa-spin fa-spinner"></i>
+        <i class="fa fa-spin fa-spinner" />
       </div>
     </template>
     <template v-else-if="dataLoaded && !requestgroup.id">
-      <not-found></not-found>
+      <not-found />
     </template>
     <template v-else>
-      <requestgroup-header :requestgroup="requestgroup"></requestgroup-header>
+      <requestgroup-header :requestgroup="requestgroup" />
       <b-row>
         <b-col>
           <b-breadcrumb class="bg-light">
@@ -22,17 +22,25 @@
               <b-breadcrumb-item :to="{ name: 'requestgroupDetail', params: { id: requestgroup.id } }">
                 Sub-requests
               </b-breadcrumb-item>
-              <b-breadcrumb-item active> #{{ request.id }} </b-breadcrumb-item>
+              <b-breadcrumb-item active>
+                #{{ request.id }}
+              </b-breadcrumb-item>
             </template>
-            <b-breadcrumb-item v-else active>
+            <b-breadcrumb-item
+              v-else
+              active
+            >
               Sub-requests
             </b-breadcrumb-item>
           </b-breadcrumb>
         </b-col>
       </b-row>
       <template v-if="requestDetail">
-        <request-row :request="request" :instruments="instruments"></request-row>
-        <request-detail :request="request"></request-detail>
+        <request-row
+          :request="request"
+          :instruments="instruments"
+        />
+        <request-detail :request="request" />
       </template>
       <template v-else>
         <b-table
@@ -47,7 +55,11 @@
           small
         >
           <template v-slot:cell(requestRow)="data">
-            <request-row :request="data.item" :instruments="instruments" :link="true" />
+            <request-row
+              :request="data.item"
+              :instruments="instruments"
+              :link="true"
+            />
           </template>
         </b-table>
         <b-pagination
@@ -56,7 +68,7 @@
           :total-rows="numberOfRequests"
           :per-page="perPage"
           aria-controls="requests-table"
-        ></b-pagination>
+        />
       </template>
     </template>
   </b-col>

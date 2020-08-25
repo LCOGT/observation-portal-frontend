@@ -31,14 +31,19 @@
         >
           <b-form-checkbox
             id="checkbox-accept-terms"
-            name="checkbox-accept-terms"
             v-model="acceptTerms"
+            name="checkbox-accept-terms"
             required
           >
             I accept these terms.
           </b-form-checkbox>
         </b-form-group>
-        <b-button type="submit" variant="primary">Proceed</b-button>
+        <b-button
+          type="submit"
+          variant="primary"
+        >
+          Proceed
+        </b-button>
       </b-form>
     </b-col>
   </b-row>
@@ -55,7 +60,7 @@ export default {
   },
   computed: {
     url: function() {
-      return this.$store.state.urls.observationPortalApi + "/api/profile/accept_terms/";
+      return this.$store.state.urls.observationPortalApi + '/api/profile/accept_terms/';
     }
   },
   methods: {
@@ -64,10 +69,10 @@ export default {
       if (this.acceptTerms) {
         let that = this;
         $.ajax({
-          method: "POST",
+          method: 'POST',
           url: this.url,
           success: function () {
-            let homePath = that.$router.resolve({ name: "home" });
+            let homePath = that.$router.resolve({ name: 'home' });
             window.location.pathname = homePath.href;
           },
           error: function () {

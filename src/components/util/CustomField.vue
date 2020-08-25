@@ -1,70 +1,88 @@
 <template>
-<span>
-  <span class="text-right font-italic extra-help-text">
-    <slot name="extra-help-text"/>
-  </span>
-  <b-form-group
-    :id="field + '-fieldgroup-' + $parent.id"
-    v-show="$parent.show"
-    label-size="sm"
-    label-align-sm="right"
-    label-cols-sm="4"
-    :label-for="field"
-  >
-    <template 
-      slot="label"
+  <span>
+    <span class="text-right font-italic extra-help-text">
+      <slot name="extra-help-text" />
+    </span>
+    <b-form-group
+      v-show="$parent.show"
+      :id="field + '-fieldgroup-' + $parent.id"
+      label-size="sm"
+      label-align-sm="right"
+      label-cols-sm="4"
+      :label-for="field"
     >
-      {{ label }}
-      <sup 
-        v-if="desc"
-        class="text-primary" 
-        v-b-tooltip=tooltipConfig 
-        :title="desc"
+      <template
+        slot="label"
       >
-        ?
-      </sup>
-    </template>
-    <b-input-group>
-      <b-form-input 
-        :id="field + '-field-' + $parent.id" 
-        :value="value"
-        :state="validationState"
-        :type="type || `text`"
-        @input="update($event)"
-        @blur="blur($event)"
-      />
-      <slot name="inline-input"/>
-    </b-input-group>
-    <span 
-      class="errors text-danger" 
-      v-for="error in errors" 
-      :key="error"
+        {{ label }}
+        <sup
+          v-if="desc"
+          v-b-tooltip="tooltipConfig"
+          class="text-primary"
+          :title="desc"
+        >
+          ?
+        </sup>
+      </template>
+      <b-input-group>
+        <b-form-input
+          :id="field + '-field-' + $parent.id"
+          :value="value"
+          :state="validationState"
+          :type="type"
+          @input="update($event)"
+          @blur="blur($event)"
+        />
+        <slot name="inline-input" />
+      </b-input-group>
+      <span
+        v-for="error in errors"
+        :key="error"
+        class="errors text-danger"
+      >
+        {{ error }}
+      </span>
+    </b-form-group>
+    <span
+      v-show="!$parent.show"
+      class="mr-4"
     >
-      {{ error }}
-    </span>    
-  </b-form-group>
-  <span 
-    class="mr-4" 
-    v-show="!$parent.show"
-  > 
-    {{ label }}: <strong>{{ displayValue(value) }}</strong>
+      {{ label }}: <strong>{{ displayValue(value) }}</strong>
+    </span>
   </span>
-</span>
 </template>
 <script>
   import _ from 'lodash';
-  
+
   import { tooltipConfig } from '@/utils.js';
 
   export default {
-    props: [
-      'value',
-      'label', 
-      'field', 
-      'errors', 
-      'type', 
-      'desc',
-    ],
+    props: {
+      value: {
+        validator: () => true,
+        required: true
+      },
+      label: {
+        type: String,
+        required: true
+      },
+      field: {
+        type: String,
+        default: function () { return _.kebabCase(this.label); }
+      },
+      errors: {
+        validator: () => true,
+        default: function () { return null; },
+      },
+      type: {
+        type: String,
+        default: 'text'
+      },
+      desc: {
+        type: String,
+        default: ''
+      }
+    },
     data: function() {
       return {
         tooltipConfig: tooltipConfig

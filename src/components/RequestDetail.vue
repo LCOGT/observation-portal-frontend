@@ -1,12 +1,22 @@
 <template>
   <div class="row request-details">
     <div class="col-md-12">
-      <b-tabs content-class="mt-4" no-fade nav-class="nav-justified mt-3">
-        <b-tab active @click="tab = 'details'">
+      <b-tabs
+        content-class="mt-4"
+        no-fade
+        nav-class="nav-justified mt-3"
+      >
+        <b-tab
+          active
+          @click="tab = 'details'"
+        >
           <template slot="title">
             <span title="Details about the observed request.">Details</span>
           </template>
-          <div class="row" v-if="request.windows && request.windows.length != 0">
+          <div
+            v-if="request.windows && request.windows.length != 0"
+            class="row"
+          >
             <div class="col-md-12">
               <h4>Windows</h4>
               <table class="table table-sm">
@@ -17,7 +27,10 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(window, index) in request.windows" :key="'window-' + index">
+                  <tr
+                    v-for="(window, index) in request.windows"
+                    :key="'window-' + index"
+                  >
                     <td>{{ window.start | formatDate }}</td>
                     <td>{{ window.end | formatDate }}</td>
                   </tr>
@@ -25,7 +38,10 @@
               </table>
             </div>
           </div>
-          <div class="row" v-if="scheduled && scheduled.start">
+          <div
+            v-if="scheduled && scheduled.start"
+            class="row"
+          >
             <div class="col-md-12">
               <h4>Scheduled</h4>
               <table class="table table-sm">
@@ -50,39 +66,100 @@
             <div class="col-md-12">
               <h4>Configurations</h4>
               <div role="tablist">
-                <b-card no-body class="mb-1" v-for="(configuration, index) in request.configurations" :key="configuration.id">
-                  <b-card-header header-tag="header" class="p-1 button-header" role="tab">
-                    <b-button block href="#" v-b-toggle="'accordion-' + index" variant="light">
+                <b-card
+                  v-for="(configuration, index) in request.configurations"
+                  :key="configuration.id"
+                  no-body
+                  class="mb-1"
+                >
+                  <b-card-header
+                    header-tag="header"
+                    class="p-1 button-header"
+                    role="tab"
+                  >
+                    <b-button
+                      v-b-toggle="'accordion-' + index"
+                      block
+                      href="#"
+                      variant="light"
+                    >
                       <b-row>
-                        <b-col md="4">Type: {{ configuration.type }}</b-col>
-                        <b-col md="4" v-if="configuration.repeat_duration"> Duration: {{ configuration.repeat_duration }}</b-col>
-                        <b-col md="4" v-else></b-col>
-                        <b-col md="4" v-if="configuration.target">Target: {{ configuration.target.name }}</b-col>
-                        <b-col md="4" v-else>Target: None</b-col>
+                        <b-col md="4">
+                          Type: {{ configuration.type }}
+                        </b-col>
+                        <b-col
+                          v-if="configuration.repeat_duration"
+                          md="4"
+                        >
+                          Duration: {{ configuration.repeat_duration }}
+                        </b-col>
+                        <b-col
+                          v-else
+                          md="4"
+                        />
+                        <b-col
+                          v-if="configuration.target"
+                          md="4"
+                        >
+                          Target: {{ configuration.target.name }}
+                        </b-col>
+                        <b-col
+                          v-else
+                          md="4"
+                        >
+                          Target: None
+                        </b-col>
                       </b-row>
                     </b-button>
                   </b-card-header>
-                  <b-collapse :visible="index === 0" :id="'accordion-' + index" accordion="my-accordion" role="tabpanel">
+                  <b-collapse
+                    :id="'accordion-' + index"
+                    :visible="index === 0"
+                    accordion="my-accordion"
+                    role="tabpanel"
+                  >
                     <b-card-body>
                       <b-row>
                         <b-col md="6">
                           <h4>Target</h4>
-                          <div v-if="!configuration.target">No target</div>
-                          <ul v-else class="list-unstyled card-count card-column-two">
-                            <li v-for="(x, idx) in configuration.target" :key="'target-' + idx">
+                          <div v-if="!configuration.target">
+                            No target
+                          </div>
+                          <ul
+                            v-else
+                            class="list-unstyled card-count card-column-two"
+                          >
+                            <li
+                              v-for="(x, idx) in configuration.target"
+                              :key="'target-' + idx"
+                            >
                               <b-row v-if="configuration.target[idx] && x">
-                                <b-col class="font-weight-bold text-nowrap" v-if="configuration.target[idx]">{{ idx | formatField }}</b-col>
-                                <b-col v-if="x" class="text-right">
+                                <b-col
+                                  v-if="configuration.target[idx]"
+                                  class="font-weight-bold text-nowrap"
+                                >
+                                  {{ idx | formatField }}
+                                </b-col>
+                                <b-col
+                                  v-if="x"
+                                  class="text-right"
+                                >
                                   <span v-if="idx === 'name'">{{ x }}</span>
                                   <span v-else-if="isObjEmpty(x) && idx === 'extra_params'">None</span>
                                   <span v-else>{{ x | formatValue }}</span>
-                                  <em v-if="idx === 'ra'" class="text-muted"> ({{ x | raAsSexigesimal }})</em>
-                                  <em v-if="idx === 'dec'" class="text-muted"> ({{ x | decAsSexigesimal }})</em>
+                                  <em
+                                    v-if="idx === 'ra'"
+                                    class="text-muted"
+                                  > ({{ x | raAsSexigesimal }})</em>
+                                  <em
+                                    v-if="idx === 'dec'"
+                                    class="text-muted"
+                                  > ({{ x | decAsSexigesimal }})</em>
                                 </b-col>
                               </b-row>
                             </li>
                           </ul>
-                          <br />
+                          <br>
                           <h4>Instrument Configs</h4>
                           <table class="table table-sm">
                             <thead class="no-top-border">
@@ -95,11 +172,16 @@
                               </tr>
                             </thead>
                             <tbody>
-                              <tr v-for="(instrument_config, index) in configuration.instrument_configs" :key="'instrument_config-' + index">
+                              <tr
+                                v-for="(instrument_config, idx) in configuration.instrument_configs"
+                                :key="'instrument_config-' + idx"
+                              >
                                 <td v-if="instrument_config.mode">
                                   {{ instrument_config.mode }}
                                 </td>
-                                <td v-else>N/A</td>
+                                <td v-else>
+                                  N/A
+                                </td>
                                 <td>
                                   {{ instrument_config.exposure_time | formatValue }}
                                 </td>
@@ -109,11 +191,15 @@
                                 <td v-if="!isObjEmpty(instrument_config.optical_elements)">
                                   {{ instrument_config.optical_elements | formatValue }}
                                 </td>
-                                <td v-else>None</td>
+                                <td v-else>
+                                  None
+                                </td>
                                 <td v-if="!isObjEmpty(instrument_config.extra_params)">
                                   {{ instrument_config.extra_params | formatValue }}
                                 </td>
-                                <td v-else>None</td>
+                                <td v-else>
+                                  None
+                                </td>
                               </tr>
                             </tbody>
                           </table>
@@ -121,12 +207,21 @@
                         <b-col md="6">
                           <h4>Acquisition</h4>
                           <ul class="list-unstyled card-count card-column-two">
-                            <li v-for="(x, idx) in configuration.acquisition_config" :key="'acquisition-' + idx">
+                            <li
+                              v-for="(x, idx) in configuration.acquisition_config"
+                              :key="'acquisition-' + idx"
+                            >
                               <b-row v-if="configuration.acquisition_config[idx] && x">
-                                <b-col class="font-weight-bold text-nowrap" v-if="configuration.acquisition_config[idx]">
+                                <b-col
+                                  v-if="configuration.acquisition_config[idx]"
+                                  class="font-weight-bold text-nowrap"
+                                >
                                   {{ idx | formatField }}
                                 </b-col>
-                                <b-col v-if="x" class="text-right">
+                                <b-col
+                                  v-if="x"
+                                  class="text-right"
+                                >
                                   <span v-if="idx === 'name'">{{ x }}</span>
                                   <span v-else-if="isObjEmpty(x) && idx === 'extra_params'">None</span>
                                   <span v-else>{{ x | formatValue }}</span>
@@ -134,13 +229,24 @@
                               </b-row>
                             </li>
                           </ul>
-                          <br />
+                          <br>
                           <h4>Guiding</h4>
                           <ul class="list-unstyled card-count card-column-two">
-                            <li v-for="(x, idx) in configuration.guiding_config" :key="'guiding-' + idx">
+                            <li
+                              v-for="(x, idx) in configuration.guiding_config"
+                              :key="'guiding-' + idx"
+                            >
                               <b-row v-if="configuration.guiding_config[idx] && x">
-                                <b-col class="font-weight-bold text-nowrap" v-if="configuration.guiding_config[idx]">{{ idx | formatField }}</b-col>
-                                <b-col v-if="x" class="text-right">
+                                <b-col
+                                  v-if="configuration.guiding_config[idx]"
+                                  class="font-weight-bold text-nowrap"
+                                >
+                                  {{ idx | formatField }}
+                                </b-col>
+                                <b-col
+                                  v-if="x"
+                                  class="text-right"
+                                >
                                   <span v-if="idx === 'name'">{{ x }}</span>
                                   <span v-else-if="isObjEmpty(x) && (idx === 'extra_params' || idx === 'optical_elements')">None</span>
                                   <span v-else>{{ x | formatValue }}</span>
@@ -148,13 +254,24 @@
                               </b-row>
                             </li>
                           </ul>
-                          <br />
+                          <br>
                           <h4>Constraints</h4>
                           <ul class="list-unstyled card-count card-column-two">
-                            <li v-for="(x, idx) in configuration.constraints" :key="'constraints-' + idx">
+                            <li
+                              v-for="(x, idx) in configuration.constraints"
+                              :key="'constraints-' + idx"
+                            >
                               <b-row v-if="configuration.constraints[idx] && x">
-                                <b-col class="font-weight-bold text-nowrap" v-if="configuration.constraints[idx]">{{ idx | formatField }}</b-col>
-                                <b-col v-if="x" class="text-right">
+                                <b-col
+                                  v-if="configuration.constraints[idx]"
+                                  class="font-weight-bold text-nowrap"
+                                >
+                                  {{ idx | formatField }}
+                                </b-col>
+                                <b-col
+                                  v-if="x"
+                                  class="text-right"
+                                >
                                   <span v-if="isObjEmpty(x) && idx === 'extra_params'">None</span>
                                   <span v-else>{{ x | formatValue }}</span>
                                 </b-col>
@@ -174,8 +291,15 @@
           <template slot="title">
             <span title="Scheduling history.">Scheduling</span>
           </template>
-          <observation-history v-show="observationData.length > 0" :data="observationData" :showPlotControls="true" />
-          <div v-show="observationData.length < 1" class="text-center">
+          <observation-history
+            v-show="observationData.length > 0"
+            :data="observationData"
+            :show-plot-controls="true"
+          />
+          <div
+            v-show="observationData.length < 1"
+            class="text-center"
+          >
             <h3>This request has not been scheduled.</h3>
           </div>
         </b-tab>
@@ -185,11 +309,14 @@
           </template>
           <airmass-telescope-states
             v-show="'airmass_limit' in airmassData"
-            :airmassData="airmassData"
-            :telescopeStatesData="telescopeStatesData"
-            :activeObservation="activeObservation"
+            :airmass-data="airmassData"
+            :telescope-states-data="telescopeStatesData"
+            :active-observation="activeObservation"
           />
-          <p v-if="!hasTarget" class="text-center text-secondary">
+          <p
+            v-if="!hasTarget"
+            class="text-center text-secondary"
+          >
             Visibility data not available
           </p>
         </b-tab>
@@ -198,21 +325,38 @@
             <span title="Scheduling history.">Data</span>
           </template>
           <div class="row">
-            <div v-if="request.state === 'COMPLETED' && curFrame" class="col-md-4">
+            <div
+              v-if="request.state === 'COMPLETED' && curFrame"
+              class="col-md-4"
+            >
               <p class="thumb-help">
                 Click a row in the data table to preview the file below. Click preview for a larger version.
               </p>
-              <thumbnail v-show="curFrame" :frame="curFrame" width="400" height="400" />
+              <thumbnail
+                v-show="curFrame"
+                :frame="curFrame"
+                width="400"
+                height="400"
+              />
               <p v-show="canViewColor && curFrame">
                 RVB frames found.
-                <b-link @click="viewColorImage" title="Color Image"> View color image <i class="fas fa-external-link-alt"></i> </b-link>
-                <br />
-                <span v-show="loadingColor"><i class="fa fa-spin fa-spinner"></i> Generating color image...</span>
+                <b-link
+                  title="Color Image"
+                  @click="viewColorImage"
+                >
+                  View color image <i class="fas fa-external-link-alt" />
+                </b-link>
+                <br>
+                <span v-show="loadingColor"><i class="fa fa-spin fa-spinner" /> Generating color image...</span>
               </p>
             </div>
             <div :class="[request.state === 'COMPLETED' && curFrame ? 'col-md-8' : 'col-md-12']">
-              <archive-table :requestid="request.id" @rowClicked="curFrame = $event" @dataLoaded="frames = $event" />
-              <br />
+              <archive-table
+                :requestid="request.id"
+                @rowClicked="curFrame = $event"
+                @dataLoaded="frames = $event"
+              />
+              <br>
             </div>
           </div>
         </b-tab>
@@ -252,7 +396,7 @@ Vue.filter('decAsSexigesimal', function (dec) {
 });
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
     Thumbnail,
     ArchiveTable,
@@ -262,7 +406,8 @@ export default {
   props: {
     request: {
       type: Object,
-    },
+      required: true
+    }
   },
   data: function () {
     return {
@@ -270,49 +415,12 @@ export default {
       frames: [],
       curFrame: null,
       observationData: [],
-      activeObservation: null,
+      activeObservation: {},
       airmassData: {},
       telescopeStatesData: {},
       tab: 'details',
       loadingColor: false,
     };
-  },
-  created: function () {
-    let that = this;
-    this.$store.dispatch('getArchiveToken').then(() => {
-      if (that.request.state === 'COMPLETED') {
-        getLatestFrame(that.request.id, that.archiveApiUrl, function (frame) {
-          that.curFrame = frame;
-        });
-      }
-    });
-    if (that.request.windows && that.request.windows.length === 0) {
-      $.getJSON(that.observationPortalApiUrl + '/api/requests/' + that.request.id + '/observations/', function (observations) {
-        let location = observations[0].site + '.' + observations[0].enclosure + '.' + observations[0].telescope;
-        that.scheduled = {
-          start: observations[0].start,
-          end: observations[0].end,
-          location: location,
-        };
-      });
-    }
-  },
-  watch: {
-    tab: function (tab) {
-      if (tab === 'scheduling' && this.observationData.length === 0) {
-        this.loadObservationData();
-      } else if (tab === 'visibility') {
-        if ($.isEmptyObject(this.airmassData)) {
-          this.loadAirmassData();
-        }
-        if ($.isEmptyObject(this.telescopeStatesData)) {
-          this.loadTelescopeStatesData();
-          if (this.observationData.length === 0) {
-            this.loadObservationData();
-          }
-        }
-      }
-    },
   },
   computed: {
     observationPortalApiUrl: function () {
@@ -354,6 +462,43 @@ export default {
     hasTarget: function () {
       return this.request.configurations && this.request.configurations.length > 0 && !_.isEmpty(this.request.configurations[0].target);
     },
+  },
+  watch: {
+    tab: function (tab) {
+      if (tab === 'scheduling' && this.observationData.length === 0) {
+        this.loadObservationData();
+      } else if (tab === 'visibility') {
+        if ($.isEmptyObject(this.airmassData)) {
+          this.loadAirmassData();
+        }
+        if ($.isEmptyObject(this.telescopeStatesData)) {
+          this.loadTelescopeStatesData();
+          if (this.observationData.length === 0) {
+            this.loadObservationData();
+          }
+        }
+      }
+    },
+  },
+  created: function () {
+    let that = this;
+    this.$store.dispatch('getArchiveToken').then(() => {
+      if (that.request.state === 'COMPLETED') {
+        getLatestFrame(that.request.id, that.archiveApiUrl, function (frame) {
+          that.curFrame = frame;
+        });
+      }
+    });
+    if (that.request.windows && that.request.windows.length === 0) {
+      $.getJSON(that.observationPortalApiUrl + '/api/requests/' + that.request.id + '/observations/', function (observations) {
+        let location = observations[0].site + '.' + observations[0].enclosure + '.' + observations[0].telescope;
+        that.scheduled = {
+          start: observations[0].start,
+          end: observations[0].end,
+          location: location,
+        };
+      });
+    }
   },
   methods: {
     isObjEmpty: function (obj) {

@@ -3,8 +3,8 @@
     <b-col>
       <passthrough-get
         :endpoint="endpoint"
-        :successRedirectViewName="successRedirectViewName"
-      ></passthrough-get>
+        :success-redirect-view-name="successRedirectViewName"
+      />
     </b-col>
   </b-row>
 </template>

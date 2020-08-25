@@ -171,7 +171,7 @@ function timeFromNow(date) {
 
 function julianToModifiedJulian(jd){
   if(jd && jd >= 2400000.5){
-    let precision = (jd + "").split(".")[1].length;
+    let precision = (jd + '').split('.')[1].length;
     return Number((parseFloat(jd) - 2400000.5).toFixed(precision));
   }
 }
@@ -248,7 +248,7 @@ function extractTopLevelErrors(errors) {
   let topLevelErrors = [];
   if (_.isString(errors)) {
     // The error will be a string if a validate_xxx method of the parent serializer
-    // returned an error, for example the validate_instrument_configs method on the 
+    // returned an error, for example the validate_instrument_configs method on the
     // ConfigurationSerializer. These should be displayed at the top of a section.
     topLevelErrors = _.concat(topLevelErrors, [errors]);
   }
@@ -283,9 +283,9 @@ let datetimeFormat = 'YYYY-MM-DD HH:mm:ss';
 
 const tooltipConfig = {
   delay: {
-    show: 500, 
+    show: 500,
     hide: 100
-  }, 
+  },
   trigger: 'hover'
 };
 
@@ -385,8 +385,8 @@ let colorPalette = [  // useful assigning colors to datasets.
 
 export {
   semesterStart, semesterEnd, sexagesimalRaToDecimal, sexagesimalDecToDecimal, QueryString, formatJson, formatValue,
-  formatDate, copyObject, formatField, datetimeFormat, timeFromNow, collapseMixin, siteToColor, siteCodeToName, arcDefaultExposureTime, 
-  lampFlatDefaultExposureTime, observatoryCodeToNumber, telescopeCodeToName, colorPalette, julianToModifiedJulian, 
+  formatDate, copyObject, formatField, datetimeFormat, timeFromNow, collapseMixin, siteToColor, siteCodeToName, arcDefaultExposureTime,
+  lampFlatDefaultExposureTime, observatoryCodeToNumber, telescopeCodeToName, colorPalette, julianToModifiedJulian,
   getFieldDescription, decimalRaToSexigesimal, decimalDecToSexigesimal, tooltipConfig, getCookie, csrfSafeMethod,
   extractTopLevelErrors, stateToBsClass, stateToIcon
 };

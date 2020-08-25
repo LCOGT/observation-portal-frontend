@@ -2,26 +2,32 @@
   <b-alert
     v-if="dismissible"
     dismissible
-    :variant="alertclass" 
-    :show="alertDuration" 
+    :variant="alertclass"
+    :show="alertDuration"
   >
-    <slot></slot>
+    <slot />
   </b-alert>
   <b-alert
     v-else
-    show 
-    :variant="alertclass" 
+    show
+    :variant="alertclass"
   >
-    <slot></slot>
+    <slot />
   </b-alert>
 </template>
 <script>
   export default {
     name: 'CustomAlert',
-    props: [
-      'alertclass',
-      'dismissible'
-    ],
+    props: {
+      alertclass: {
+        type: String,
+        default: 'info'
+      },
+      dismissible: {
+        type: Boolean,
+        default: true
+      }
+    },
     data: function() {
       return {
         alertDuration: 10

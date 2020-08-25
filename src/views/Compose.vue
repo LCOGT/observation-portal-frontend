@@ -1,74 +1,79 @@
 <template>
-  <b-container id="app" class="p-0">
+  <b-container
+    id="app"
+    class="p-0"
+  >
     <b-form-row>
       <b-col>
-
         <!-- TODO Add in LCO terms -->
 
-        <!-- TODO: If the same alert is brought up more than once, it will only display the 
+        <!-- TODO: If the same alert is brought up more than once, it will only display the
         first time. This applies to all alerts, not just this one -->
-        <custom-alert 
+        <custom-alert
           v-for="alert in alerts"
-          :key="alert.msg" 
-          :alertclass="alert.class" 
+          :key="alert.msg"
+          :alertclass="alert.class"
           :dismissible="true"
         >
           {{ alert.msg }}
         </custom-alert>
       </b-col>
     </b-form-row>
-    <b-tabs id="tabs" fill>
-      <b-tab 
-        :active="tab==1" 
+    <b-tabs
+      id="tabs"
+      fill
+    >
+      <b-tab
+        :active="tab==1"
         @click="tab=1"
       >
         <template slot="title">
-          <i class="far fa-edit"></i> Form
+          <i class="far fa-edit" /> Form
         </template>
         <b-container class="p-0 mt-2">
           <b-form-row>
-            <b-col class="m-0 p-0">            
+            <b-col class="m-0 p-0">
               <requestgroup
-                :errors="errors" 
-                :duration_data="duration_data" 
+                :errors="errors"
+                :duration-data="durationData"
                 :requestgroup="requestgroup"
                 @requestgroupupdate="requestgroupUpdated"
               />
             </b-col>
             <b-col
-              cols="auto" 
+              cols="auto"
               class="m-0 p-0"
             >
-              <sidenav 
-                :requestgroup="requestgroup" 
-                :errors="errors" 
-                :draftId="draftId"
-                @savedraft="saveDraft($event.draftId)" 
+              <sidenav
+                :requestgroup="requestgroup"
+                :errors="errors"
+                :draft-id="draftId"
+                @savedraft="saveDraft($event.draftId)"
                 @submit="submit()"
                 @clear="clear()"
-              /> 
+              />
             </b-col>
           </b-form-row>
         </b-container>
       </b-tab>
-      <b-tab 
+      <b-tab
         :active="tab==2"
         @click="tab=2"
       >
         <template slot="title">
-          <i class="fas fa-code"></i> API View
+          <i class="fas fa-code" /> API View
         </template>
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col class="bg-light rounded">
               <b-container class="p-4">
-                <b-button 
-                  :href="dataAsEncodedStr" 
+                <b-button
+                  :href="dataAsEncodedStr"
                   download="apiview.json"
                   variant="info"
                   class="float-right"
                 >
-                  <i class="fa fa-download"></i> Download as JSON
+                  <i class="fa fa-download" /> Download as JSON
                 </b-button>
                 <pre>{{ JSON.stringify(requestgroup, null, 4) }}</pre>
               </b-container>
@@ -76,30 +81,30 @@
           </b-form-row>
         </b-container>
       </b-tab>
-      <b-tab 
-        :active="tab==3" 
+      <b-tab
+        :active="tab==3"
         @click="tab=3"
       >
         <template slot="title">
-          <i class="far fa-file-alt"></i> Drafts 
+          <i class="far fa-file-alt" /> Drafts
         </template>
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col>
-              <drafts 
+              <drafts
                 :tab="tab"
                 @loaddraft="loadDraft"
               />
             </b-col>
           </b-form-row>
-        </b-container>  
+        </b-container>
       </b-tab>
-      <b-tab 
+      <b-tab
         :active="tab==4"
         @click="tab=4"
       >
         <template slot="title">
-          <i class="fas fa-question"></i> How to use this page
+          <i class="fas fa-question" /> How to use this page
         </template>
         <b-container class="p-0 mt-2">
           <b-form-row>
@@ -107,22 +112,22 @@
               <h2>Using the compose form</h2>
               <p>
                 Use the form to describe the observation you would like carried out on the network.
-                Sections marked with an exclamation mark <i class="fas fa-exclamation-triangle text-danger"></i> are incomplete or
-                invalid. A complete section will be marked with a <i class="fa fa-check text-success"></i>. Only
+                Sections marked with an exclamation mark <i class="fas fa-exclamation-triangle text-danger" /> are incomplete or
+                invalid. A complete section will be marked with a <i class="fa fa-check text-success" />. Only
                 when all sections are marked complete can the observation be submitted.
               </p>
               <p>
-                Some fields have blue question marks next to the field labels. Hovering over these question marks 
+                Some fields have blue question marks next to the field labels. Hovering over these question marks
                 will display more information about that field.
               </p>
               <p>
-                Each section may be collapsed for a more compact view. Use the <i class="fa fa-window-minimize text-info"></i>
-                and <i class="fa fa-window-maximize text-info"></i> buttons to control the state of the window.
+                Each section may be collapsed for a more compact view. Use the <i class="fa fa-window-minimize text-info" />
+                and <i class="fa fa-window-maximize text-info" /> buttons to control the state of the window.
               </p>
               <p>
-                Some sections may be copied using the <i class="fa fa-copy text-success"></i> button. This will duplicate
+                Some sections may be copied using the <i class="fa fa-copy text-success" /> button. This will duplicate
                 the section and add it to your observation request. Certain sections can also be removed using the
-                <i class="fa fa-trash text-danger"></i> button. This button is only displayed if that section is eligible for removal.
+                <i class="fa fa-trash text-danger" /> button. This button is only displayed if that section is eligible for removal.
               </p>
               <h2>Using the API view</h2>
               <p>
@@ -135,12 +140,15 @@
               </p>
               <p>
                 For more information see the
-                <a target="_blank" href="https://developers.lco.global/#observations">API Documentation</a>.
+                <a
+                  target="_blank"
+                  href="https://developers.lco.global/#observations"
+                >API Documentation</a>.
               </p>
               <h2>Loading and saving drafts</h2>
               <p>
-                Use the <i class="fa fa-save text-info"></i> button at any time to save an observation 
-                request as a draft. Saved drafts can be loaded and managed from the Drafts tab. You will see 
+                Use the <i class="fa fa-save text-info" /> button at any time to save an observation
+                request as a draft. Saved drafts can be loaded and managed from the Drafts tab. You will see
                 drafts saved by other members of your proposal as well as your own.
               </p>
             </b-col>
@@ -160,14 +168,14 @@
   import Drafts from '@/components/Drafts.vue';
   import Sidenav from '@/components/Sidenav.vue';
   import CustomAlert from '@/components/util/CustomAlert.vue';
-  import { datetimeFormat, formatDate, formatField, getFieldDescription } from '@/utils.js';
+  import { datetimeFormat } from '@/utils.js';
 
   export default {
     name: 'Compose',
     components: {
-      Requestgroup, 
-      Drafts, 
-      Sidenav, 
+      Requestgroup,
+      Drafts,
+      Sidenav,
       CustomAlert
     },
     data: function() {
@@ -233,28 +241,10 @@
           }]
         },
         errors: {},
-        duration_data: {},
+        durationData: {},
         alerts: [],
       };
     },
-
-
-    // TODO: These have to go somewhere else
-    filters: {
-      formatDate: function(value) {
-        return formatDate(value);
-      },
-      formatField: function(value) {
-        return formatField(value);
-      },
-      getFieldDescription: function(value) {
-        return getFieldDescription(value);
-      }
-    },
-
-
-
-
     computed: {
       dataAsEncodedStr: function() {
         return 'data:application/json;charset=utf-8,' +  encodeURIComponent(JSON.stringify(this.requestgroup));
@@ -273,16 +263,16 @@
           contentType: 'application/json',
           success: function(data) {
             that.errors = data.errors;
-            that.duration_data = data.request_durations;
+            that.durationData = data.request_durations;
           }
         });
       }, 200),
       submit: function() {
-        let duration = moment.duration(this.duration_data.duration, 'seconds');
+        let duration = moment.duration(this.durationData.duration, 'seconds');
         let duration_string = '';
         if (duration.days() > 0) {
             duration_string = duration.days() + ' days, ' + duration_string;
-        } 
+        }
         if (duration.hours() > 0) {
           duration_string += duration.hours() + ' hours, ';
         }

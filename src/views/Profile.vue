@@ -2,50 +2,81 @@
   <b-row>
     <b-col md="8">
       <h2>Settings</h2>
-      <b-form @submit="updateProfileData" @reset="clearProfileForm">
-        <b-form-group id="input-group-first-name" label="First Name" label-for="input-first-name">
+      <b-form
+        @submit="updateProfileData"
+        @reset="clearProfileForm"
+      >
+        <b-form-group
+          id="input-group-first-name"
+          label="First Name"
+          label-for="input-first-name"
+        >
           <b-form-input
             id="input-first-name"
             v-model="formData.first_name"
             :state="getValidState('first_name')"
             required
-          ></b-form-input>
+          />
           <b-form-invalid-feedback id="input-first-name-state">
-            <span v-for="msg in getFeedback('first_name')" :key="msg">{{ msg }}</span>
+            <span
+              v-for="msg in getFeedback('first_name')"
+              :key="msg"
+            >{{ msg }}</span>
           </b-form-invalid-feedback>
         </b-form-group>
-        <b-form-group id="input-group-last-name" label="Last Name" label-for="input-last-name">
+        <b-form-group
+          id="input-group-last-name"
+          label="Last Name"
+          label-for="input-last-name"
+        >
           <b-form-input
             id="input-last-name"
             v-model="formData.last_name"
             :state="getValidState('last_name')"
             required
-          ></b-form-input>
+          />
           <b-form-invalid-feedback id="input-last-name-state">
-            <span v-for="msg in getFeedback('last_name')" :key="msg">{{ msg }}</span>
+            <span
+              v-for="msg in getFeedback('last_name')"
+              :key="msg"
+            >{{ msg }}</span>
           </b-form-invalid-feedback>
         </b-form-group>
-        <b-form-group id="input-group-username" label="Username" label-for="input-username">
+        <b-form-group
+          id="input-group-username"
+          label="Username"
+          label-for="input-username"
+        >
           <b-form-input
             id="input-username"
             v-model="formData.username"
             :state="getValidState('username')"
             required
-          ></b-form-input>
+          />
           <b-form-invalid-feedback id="input-username-state">
-            <span v-for="msg in getFeedback('username')" :key="msg">{{ msg }}</span>
+            <span
+              v-for="msg in getFeedback('username')"
+              :key="msg"
+            >{{ msg }}</span>
           </b-form-invalid-feedback>
         </b-form-group>
-        <b-form-group id="input-group-email" label="Email" label-for="input-email">
+        <b-form-group
+          id="input-group-email"
+          label="Email"
+          label-for="input-email"
+        >
           <b-form-input
             id="input-email"
             v-model="formData.email"
             type="email"
             :state="getValidState('email')"
             required
-          ></b-form-input>
+          />
           <b-form-invalid-feedback id="input-email-state">
-            <span v-for="msg in getFeedback('email')" :key="msg">{{ msg }}</span>
+            <span
+              v-for="msg in getFeedback('email')"
+              :key="msg"
+            >{{ msg }}</span>
           </b-form-invalid-feedback>
         </b-form-group>
         <b-form-group
@@ -58,20 +89,30 @@
             v-model="formData.profile.institution"
             :state="getValidState('profile.institution')"
             required
-          ></b-form-input>
+          />
           <b-form-invalid-feedback id="input-institution-state">
-            <span v-for="msg in getFeedback('profile.institution')" :key="msg">{{ msg }}</span>
+            <span
+              v-for="msg in getFeedback('profile.institution')"
+              :key="msg"
+            >{{ msg }}</span>
           </b-form-invalid-feedback>
         </b-form-group>
-        <b-form-group id="input-group-title" label="Title" label-for="input-title">
+        <b-form-group
+          id="input-group-title"
+          label="Title"
+          label-for="input-title"
+        >
           <b-form-input
             id="input-title"
             v-model="formData.profile.title"
             :state="getValidState('profile.title')"
             required
-          ></b-form-input>
+          />
           <b-form-invalid-feedback id="input-title-state">
-            <span v-for="msg in getFeedback('profile.title')" :key="msg">{{ msg }}</span>
+            <span
+              v-for="msg in getFeedback('profile.title')"
+              :key="msg"
+            >{{ msg }}</span>
           </b-form-invalid-feedback>
         </b-form-group>
         <b-form-group
@@ -83,7 +124,9 @@
             id="checkbox-simple-interface"
             v-model="formData.profile.simple_interface"
             :state="getValidState('simple_interface')"
-          >Simple interface</b-form-checkbox>
+          >
+            Simple interface
+          </b-form-checkbox>
         </b-form-group>
         <b-form-group
           id="checkbox-group-notifications-enabled"
@@ -99,7 +142,9 @@
             id="checkbox-notifications-enabled"
             v-model="formData.profile.notifications_enabled"
             :state="getValidState('notifications_enabled')"
-          >Notifications enabled</b-form-checkbox>
+          >
+            Notifications enabled
+          </b-form-checkbox>
         </b-form-group>
         <b-form-group
           id="checkbox-group-notifications-on-authored-only"
@@ -117,7 +162,9 @@
             id="checkbox-notifications-on-authored-only"
             v-model="formData.profile.notifications_on_authored_only"
             :state="getValidState('notifications_on_authored_only')"
-          >Notifications on authored only</b-form-checkbox>
+          >
+            Notifications on authored only
+          </b-form-checkbox>
         </b-form-group>
         <b-form-group
           id="checkbox-group-view-authored-requests-only"
@@ -130,7 +177,9 @@
             id="checkbox-view-authored-requests-only"
             v-model="formData.profile.view_authored_requests_only"
             :state="getValidState('view_authored_requests_only')"
-          >View authored requests only</b-form-checkbox>
+          >
+            View authored requests only
+          </b-form-checkbox>
         </b-form-group>
         <b-form-group
           v-if="profile.is_staff"
@@ -141,14 +190,28 @@
             id="checkbox-staff-view"
             v-model="formData.profile.staff_view"
             :state="getValidState('staff_view')"
-          >Staff view</b-form-checkbox>
+          >
+            Staff view
+          </b-form-checkbox>
         </b-form-group>
-        <b-button type="submit" variant="primary">Save</b-button>
-        <b-button type="reset" variant="primary">Cancel</b-button>
+        <b-button
+          type="submit"
+          variant="primary"
+        >
+          Save
+        </b-button>
+        <b-button
+          type="reset"
+          variant="primary"
+        >
+          Cancel
+        </b-button>
         <router-link
           :to="{name: 'passwordChange'}"
           class="btn btn-danger pull-right"
-        >Change Password</router-link>
+        >
+          Change Password
+        </router-link>
       </b-form>
     </b-col>
     <b-col md="4">
@@ -160,14 +223,24 @@
         >API</a>.
         This key should be treated like a password.
       </p>
-      <input class="form-control" :value="apiToken" onclick="this.select()" readonly />
+      <input
+        class="form-control"
+        :value="apiToken"
+        onclick="this.select()"
+        readonly
+      >
       <p>
         If you think your API token may have been comprimised (by accidentally checking it in to
         a public source code repository, emailing it out, etc) you may revoke the token to obtain
         a new one using the button below. WARNING: This will cause any applications that use this
         token to stop working!
       </p>
-      <b-button @click="performRevokeToken" variant="danger">Revoke Token</b-button>
+      <b-button
+        variant="danger"
+        @click="performRevokeToken"
+      >
+        Revoke Token
+      </b-button>
       <h2>API Quota</h2>
       <p>
         The observations API is rate limited so that it remains available to all users in the event
@@ -190,28 +263,25 @@
   </b-row>
 </template>
 <script>
-import $ from "jquery";
-import _ from "lodash";
+import $ from 'jquery';
+import _ from 'lodash';
 
-import { copyObject } from "@/utils.js";
+import { copyObject } from '@/utils.js';
 
 export default {
-  name: "Profile",
+  name: 'Profile',
   data: function () {
     return {
       formData: {},
       errors: null,
     };
   },
-  created: function () {
-    this.setProfileData();
-  },
   computed: {
     apiToken: function () {
-      return _.get(this.profile, "tokens.api_token", "");
+      return _.get(this.profile, 'tokens.api_token', '');
     },
     apiQuota: function () {
-      return _.get(this.profile, "profile.api_quota", {});
+      return _.get(this.profile, 'profile.api_quota', {});
     },
     profile: function () {
       return copyObject(this.$store.state.profile);
@@ -220,10 +290,18 @@ export default {
       return this.$store.state.urls.observationPortalApi;
     }
   },
+  watch: {
+    profile: function () {
+      this.setProfileData();
+    },
+  },
+  created: function () {
+    this.setProfileData();
+  },
   methods: {
     getFeedback: function (key) {
       let feedback = _.get(this.errors, key);
-      return feedback || "";
+      return feedback || '';
     },
     getValidState(key) {
       if (this.errors === null) {
@@ -261,10 +339,10 @@ export default {
       evt.preventDefault();
       let that = this;
       $.ajax({
-        method: "PATCH",
+        method: 'PATCH',
         url: this.observationPortalApiUrl + '/api/profile/',
         data: JSON.stringify(that.formData),
-        contentType: "application/json",
+        contentType: 'application/json',
         success: function () {
           that.$store.commit('clearAllMessages');
           that.$store.commit('addMessage', {text: 'Profile successfully updated', variant: 'success'});
@@ -281,11 +359,6 @@ export default {
           }
         }
       });
-    },
-  },
-  watch: {
-    profile: function () {
-      this.setProfileData();
     },
   },
 };

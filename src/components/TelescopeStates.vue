@@ -1,6 +1,9 @@
 <template>
   <div class="telescopeStatesPlot">
-    <plot-controls v-show="showZoomControls" v-on:plotZoom="plotZoom" />
+    <plot-controls
+      v-show="showZoomControls"
+      @plotZoom="plotZoom"
+    />
   </div>
 </template>
 <script>
@@ -15,10 +18,22 @@ import { plotZoomMixin } from '@/components/util/plotMixins.js';
 
 export default {
   name: 'TelescopeStates',
-  props: ['data', 'activeObservation', 'showZoomControls'],
-  mixins: [plotZoomMixin],
   components: {
     PlotControls,
+  },
+  mixins: [plotZoomMixin],
+  props: {
+    data: {
+      type: Object,
+      default: function() { return undefined; }
+    },
+    activeObservation: {
+      type: Object,
+      default: function() { return null; }
+    },
+    showZoomControls: {
+      type: Boolean
+    }
   },
   data: function () {
     let event_types = {

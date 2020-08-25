@@ -1,6 +1,9 @@
 <template>
   <div class="airmassPlot">
-    <plot-controls v-show="showZoomControls" @plotZoom="plotZoom" />
+    <plot-controls
+      v-show="showZoomControls"
+      @plotZoom="plotZoom"
+    />
   </div>
 </template>
 <script>
@@ -15,17 +18,20 @@ import { siteToColor, siteCodeToName } from '@/utils.js';
 import { plotZoomMixin } from '@/components/util/plotMixins.js';
 
 export default {
+  components: {
+    PlotControls
+  },
+  mixins: [plotZoomMixin],
   props: {
-    data: Object,
+    data: {
+      type: Object,
+      required: true
+    },
     showZoomControls: Boolean,
     alignleft: {
       type: Boolean,
       default: false,
-    },
-  },
-  mixins: [plotZoomMixin],
-  components: {
-    PlotControls,
+    }
   },
   data: function () {
     let options = {
@@ -184,7 +190,7 @@ export default {
         that.$emit('rangechanged', that.plot.getWindow());
       });
       return plot;
-    },
-  },
+    }
+  }
 };
 </script>

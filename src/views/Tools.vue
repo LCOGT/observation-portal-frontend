@@ -9,7 +9,7 @@
           incur scheduling conflicts.
         </p>
         <p>This plot excludes moving targets.</p>
-        <Contention :instruments="instruments"/>
+        <Contention :instruments="instruments" />
         <h1>Network Pressure</h1>
         <p>
           The pressure of a block is defined as its length divided by the total length of time during which it is visible.
@@ -18,7 +18,7 @@
           under-subscription).
         </p>
         <p>This plot excludes moving targets.</p>
-        <Pressure :instruments="instruments"/>
+        <Pressure :instruments="instruments" />
       </b-col>
     </b-row>
   </b-container>
@@ -32,7 +32,7 @@
   export default {
     name: 'Tools',
     components: {
-      Contention, 
+      Contention,
       Pressure
     },
     data: function() {

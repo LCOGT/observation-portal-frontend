@@ -1,40 +1,46 @@
 <template>
   <div>
-    <div class="observationHistoryPlot" id="plot">
-      <plot-controls v-show="showZoomControls" v-on:plotZoom="plotZoom"></plot-controls>
+    <div
+      id="plot"
+      class="observationHistoryPlot"
+    >
+      <plot-controls
+        v-show="showZoomControls"
+        @plotZoom="plotZoom"
+      />
     </div>
     <div class="observationHistoryPlotLegend text-center">
       <ul class="list-inline mt-1">
         <li class="list-inline-item">
-          <span class="legend-item CANCELED align-middle mb-1 mr-1"></span>
+          <span class="legend-item CANCELED align-middle mb-1 mr-1" />
           Superseded by new schedule
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item SCHEDULED align-middle mb-1 mr-1"></span>
+          <span class="legend-item SCHEDULED align-middle mb-1 mr-1" />
           Scheduled
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item NOT_ATTEMPTED align-middle mb-1 mr-1"></span>
+          <span class="legend-item NOT_ATTEMPTED align-middle mb-1 mr-1" />
           Not Attempted
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item IN_PROGRESS align-middle mb-1 mr-1"></span>
+          <span class="legend-item IN_PROGRESS align-middle mb-1 mr-1" />
           In Progress
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item FAILED align-middle mb-1 mr-1"></span>
+          <span class="legend-item FAILED align-middle mb-1 mr-1" />
           Failed
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item ABORTED align-middle mb-1 mr-1"></span>
+          <span class="legend-item ABORTED align-middle mb-1 mr-1" />
           Aborted
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item PARTIALLY-COMPLETED align-middle mb-1 mr-1"></span>
+          <span class="legend-item PARTIALLY-COMPLETED align-middle mb-1 mr-1" />
           Partially Completed
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item COMPLETED align-middle mb-1 mr-1"></span>
+          <span class="legend-item COMPLETED align-middle mb-1 mr-1" />
           Completed
         </li>
       </ul>
@@ -51,17 +57,18 @@ import PlotControls from '@/components/util/PlotControls.vue';
 import { plotZoomMixin } from '@/components/util/plotMixins.js';
 
 export default {
+  components: {
+    PlotControls,
+  },
+  mixins: [plotZoomMixin],
   props: {
     data: {
       type: Array,
+      required: true
     },
     showZoomControls: {
-      type: Boolean,
-    },
-  },
-  mixins: [plotZoomMixin],
-  components: {
-    PlotControls,
+      type: Boolean
+    }
   },
   data: function () {
     let options = {

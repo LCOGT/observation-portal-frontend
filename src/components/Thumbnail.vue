@@ -1,11 +1,22 @@
 <template>
   <div class="thumbnail-container">
-    <span class="error" v-if="error">
+    <span
+      v-if="error"
+      class="error"
+    >
       {{ error }}
     </span>
-    <i class="fa fa-spinner fa-spin" v-show="!src && !error"></i>
-    <img v-show="src" @click="generateLarge" class="thumbnail img-fluid img-thumbnail" :src="src" />
-    <span v-show="loadLarge"><i class="fa fa-spin fa-spinner"></i> Generating high resolution image...</span>
+    <i
+      v-show="!src && !error"
+      class="fa fa-spinner fa-spin"
+    />
+    <img
+      v-show="src"
+      class="thumbnail img-fluid img-thumbnail"
+      :src="src"
+      @click="generateLarge"
+    >
+    <span v-show="loadLarge"><i class="fa fa-spin fa-spinner" /> Generating high resolution image...</span>
   </div>
 </template>
 <script>
@@ -13,11 +24,16 @@ import $ from 'jquery';
 
 export default {
   props: {
-    frame: {},
+    frame: {
+      type: Object,
+      default: function () { return null; },
+    },
     width: {
+      type: [Number, String],
       default: 200,
     },
     height: {
+      type: [Number, String],
       default: 200,
     },
   },
@@ -27,14 +43,6 @@ export default {
       error: null,
       loadLarge: false,
     };
-  },
-  created: function () {
-    this.updateFrame();
-  },
-  watch: {
-    frame: function () {
-      this.updateFrame();
-    },
   },
   computed: {
     thumbnailServiceUrl: function () {
@@ -50,6 +58,14 @@ export default {
         return '';
       }
     },
+  },
+  watch: {
+    frame: function () {
+      this.updateFrame();
+    },
+  },
+  created: function () {
+    this.updateFrame();
   },
   methods: {
     updateFrame: function () {

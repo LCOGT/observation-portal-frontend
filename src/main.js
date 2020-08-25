@@ -43,7 +43,10 @@ getRuntimeConfig().then(function(json) {
 
   // Add the archive token to a request being sent to the archive api or the thumbservice
   $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-    if ((options.url.startsWith(store.state.urls.archiveApi) || options.url.startsWith(store.state.urls.thumbnailService)) && store.state.archiveToken) {
+    if (
+      (options.url.startsWith(store.state.urls.archiveApi) || options.url.startsWith(store.state.urls.thumbnailService))
+      && store.state.archiveToken
+    ) {
       jqXHR.setRequestHeader('Authorization', 'Token ' + store.state.archiveToken);
     }
   });

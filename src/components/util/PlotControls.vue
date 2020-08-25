@@ -1,10 +1,20 @@
 <template>
   <b-container class="plot-controls">
-    <b-button class="float-right" variant="transparent" id="zoom-in" @click="zoomIn">
-      <i class="fas fa-search-plus"></i>
+    <b-button
+      id="zoom-in"
+      class="float-right"
+      variant="transparent"
+      @click="zoomIn"
+    >
+      <i class="fas fa-search-plus" />
     </b-button>
-    <b-button class="float-right" variant="transparent" id="zoom-in" @click="zoomOut">
-      <i class="fas fa-search-minus"></i>
+    <b-button
+      id="zoom-in"
+      class="float-right"
+      variant="transparent"
+      @click="zoomOut"
+    >
+      <i class="fas fa-search-minus" />
     </b-button>
   </b-container>
 </template>

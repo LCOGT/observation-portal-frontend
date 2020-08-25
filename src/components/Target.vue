@@ -1,6 +1,7 @@
 <template>
-  <panel :show="show"
+  <panel
     :id="'target' + $parent.$parent.$parent.index + $parent.index"
+    :show="show"
     :errors="errors"
     :canremove="false"
     :cancopy="false"
@@ -18,7 +19,10 @@
     </custom-alert>
     <b-container class="p-0">
       <b-row>
-        <b-col md="6" v-show="show">
+        <b-col
+          v-show="show"
+          md="6"
+        >
           <archive
             v-if="target.ra && target.dec"
             :ra="target.ra"
@@ -38,10 +42,14 @@
                 v-show="lookingUP || lookupFail"
                 slot="extra-help-text"
               >
-                <i v-show="lookingUP" class="fa fa-spinner fa-spin fa-fw"></i> {{ lookupText }}
+                <i
+                  v-show="lookingUP"
+                  class="fa fa-spinner fa-spin fa-fw"
+                /> {{ lookupText }}
               </div>
             </custom-field>
-            <custom-select v-if="!simple_interface"
+            <custom-select
+              v-if="!simpleInterface"
               v-model="target.type"
               label="Type"
               field="type"
@@ -52,7 +60,10 @@
               ]"
               @input="update"
             />
-            <span class="sidereal" v-show="target.type === 'ICRS'">
+            <span
+              v-show="target.type === 'ICRS'"
+              class="sidereal"
+            >
               <custom-field
                 v-model="ra_display"
                 label="Right Ascension"
@@ -62,8 +73,8 @@
                 @blur="updateRA"
               >
                 <div
-                  slot="extra-help-text"
                   v-if="target.ra"
+                  slot="extra-help-text"
                 >
                   {{ ra_help_text }}
                 </div>
@@ -77,13 +88,14 @@
                 @blur="updateDec"
               >
                 <div
-                  slot="extra-help-text"
                   v-if="target.dec"
+                  slot="extra-help-text"
                 >
                   {{ dec_help_text }}
                 </div>
               </custom-field>
-              <custom-field v-if="!simple_interface"
+              <custom-field
+                v-if="!simpleInterface"
                 v-model="target.proper_motion_ra"
                 label="Proper Motion RA"
                 field="proper_motion_ra"
@@ -91,7 +103,8 @@
                 :errors="errors.proper_motion_ra"
                 @input="update"
               />
-              <custom-field v-if="!simple_interface"
+              <custom-field
+                v-if="!simpleInterface"
                 v-model="target.proper_motion_dec"
                 label="Proper Motion Dec"
                 field="proper_motion_dec"
@@ -99,7 +112,8 @@
                 :errors="errors.proper_motion_dec"
                 @input="update"
               />
-              <custom-field v-if="!simple_interface"
+              <custom-field
+                v-if="!simpleInterface"
                 v-model="target.epoch"
                 label="Epoch"
                 field="epoch"
@@ -107,7 +121,8 @@
                 :errors="errors.epoch"
                 @input="update"
               />
-              <custom-field v-if="!simple_interface"
+              <custom-field
+                v-if="!simpleInterface"
                 v-model="target.parallax"
                 label="Parallax"
                 field="parallax"
@@ -116,7 +131,10 @@
                 @input="update"
               />
             </span>
-            <span class="non-sidereal" v-show="target.type === 'ORBITAL_ELEMENTS'">
+            <span
+              v-show="target.type === 'ORBITAL_ELEMENTS'"
+              class="non-sidereal"
+            >
               <custom-select
                 v-model="target.scheme"
                 label="Scheme"
@@ -238,12 +256,6 @@
   import CustomSelect from '@/components/util/CustomSelect.vue';
 
   export default {
-    props: [
-      'target',
-      'errors',
-      'parentshow',
-      'simple_interface'
-    ],
     components: {
       CustomField,
       CustomSelect,
@@ -254,6 +266,22 @@
     mixins: [
       collapseMixin
     ],
+    props: {
+      target: {
+        type: Object,
+        required: true
+      },
+      errors: {
+        type: [Object, null],
+        required: true
+      },
+      simpleInterface: {
+        type: Boolean
+      },
+      parentshow: {
+        type: Boolean
+      }
+    },
     data: function() {
       let ns_target_params = {
         scheme: 'MPC_MINOR_PLANET',
@@ -282,35 +310,6 @@
         ra_help_text: this.raHelp(this.target.ra),
         dec_help_text: this.decHelp(this.target.dec)
       };
-    },
-    methods: {
-      update: function() {
-        this.$emit('targetupdate', {});
-      },
-      updateRA: function() {
-        this.target.ra = sexagesimalRaToDecimal(this.ra_display);
-        this.ra_help_text = this.raHelp(this.ra_display);
-        this.update();
-      },
-      updateDec: function() {
-        this.target.dec = sexagesimalDecToDecimal(this.dec_display);
-        this.dec_help_text = this.decHelp(this.dec_display);
-        this.update();
-      },
-      raHelp: function(ra) {
-        if (isNaN(Number(ra))) {
-          return 'Decimal: ' + Number(sexagesimalRaToDecimal(ra));
-        } else {
-          return 'Sexagesimal: ' + decimalRaToSexigesimal(ra).str;
-        }
-      },
-      decHelp: function(dec){
-        if (isNaN(Number(dec))) {
-          return 'Decimal: ' + Number(sexagesimalDecToDecimal(dec));
-        } else {
-          return 'Sexagesimal: ' + decimalDecToSexigesimal(dec).str;
-        }
-      }
     },
     watch: {
       'target.name': _.debounce(function(name) {
@@ -352,12 +351,12 @@
             that.lookupFail = true;
           }
         }).fail(function(_response, status) {
-          if (status !== "abort") {
+          if (status !== 'abort') {
             that.lookupText = 'Could not find any matching objects';
             that.lookupFail = true;
           }
         }).always(function(_response, status) {
-          if (status !== "abort") {
+          if (status !== 'abort') {
             that.lookingUP = false;
           }
           that.update();
@@ -381,6 +380,35 @@
           for (let a in that.ns_target_params) {
             that.target[a] = that.ns_target_params[a];
           }
+        }
+      }
+    },
+    methods: {
+      update: function() {
+        this.$emit('targetupdate', {});
+      },
+      updateRA: function() {
+        this.target.ra = sexagesimalRaToDecimal(this.ra_display);
+        this.ra_help_text = this.raHelp(this.ra_display);
+        this.update();
+      },
+      updateDec: function() {
+        this.target.dec = sexagesimalDecToDecimal(this.dec_display);
+        this.dec_help_text = this.decHelp(this.dec_display);
+        this.update();
+      },
+      raHelp: function(ra) {
+        if (isNaN(Number(ra))) {
+          return 'Decimal: ' + Number(sexagesimalRaToDecimal(ra));
+        } else {
+          return 'Sexagesimal: ' + decimalRaToSexigesimal(ra).str;
+        }
+      },
+      decHelp: function(dec){
+        if (isNaN(Number(dec))) {
+          return 'Decimal: ' + Number(sexagesimalDecToDecimal(dec));
+        } else {
+          return 'Sexagesimal: ' + decimalDecToSexigesimal(dec).str;
         }
       }
     }

@@ -158,7 +158,7 @@ const routes = [
       title: 'Accounts'
     }
   },
-  { 
+  {
     path: '*',
     name: 'notFound',
     component: NotFound

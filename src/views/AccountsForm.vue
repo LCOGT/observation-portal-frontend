@@ -3,9 +3,9 @@
     <b-col>
       <passthrough-form
         :endpoint="endpoint"
-        :successRedirectViewName="successRedirectViewName"
-      ></passthrough-form>
-      <br/>
+        :success-redirect-view-name="successRedirectViewName"
+      />
+      <br>
     </b-col>
   </b-row>
 </template>

@@ -1,48 +1,48 @@
 <template>
   <span>
     <span class="text-right font-italic extra-help-text">
-      <slot name="extra-help-text"/>
+      <slot name="extra-help-text" />
     </span>
     <b-form-group
-      :id="field + '-fieldgroup-' + $parent.id"
       v-show="$parent.show"
+      :id="field + '-fieldgroup-' + $parent.id"
       label-size="sm"
       label-align-sm="right"
       label-cols-sm="4"
       :label-for="field"
     >
-      <template 
+      <template
         slot="label"
       >
         {{ label }}
-        <sup 
+        <sup
           v-if="desc"
-          class="text-primary" 
-          v-b-tooltip=tooltipConfig 
+          v-b-tooltip="tooltipConfig"
+          class="text-primary"
           :title="desc"
         >
           ?
         </sup>
       </template>
-      <b-form-select 
-        :id="field + '-select-' + $parent.id" 
+      <b-form-select
+        :id="field + '-select-' + $parent.id"
         :value="value | toLowerCase(lowerOptions)"
         :state="validationState"
         :options="selectOptions"
         @input="update($event)"
       />
-      <span 
-        class="errors text-danger" 
-        v-for="error in errors" 
+      <span
+        v-for="error in errors"
         :key="error"
+        class="errors text-danger"
       >
         {{ error }}
-      </span>    
+      </span>
     </b-form-group>
-    <span 
-      class="mr-4" 
+    <span
       v-show="!$parent.show"
-    > 
+      class="mr-4"
+    >
       {{ label }}: <strong>{{ value || '...' }}</strong>
     </span>
   </span>
@@ -53,15 +53,43 @@
   import { tooltipConfig } from '@/utils.js';
 
   export default {
-    props: [
-      'value',
-      'label', 
-      'field', 
-      'options', 
-      'errors', 
-      'desc',
-      'lowerOptions'
-    ],
+    filters: {
+      toLowerCase: function(value, lowerOptions) {
+        if (lowerOptions && _.isString(value)) {
+          return _.toLower(value);
+        }
+        return value;
+      }
+    },
+    props: {
+      value: {
+        validator: () => true,
+        required: true
+      },
+      label: {
+        type: String,
+        required: true
+      },
+      field: {
+        type: String,
+        default: function () { return _.kebabCase(this.label); }
+      },
+      options: {
+        type: [Object, Array],
+        required: true
+      },
+      errors: {
+        validator: () => true,
+        default: function () { return null; },
+      },
+      desc: {
+        type: String,
+        default: ''
+      },
+      lowerOptions: {
+        type: Boolean
+      }
+    },
     data: function() {
       return {
         tooltipConfig: tooltipConfig
@@ -93,14 +121,6 @@
         } else {
           return this.options;
         }
-      }
-    },
-    filters: {
-      toLowerCase: function(value, lowerOptions) {
-        if (lowerOptions && _.isString(value)) {
-          return _.toLower(value);
-        }
-        return value;
       }
     },
     methods: {

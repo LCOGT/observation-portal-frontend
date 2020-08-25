@@ -4,7 +4,7 @@ module.exports = {
     node: true
   },
   'extends': [
-    'plugin:vue/essential',
+    'plugin:vue/recommended',
     'eslint:recommended'
   ],
   parserOptions: {
@@ -12,7 +12,12 @@ module.exports = {
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'vue/max-len': [ 'error', { 'code': 150, 'template': 150, 'tabWidth': 2 } ],
+    'vue/brace-style': ['warn', '1tbs'],
+    'vue/no-irregular-whitespace': 'error',
+    'no-trailing-spaces': 'warn',
+    'quotes': ['warn', 'single'],
   },
   overrides: [
     {

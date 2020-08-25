@@ -10,12 +10,20 @@
           placeholder="Enter the reason for your request"
           :state="error.state"
           required
-        ></b-form-textarea>
-          <b-form-invalid-feedback id="input-reason-state">
-            <span v-for="msg in error.messages" :key="msg">{{ msg }}</span>
-          </b-form-invalid-feedback>
+        />
+        <b-form-invalid-feedback id="input-reason-state">
+          <span
+            v-for="msg in error.messages"
+            :key="msg"
+          >{{ msg }}</span>
+        </b-form-invalid-feedback>
       </b-form-group>
-      <b-button type="submit" variant="info">Submit request</b-button>
+      <b-button
+        type="submit"
+        variant="info"
+      >
+        Submit request
+      </b-button>
     </b-form>
   </b-col>
 </template>
@@ -23,7 +31,7 @@
 import $ from 'jquery';
 
 export default {
-  name: "AccountRemovalRequest",
+  name: 'AccountRemovalRequest',
   data: function() {
     return {
       formData: {

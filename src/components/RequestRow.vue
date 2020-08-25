@@ -1,50 +1,76 @@
 <template>
-  <b-row class="requestgroup" :class="request.state | stateToBsClass('requestgroup')">
+  <b-row
+    class="requestgroup"
+    :class="request.state | stateToBsClass('requestgroup')"
+  >
     <b-col md="10">
       <b-row>
-        <b-col md="4" class="requestgroup-block border-right">
-          <router-link v-if="link" class="requestgroup-title" :to="{ name: 'requestDetail', params: { id: request.id } }"
-            ># {{ request.id }}</router-link
+        <b-col
+          md="4"
+          class="requestgroup-block border-right"
+        >
+          <router-link
+            v-if="link"
+            class="requestgroup-title"
+            :to="{ name: 'requestDetail', params: { id: request.id } }"
           >
-          <span v-else class="requestgroup-title"># {{ request.id }}</span>
+            # {{ request.id }}
+          </router-link>
+          <span
+            v-else
+            class="requestgroup-title"
+          ># {{ request.id }}</span>
           <p>
-            <i class="far fa-clock"></i>
+            <i class="far fa-clock" />
             <span title="Total exposure time + observing overhead">Duration: {{ request.duration }} seconds</span>
           </p>
           <p>
-            <i class="fa fa-camera"></i>
+            <i class="fa fa-camera" />
             Instrument: {{ instrumentName }}
           </p>
         </b-col>
-        <b-col md="4" class="requestgroup-block border-right">
+        <b-col
+          md="4"
+          class="requestgroup-block border-right"
+        >
           <p>
             <span :class="request.state | stateToBsClass('text')">
-              <i :class="request.state | stateToIcon"></i>
+              <i :class="request.state | stateToIcon" />
               {{ request.state }}
             </span>
           </p>
           <p>
-            <i class="fa fa-clipboard-check"></i>
+            <i class="fa fa-clipboard-check" />
             Acceptability Threshold: {{ request.acceptability_threshold }}%
           </p>
           <p>
-            <i class="fa fa-calendar"></i>
+            <i class="fa fa-calendar" />
             {{ request.modified | formatDate }}
           </p>
         </b-col>
-        <b-col md="4" class="requestgroup-block my-auto">
+        <b-col
+          md="4"
+          class="requestgroup-block my-auto"
+        >
           <b-row class="border-right mx-auto">
             <div>
-              <div class="btn-group mr-2" role="group" aria-label="button group">
-                <a :href="requestApiUrl" class="btn btn-outline-secondary btn-sm"> <i class="fa fa-fw fa-code"></i> View in API </a>
+              <div
+                class="btn-group mr-2"
+                role="group"
+                aria-label="button group"
+              >
+                <a
+                  :href="requestApiUrl"
+                  class="btn btn-outline-secondary btn-sm"
+                > <i class="fa fa-fw fa-code" /> View in API </a>
                 <button
                   v-if="request.state === 'COMPLETED'"
                   class="btn btn-outline-secondary btn-sm"
                   type="button"
-                  @click="downloadAllData"
                   :disabled="!archiveDataIsAvailable"
+                  @click="downloadAllData"
                 >
-                  <i class="fa fa-fw fa-download"></i> Download
+                  <i class="fa fa-fw fa-download" /> Download
                 </button>
               </div>
             </div>
@@ -52,19 +78,35 @@
         </b-col>
       </b-row>
     </b-col>
-    <b-col md="2" class="text-center my-auto">
+    <b-col
+      md="2"
+      class="text-center my-auto"
+    >
       <template v-if="request.state == 'COMPLETED'">
-        <b-img v-if="thumbnailUrl" :src="thumbnailUrl" fluid :alt="frame.filename" :title="frame.filename"></b-img>
-        <div v-else-if="thumbnailError">{{ thumbnailError }}</div>
-        <div v-else-if="archiveError">{{ archiveError }}</div>
-        <i v-else class="fa fa-spin fa-spinner"></i>
+        <b-img
+          v-if="thumbnailUrl"
+          :src="thumbnailUrl"
+          fluid
+          :alt="frame.filename"
+          :title="frame.filename"
+        />
+        <div v-else-if="thumbnailError">
+          {{ thumbnailError }}
+        </div>
+        <div v-else-if="archiveError">
+          {{ archiveError }}
+        </div>
+        <i
+          v-else
+          class="fa fa-spin fa-spinner"
+        />
       </template>
       <template v-else-if="request.state == 'PENDING'">
         <div>
           <template v-if="schedulingInformation.found">
             <div>
               <strong>{{ schedulingInformation.site }}</strong>
-              <br />
+              <br>
               {{ schedulingInformation.start | formatDate }} to
               {{ schedulingInformation.end | formatDate }}
             </div>
@@ -72,7 +114,10 @@
           <div v-else-if="schedulingInformation.error">
             {{ schedulingInformation.error }}
           </div>
-          <i v-else class="fa fa-spinner fa-spin"></i>
+          <i
+            v-else
+            class="fa fa-spinner fa-spin"
+          />
         </div>
       </template>
     </b-col>
@@ -87,30 +132,6 @@ import { downloadAll, getLatestFrame } from '@/archive.js';
 
 export default {
   name: 'RequestRow',
-  props: {
-    request: {
-      type: Object,
-    },
-    instruments: {
-      type: Object,
-    },
-    link: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data: function () {
-    return {
-      thumbnailUrl: '',
-      thumbnailError: '',
-      archiveError: '',
-      frame: {},
-      schedulingInformation: {
-        found: false,
-        error: '',
-      },
-    };
-  },
   filters: {
     stateToBsClass: function (state, prefix) {
       return stateToBsClass(state, prefix);
@@ -120,7 +141,33 @@ export default {
     },
     formatDate(value) {
       return formatDate(value);
+    }
+  },
+  props: {
+    request: {
+      type: Object,
+      required: true
     },
+    instruments: {
+      type: Object,
+      required: true
+    },
+    link: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: function () {
+    return {
+      thumbnailUrl: '',
+      thumbnailError: '',
+      archiveError: '',
+      frame: {},
+      schedulingInformation: {
+        found: false,
+        error: ''
+      }
+    };
   },
   computed: {
     observationPortalApiUrl: function () {
@@ -203,7 +250,7 @@ export default {
           };
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>

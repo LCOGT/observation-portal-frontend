@@ -1,7 +1,7 @@
 <template>
   <div id="form-container">
-    <b-form></b-form>
-    <slot></slot>
+    <b-form />
+    <slot />
   </div>
 </template>
 <script>
@@ -10,7 +10,10 @@ import $ from 'jquery';
 export default {
   name: 'PassthroughForm',
   props: {
-    endpoint: String,
+    endpoint: {
+      type: String,
+      required: true
+    },
     retrievedFormElementSelector: {
       type: String,
       default: 'form'
@@ -25,6 +28,12 @@ export default {
       formElementSelector: 'form',
     }
   },
+  computed: {
+    url: function() {
+      let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
+      return this.$store.state.urls.observationPortalApi + endpoint + '?passthrough=true';
+    }
+  },
   mounted: function() {
     let that = this;
     $('#form-container').submit(function(evt) {
@@ -32,12 +41,6 @@ export default {
       that.submitForm();
     });
     this.getInitialForm();
-  },
-  computed: {
-    url: function() {
-      let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
-      return this.$store.state.urls.observationPortalApi + endpoint + '?passthrough=true';
-    }
   },
   methods: {
     replaceForm(form) {
