@@ -1,19 +1,9 @@
 <template>
   <b-container class="plot-controls">
-    <b-button
-      id="zoom-in"
-      class="float-right"
-      variant="transparent"
-      @click="zoomIn"
-    >
+    <b-button id="zoom-in" class="float-right" variant="transparent" @click="zoomIn">
       <i class="fas fa-search-plus" />
     </b-button>
-    <b-button
-      id="zoom-in"
-      class="float-right"
-      variant="transparent"
-      @click="zoomOut"
-    >
+    <b-button id="zoom-in" class="float-right" variant="transparent" @click="zoomOut">
       <i class="fas fa-search-minus" />
     </b-button>
   </b-container>
@@ -23,21 +13,21 @@ export default {
   props: {
     zoomInPercent: {
       type: Number,
-      default: -0.2,
+      default: -0.2
     },
     zoomOutPercent: {
       type: Number,
-      default: 0.2,
-    },
+      default: 0.2
+    }
   },
   methods: {
-    zoomIn: function () {
+    zoomIn: function() {
       this.$emit('plotZoom', this.zoomInPercent);
     },
-    zoomOut: function () {
+    zoomOut: function() {
       this.$emit('plotZoom', this.zoomOutPercent);
-    },
-  },
+    }
+  }
 };
 </script>
 <style scoped>

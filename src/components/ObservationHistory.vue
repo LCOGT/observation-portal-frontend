@@ -1,13 +1,7 @@
 <template>
   <div>
-    <div
-      id="plot"
-      class="observationHistoryPlot"
-    >
-      <plot-controls
-        v-show="showZoomControls"
-        @plotZoom="plotZoom"
-      />
+    <div id="plot" class="observationHistoryPlot">
+      <plot-controls v-show="showZoomControls" @plotZoom="plotZoom" />
     </div>
     <div class="observationHistoryPlotLegend text-center">
       <ul class="list-inline mt-1">
@@ -58,7 +52,7 @@ import { plotZoomMixin } from '@/components/util/plotMixins.js';
 
 export default {
   components: {
-    PlotControls,
+    PlotControls
   },
   mixins: [plotZoomMixin],
   props: {
@@ -70,7 +64,7 @@ export default {
       type: Boolean
     }
   },
-  data: function () {
+  data: function() {
     let options = {
       groupOrder: 'content',
       maxHeight: '450px',
@@ -80,19 +74,19 @@ export default {
       selectable: false,
       snap: null,
       zoomKey: 'ctrlKey',
-      moment: function (date) {
+      moment: function(date) {
         return vis.moment(date).utc();
       },
       tooltip: {
-        overflowMethod: 'cap',
-      },
+        overflowMethod: 'cap'
+      }
     };
     return {
-      options: options,
+      options: options
     };
   },
   computed: {
-    toVis: function () {
+    toVis: function() {
       let visGroups = new vis.DataSet();
       let visData = new vis.DataSet();
       let timeline_min = 0;
@@ -158,7 +152,7 @@ export default {
               end: previousObservation.end,
               toggle: 'tooltip',
               html: true,
-              type: 'range',
+              type: 'range'
             });
             index++;
             previousObservationIndex = i + 1;
@@ -188,7 +182,7 @@ export default {
           end: previousObservation.end,
           toggle: 'tooltip',
           html: true,
-          type: 'range',
+          type: 'range'
         });
         index++;
         timeline_min = new Date(visData.get(index - 1)['start']);
@@ -209,10 +203,10 @@ export default {
         }
       }
       return { datasets: visData, groups: visGroups, window: { start: timeline_min, end: timeline_max } };
-    },
+    }
   },
   watch: {
-    data: function () {
+    data: function() {
       let datasets = this.toVis;
       //Need to first zero out the items and groups or vis.js throws an error
       this.plot.setItems(new vis.DataSet());
@@ -220,12 +214,12 @@ export default {
       this.plot.setGroups(datasets.groups);
       this.plot.setItems(datasets.datasets);
       this.plot.setWindow(datasets.window.start, datasets.window.end);
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.plot = this.buildPlot();
     let that = this;
-    this.plot.on('click', function (event) {
+    this.plot.on('click', function(event) {
       if (event.item !== null) {
         // An observation on the timeline was cliked, get that observation info
         let item = that.toVis.datasets.get(event.item);
@@ -236,11 +230,11 @@ export default {
     });
   },
   methods: {
-    buildPlot: function () {
+    buildPlot: function() {
       // Set a unique name for the plot element, since vis.js needs this to separate plots
       this.$el.setAttribute('class', _.uniqueId(this.$el.className));
       return new vis.Timeline(document.getElementById('plot'), new vis.DataSet([]), this.options);
-    },
-  },
+    }
+  }
 };
 </script>

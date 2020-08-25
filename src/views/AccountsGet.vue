@@ -1,10 +1,7 @@
 <template>
   <b-row>
     <b-col>
-      <passthrough-get
-        :endpoint="endpoint"
-        :success-redirect-view-name="successRedirectViewName"
-      />
+      <passthrough-get :endpoint="endpoint" :success-redirect-view-name="successRedirectViewName" />
     </b-col>
   </b-row>
 </template>
@@ -25,7 +22,7 @@ export default {
   data: function() {
     return {
       endpoint: this.$route.path
-    }
+    };
   }
-}
+};
 </script>

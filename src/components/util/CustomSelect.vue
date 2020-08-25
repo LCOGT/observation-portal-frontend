@@ -11,16 +11,9 @@
       label-cols-sm="4"
       :label-for="field"
     >
-      <template
-        slot="label"
-      >
+      <template slot="label">
         {{ label }}
-        <sup
-          v-if="desc"
-          v-b-tooltip="tooltipConfig"
-          class="text-primary"
-          :title="desc"
-        >
+        <sup v-if="desc" v-b-tooltip="tooltipConfig" class="text-primary" :title="desc">
           ?
         </sup>
       </template>
@@ -31,113 +24,110 @@
         :options="selectOptions"
         @input="update($event)"
       />
-      <span
-        v-for="error in errors"
-        :key="error"
-        class="errors text-danger"
-      >
+      <span v-for="error in errors" :key="error" class="errors text-danger">
         {{ error }}
       </span>
     </b-form-group>
-    <span
-      v-show="!$parent.show"
-      class="mr-4"
-    >
+    <span v-show="!$parent.show" class="mr-4">
       {{ label }}: <strong>{{ value || '...' }}</strong>
     </span>
   </span>
 </template>
 <script>
-  import _ from 'lodash';
+import _ from 'lodash';
 
-  import { tooltipConfig } from '@/utils.js';
+import { tooltipConfig } from '@/utils.js';
 
-  export default {
-    filters: {
-      toLowerCase: function(value, lowerOptions) {
-        if (lowerOptions && _.isString(value)) {
-          return _.toLower(value);
-        }
-        return value;
+export default {
+  filters: {
+    toLowerCase: function(value, lowerOptions) {
+      if (lowerOptions && _.isString(value)) {
+        return _.toLower(value);
+      }
+      return value;
+    }
+  },
+  props: {
+    value: {
+      validator: () => true,
+      required: true
+    },
+    label: {
+      type: String,
+      required: true
+    },
+    field: {
+      type: String,
+      default: function() {
+        return _.kebabCase(this.label);
       }
     },
-    props: {
-      value: {
-        validator: () => true,
-        required: true
-      },
-      label: {
-        type: String,
-        required: true
-      },
-      field: {
-        type: String,
-        default: function () { return _.kebabCase(this.label); }
-      },
-      options: {
-        type: [Object, Array],
-        required: true
-      },
-      errors: {
-        validator: () => true,
-        default: function () { return null; },
-      },
-      desc: {
-        type: String,
-        default: ''
-      },
-      lowerOptions: {
-        type: Boolean
+    options: {
+      type: [Object, Array],
+      required: true
+    },
+    errors: {
+      validator: () => true,
+      default: function() {
+        return null;
       }
     },
-    data: function() {
-      return {
-        tooltipConfig: tooltipConfig
+    desc: {
+      type: String,
+      default: ''
+    },
+    lowerOptions: {
+      type: Boolean
+    }
+  },
+  data: function() {
+    return {
+      tooltipConfig: tooltipConfig
+    };
+  },
+  computed: {
+    hasErrors: function() {
+      return !_.isEmpty(this.errors);
+    },
+    validationState: function() {
+      if (this.errors === null) {
+        // No validation displayed
+        return null;
+      } else if (this.hasErrors) {
+        return false;
+      } else {
+        return null;
       }
     },
-    computed: {
-      hasErrors: function() {
-        return !_.isEmpty(this.errors);
-      },
-      validationState: function() {
-        if (this.errors === null) {
-          // No validation displayed
-          return null;
-        } else if (this.hasErrors) {
-          return false;
-        } else {
-          return null;
-        }
-      },
-      selectOptions: function() {
-        if (this.lowerOptions) {
-          return _.mapValues(this.options, function(opt) {
-            if (_.isString(opt.value)) {
-              return {value: _.toLower(opt.value), text: opt.text};
-            } else {
-              return {value: opt.value, text: opt.text};
-            }
-          });
-        } else {
-          return this.options;
-        }
-      }
-    },
-    methods: {
-      update: function(value) {
-        this.$emit('input', value);
+    selectOptions: function() {
+      if (this.lowerOptions) {
+        return _.mapValues(this.options, function(opt) {
+          if (_.isString(opt.value)) {
+            return { value: _.toLower(opt.value), text: opt.text };
+          } else {
+            return { value: opt.value, text: opt.text };
+          }
+        });
+      } else {
+        return this.options;
       }
     }
-  };
+  },
+  methods: {
+    update: function(value) {
+      this.$emit('input', value);
+    }
+  }
+};
 </script>
 <style scoped>
-  .errors {
-    font-size: 90%;
-  }
-  .extra-help-text,
-  .extra-help-text div {
-    font-size: 90%;
-    margin-left: auto !important;
-    max-width: 220px;
-  }
+.errors {
+  font-size: 90%;
+}
+.extra-help-text,
+.extra-help-text div {
+  font-size: 90%;
+  margin-left: auto !important;
+  max-width: 220px;
+}
 </style>

@@ -1,14 +1,7 @@
 <template>
   <div>
-    <a
-      v-if="asLink"
-      :class="linkClasses"
-      @click="performGet"
-    >{{ linkText }}</a>
-    <div
-      v-else
-      id="passthrough-container"
-    />
+    <a v-if="asLink" :class="linkClasses" @click="performGet">{{ linkText }}</a>
+    <div v-else id="passthrough-container" />
   </div>
 </template>
 <script>
@@ -58,7 +51,7 @@ export default {
         success: function(response) {
           if (that.successRedirectViewName) {
             // Successful submission, and a redirect has been set. Navigate to the specified view name.
-            let successPathname = that.$router.resolve({ name: that.successRedirectViewName});
+            let successPathname = that.$router.resolve({ name: that.successRedirectViewName });
             window.location.pathname = successPathname.href;
           } else {
             // Successful submission, and no redirect has been set. Replace the contents with
@@ -69,11 +62,11 @@ export default {
         },
         error: function(response) {
           if (!that.asLink && response.status === 404) {
-            that.$router.replace({name: 'notFound'});
+            that.$router.replace({ name: 'notFound' });
           }
           console.log('there was an error');
         }
-      })
+      });
     }
   }
 };

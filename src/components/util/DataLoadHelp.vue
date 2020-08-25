@@ -1,22 +1,11 @@
 <template>
   <div class="p-0 text-secondary font-italic data-load-help">
     <transition>
-      <span
-        v-if="loadingDataFailed"
-        key="loadFailed"
-      >
+      <span v-if="loadingDataFailed" key="loadFailed">
         Data failed to load
       </span>
-      <span
-        v-else-if="isLoading"
-        key="loading"
-      >
-        Loading <i class="m-2 fa fa-spin fa-spinner load-spinner" />
-      </span>
-      <span
-        v-else-if="!dataAvailable"
-        key="noDataAvailable"
-      >
+      <span v-else-if="isLoading" key="loading"> Loading <i class="m-2 fa fa-spin fa-spinner load-spinner" /> </span>
+      <span v-else-if="!dataAvailable" key="noDataAvailable">
         No data available for selection
       </span>
     </transition>
@@ -39,10 +28,10 @@ export default {
       required: true
     }
   }
-}
+};
 </script>
 <style scoped>
-  .data-load-help {
-    line-height: 2rem; /* Vertically center */
-  }
+.data-load-help {
+  line-height: 2rem; /* Vertically center */
+}
 </style>

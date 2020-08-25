@@ -3,7 +3,7 @@
     <b-row>
       <b-col>
         <h2>
-          {{ requestgroup.name }}<br>
+          {{ requestgroup.name }}<br />
           <small>RequestGroup # {{ requestgroup.id }}</small>
         </h2>
       </b-col>
@@ -31,9 +31,7 @@
         <!-- TODO: Translate this -->
         <dt>Proposal</dt>
         <dd>
-          <router-link
-            :to="{ name: 'proposalDetail', params: {id: requestgroup.proposal} }"
-          >
+          <router-link :to="{ name: 'proposalDetail', params: { id: requestgroup.proposal } }">
             {{ requestgroup.proposal }}
           </router-link>
         </dd>
@@ -61,16 +59,11 @@
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
-          >Options</button>
-          <div
-            class="dropdown-menu"
-            aria-labelledby="rgOptionsButton"
           >
-            <router-link
-              class="dropdown-item"
-              title="Copy this request"
-              :to="{ name: 'create', query: { requestgroupid: requestgroup.id} }"
-            >
+            Options
+          </button>
+          <div class="dropdown-menu" aria-labelledby="rgOptionsButton">
+            <router-link class="dropdown-item" title="Copy this request" :to="{ name: 'create', query: { requestgroupid: requestgroup.id } }">
               <i class="fa fa-copy" /> Copy
             </router-link>
             <a
@@ -95,13 +88,13 @@ import { stateToBsClass, stateToIcon, formatDate } from '@/utils.js';
 export default {
   name: 'RequestgroupHeader',
   filters: {
-    stateToBsClass: function (state, prefix) {
+    stateToBsClass: function(state, prefix) {
       return stateToBsClass(state, prefix);
     },
-    stateToIcon: function (state) {
+    stateToIcon: function(state) {
       return stateToIcon(state);
     },
-    formatIpp: function (ipp) {
+    formatIpp: function(ipp) {
       let ippAsNumber = Number(ipp);
       if (ippAsNumber === 0 || ippAsNumber) {
         return ippAsNumber.toFixed(6);
@@ -120,7 +113,7 @@ export default {
     }
   },
   computed: {
-    userIsAuthenticated: function () {
+    userIsAuthenticated: function() {
       return this.$store.state.userIsAuthenticated;
     },
     observationPortalApiUrl: function() {
@@ -130,7 +123,7 @@ export default {
   methods: {
     cancelRequestGroup: function() {
       let that = this;
-      if(confirm('Cancel this request? This action cannot be undone')) {
+      if (confirm('Cancel this request? This action cannot be undone')) {
         $.ajax({
           type: 'POST',
           url: this.observationPortalApiUrl + '/api/requestgroups/' + this.requestgroup.id + '/cancel/',
@@ -140,13 +133,13 @@ export default {
             window.location = '/requestgroups/' + that.requestgroup.id + '/';
           },
           error: function(response) {
-            if(response.status === 429) {
+            if (response.status === 429) {
               alert('Too many cancel requests, your request to cancel has been throttled. Please contact support.');
             } else {
               alert(response.responseJSON.errors[0]);
             }
           }
-        })
+        });
       }
     }
   }

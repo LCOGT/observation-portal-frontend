@@ -12,27 +12,16 @@
     @copy="$emit('copy')"
     @show="show = $event"
   >
-    <custom-alert
-      v-for="error in topLevelErrors"
-      :key="error"
-      alertclass="danger"
-      :dismissible="false"
-    >
+    <custom-alert v-for="error in topLevelErrors" :key="error" alertclass="danger" :dismissible="false">
       {{ error }}
     </custom-alert>
     <b-container class="p-0">
       <b-row>
-        <b-col
-          v-show="show"
-          md="6"
-        >
+        <b-col v-show="show" md="6">
           <ul>
             <li>
               Try the
-              <a
-                href=" https://exposure-time-calculator.lco.global/"
-                target="_blank"
-              >
+              <a href=" https://exposure-time-calculator.lco.global/" target="_blank">
                 online Exposure Time Calculator.
               </a>
             </li>
@@ -57,18 +46,11 @@
               desc="Seconds"
               @input="update"
             >
-              <div
-                v-if="suggestedLampFlatSlitExposureTime"
-                slot="extra-help-text"
-              >
-                Suggested exposure time for a Lamp Flat with
-                slit {{ instrumentconfig.optical_elements.slit }} and readout mode {{ instrumentconfig.mode }}
-                is <strong>{{ suggestedLampFlatSlitExposureTime }} seconds</strong>
+              <div v-if="suggestedLampFlatSlitExposureTime" slot="extra-help-text">
+                Suggested exposure time for a Lamp Flat with slit {{ instrumentconfig.optical_elements.slit }} and readout mode
+                {{ instrumentconfig.mode }} is <strong>{{ suggestedLampFlatSlitExposureTime }} seconds</strong>
               </div>
-              <div
-                v-else-if="suggestedArcExposureTime"
-                slot="extra-help-text"
-              >
+              <div v-else-if="suggestedArcExposureTime" slot="extra-help-text">
                 Suggested exposure time for an Arc is <strong>{{ suggestedArcExposureTime }} seconds</strong>
               </div>
             </custom-field>
@@ -131,10 +113,7 @@
               :errors="errors.mode"
               @input="update"
             />
-            <div
-              v-for="opticalElementGroup in availableOpticalElementGroups"
-              :key="opticalElementGroup.type"
-            >
+            <div v-for="opticalElementGroup in availableOpticalElementGroups" :key="opticalElementGroup.type">
               <custom-select
                 v-model="instrumentconfig.optical_elements[opticalElementGroup.type]"
                 :label="opticalElementGroup.label"
@@ -217,9 +196,7 @@ export default {
       return getFieldDescription(value);
     }
   },
-  mixins: [
-    collapseMixin
-  ],
+  mixins: [collapseMixin],
   props: {
     errors: {
       type: Object,
@@ -266,10 +243,10 @@ export default {
       exposure_mode: 'SYNCHRONOUS',
       opticalElementUpdates: 0,
       exposureModeOptions: [
-          {value: 'SYNCHRONOUS', text: 'Synchronous'},
-          {value: 'ASYNCHRONOUS', text: 'Asynchronous'}
+        { value: 'SYNCHRONOUS', text: 'Synchronous' },
+        { value: 'ASYNCHRONOUS', text: 'Asynchronous' }
       ]
-    }
+    };
   },
   computed: {
     topLevelErrors: function() {
@@ -286,9 +263,9 @@ export default {
         let readoutModes = [];
         for (let rm in this.availableInstruments[this.selectedinstrument].modes.readout.modes) {
           readoutModes.push({
-              text: this.availableInstruments[this.selectedinstrument].modes.readout.modes[rm].name,
-              value: this.availableInstruments[this.selectedinstrument].modes.readout.modes[rm].code,
-              binning: this.availableInstruments[this.selectedinstrument].modes.readout.modes[rm].validation_schema.bin_x.default
+            text: this.availableInstruments[this.selectedinstrument].modes.readout.modes[rm].name,
+            value: this.availableInstruments[this.selectedinstrument].modes.readout.modes[rm].code,
+            binning: this.availableInstruments[this.selectedinstrument].modes.readout.modes[rm].validation_schema.bin_x.default
           });
         }
         return readoutModes;
@@ -303,12 +280,12 @@ export default {
             type: 'filter',
             label: 'Filter',
             options: [
-              {value: 'b', text: 'Blue'},
-              {value: 'v', text: 'Green'},
-              {value: 'rp', text: 'Red'}
+              { value: 'b', text: 'Blue' },
+              { value: 'v', text: 'Green' },
+              { value: 'rp', text: 'Red' }
             ]
           }
-        }
+        };
       } else if (this.selectedinstrument in this.availableInstruments) {
         let oe_groups = {};
         for (let oe_group_type in this.availableInstruments[this.selectedinstrument].optical_elements) {
@@ -317,7 +294,9 @@ export default {
           let oe_type = oe_group_type.substring(0, oe_group_type.length - 1);
           oe_groups[oe_type] = {};
           oe_groups[oe_type]['type'] = oe_type;
-          oe_groups[oe_type]['label'] = _.capitalize(oe_type).split('_').join(' ');
+          oe_groups[oe_type]['label'] = _.capitalize(oe_type)
+            .split('_')
+            .join(' ');
           let elements = [];
           for (let element in this.availableInstruments[this.selectedinstrument].optical_elements[oe_group_type]) {
             if (this.availableInstruments[this.selectedinstrument].optical_elements[oe_group_type][element].schedulable) {
@@ -344,7 +323,7 @@ export default {
           requiredModeFields = [];
           if ('extra_params' in modes[i].validation_schema) {
             for (let j in modes[i].validation_schema.extra_params.schema) {
-              requiredModeFields.push(j)
+              requiredModeFields.push(j);
             }
           }
           options.push({
@@ -419,10 +398,8 @@ export default {
         this.instrumentconfig.optical_elements.filter = 'b';
       } else {
         for (let oe_type in value) {
-          for (let oe_value_idx in value[oe_type]['options'])
-          {
-            if (value[oe_type]['options'][oe_value_idx].default)
-            {
+          for (let oe_value_idx in value[oe_type]['options']) {
+            if (value[oe_type]['options'][oe_value_idx].default) {
               this.instrumentconfig.optical_elements[oe_type] = value[oe_type]['options'][oe_value_idx].value;
             }
           }
@@ -461,8 +438,7 @@ export default {
         this.instrumentconfig.extra_params.exposure_time_i = this.exposure_time_i = this.instrumentconfig.exposure_time;
         this.instrumentconfig.extra_params.exposure_time_z = this.exposure_time_z = this.instrumentconfig.exposure_time;
         this.instrumentconfig.extra_params.exposure_mode = this.exposure_mode = 'SYNCHRONOUS';
-      }
-      else {
+      } else {
         this.instrumentconfig.extra_params.exposure_time_g = undefined;
         this.instrumentconfig.extra_params.exposure_time_r = undefined;
         this.instrumentconfig.extra_params.exposure_time_i = undefined;
@@ -540,5 +516,5 @@ export default {
       }
     }
   }
-}
+};
 </script>

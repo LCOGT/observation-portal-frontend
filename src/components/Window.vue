@@ -12,28 +12,16 @@
     @copy="$emit('copy')"
     @show="show = $event"
   >
-    <custom-alert
-      v-for="error in topLevelErrors"
-      :key="error"
-      alertclass="danger"
-      :dismissible="false"
-    >
+    <custom-alert v-for="error in topLevelErrors" :key="error" alertclass="danger" :dismissible="false">
       {{ error }}
     </custom-alert>
     <b-container class="p-0">
       <b-row>
-        <b-col
-          v-show="show"
-          md="6"
-        >
+        <b-col v-show="show" md="6">
           <ul>
             <li>
               Try the
-              <a
-                href="https://lco.global/observatory/visibility/"
-                title="Target Visibilty Calculator"
-                target="_blank"
-              >
+              <a href="https://lco.global/observatory/visibility/" title="Target Visibilty Calculator" target="_blank">
                 Target Visibility Calculator.
               </a>
             </li>
@@ -41,17 +29,10 @@
               A start time cannot be selected for a Rapid Response observation. It will be scheduled as soon as possible.
             </li>
           </ul>
-          <h4
-            v-show="showAirmass"
-            class="text-center"
-          >
+          <h4 v-show="showAirmass" class="text-center">
             Visibility
           </h4>
-          <airmass
-            v-show="showAirmass"
-            :data="airmassData"
-            :show-zoom-controls="true"
-          />
+          <airmass v-show="showAirmass" :data="airmassData" :show-zoom-controls="true" />
         </b-col>
         <b-col :md="show ? 6 : 12">
           <b-form>
@@ -79,8 +60,8 @@
               field="cadence"
               desc="A cadence will replace your current observing window with a set of windows, one for each cycle of the cadence."
               :options="[
-                {text:'None', value: 'none'},
-                {text:'Simple Period', value:'simple'}
+                { text: 'None', value: 'none' },
+                { text: 'Simple Period', value: 'simple' }
               ]"
             />
             <custom-field
@@ -109,12 +90,7 @@
               label=""
               label-for="cadence-button"
             >
-              <b-button
-                id="cadence-button"
-                block
-                variant="outline-info"
-                @click="genCadence"
-              >
+              <b-button id="cadence-button" block variant="outline-info" @click="genCadence">
                 Generate Cadence
               </b-button>
             </b-form-group>
@@ -125,96 +101,97 @@
   </panel>
 </template>
 <script>
-  import $ from 'jquery';
-  import _ from 'lodash';
+import $ from 'jquery';
+import _ from 'lodash';
 
-  import { collapseMixin, extractTopLevelErrors } from '@/utils.js';
-  import Panel from '@/components/util/Panel.vue';
-  import CustomAlert from '@/components/util/CustomAlert.vue';
-  import CustomDatetime from '@/components/util/CustomDatetime.vue';
-  import CustomField from '@/components/util/CustomField.vue';
-  import CustomSelect from '@/components/util/CustomSelect.vue';
-  import Airmass from '@/components/Airmass.vue';
+import { collapseMixin, extractTopLevelErrors } from '@/utils.js';
+import Panel from '@/components/util/Panel.vue';
+import CustomAlert from '@/components/util/CustomAlert.vue';
+import CustomDatetime from '@/components/util/CustomDatetime.vue';
+import CustomField from '@/components/util/CustomField.vue';
+import CustomSelect from '@/components/util/CustomSelect.vue';
+import Airmass from '@/components/Airmass.vue';
 
-  export default {
-    components: {
-      CustomDatetime,
-      CustomField,
-      CustomSelect,
-      Panel,
-      CustomAlert,
-      Airmass
+export default {
+  components: {
+    CustomDatetime,
+    CustomField,
+    CustomSelect,
+    Panel,
+    CustomAlert,
+    Airmass
+  },
+  mixins: [collapseMixin],
+  props: {
+    window: {
+      type: Object,
+      required: true
     },
-    mixins: [
-      collapseMixin
-    ],
-    props: {
-      window: {
-        type: Object,
-        required: true
-      },
-      index: {
-        type: Number,
-        required: true
-      },
-      errors: {
-        type: Object,
-        required: true
-      },
-      parentshow: {
-        type: Boolean
-      },
-      simpleInterface: {
-        type: Boolean
-      },
-      observationType: {
-        type: String,
-        required: true
-      }
+    index: {
+      type: Number,
+      required: true
     },
-    data: function() {
-      return {
-        show: this.parentshow,
-        airmassData: {},
-        showAirmass: false,
-        cadence: 'none',
-        period: 24.0,
-        jitter: 12.0
-      };
+    errors: {
+      type: Object,
+      required: true
     },
-    computed: {
-      topLevelErrors: function() {
-        return extractTopLevelErrors(this.errors);
-      },
-      observationPortalApiUrl: function() {
-        return this.$store.state.urls.observationPortalApi;
-      }
+    parentshow: {
+      type: Boolean
     },
-    methods: {
-      update: function() {
-        this.$emit('windowupdate');
-      },
-      genCadence: function() {
-        this.$emit('cadence', {
-          'start': this.window.start, 'end': this.window.end, 'period': this.period, 'jitter': this.jitter
-        });
-      },
-      updateVisibility: function(req) {
-        let request = _.cloneDeep(req);
-        // Replace the window list with a single window with this start/end
-        request['windows'] = [{start: this.window.start, end: this.window.end}];
-        let that = this;
-        $.ajax({
-          type: 'POST',
-          url: this.observationPortalApiUrl + '/api/airmass/',
-          data: JSON.stringify(request),
-          contentType: 'application/json',
-          success: function (data) {
-            that.airmassData = data;
-            that.showAirmass = 'airmass_limit' in data;
-          }
-        });
-      }
+    simpleInterface: {
+      type: Boolean
+    },
+    observationType: {
+      type: String,
+      required: true
     }
-  };
+  },
+  data: function() {
+    return {
+      show: this.parentshow,
+      airmassData: {},
+      showAirmass: false,
+      cadence: 'none',
+      period: 24.0,
+      jitter: 12.0
+    };
+  },
+  computed: {
+    topLevelErrors: function() {
+      return extractTopLevelErrors(this.errors);
+    },
+    observationPortalApiUrl: function() {
+      return this.$store.state.urls.observationPortalApi;
+    }
+  },
+  methods: {
+    update: function() {
+      this.$emit('windowupdate');
+    },
+    genCadence: function() {
+      this.$emit('cadence', {
+        start: this.window.start,
+        end: this.window.end,
+        period: this.period,
+        jitter: this.jitter
+      });
+    },
+    updateVisibility: function(req) {
+      let request = _.cloneDeep(req);
+      // Replace the window list with a single window with this start/end
+      request['windows'] = [{ start: this.window.start, end: this.window.end }];
+      let that = this;
+      $.ajax({
+        type: 'POST',
+        url: this.observationPortalApiUrl + '/api/airmass/',
+        data: JSON.stringify(request),
+        contentType: 'application/json',
+        success: function(data) {
+          that.airmassData = data;
+          that.showAirmass = 'airmass_limit' in data;
+        }
+      });
+    }
+  }
+};
 </script>

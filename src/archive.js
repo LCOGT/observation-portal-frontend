@@ -11,7 +11,7 @@ function downloadZip(frameIds, archiveRoot, archiveToken) {
   postData['auth_token'] = archiveToken;
   $.fileDownload(archiveRoot + '/frames/zip/', {
     httpMethod: 'POST',
-    data: postData,
+    data: postData
   });
 }
 
@@ -32,7 +32,7 @@ function downloadAll(requestId, archiveRoot, archiveClientUrl, archiveToken) {
 function getLatestFrame(requestId, archiveRoot, callback) {
   $.ajax({
     url: archiveRoot + '/frames/?ordering=-id&limit=1&REQNUM=' + requestId,
-    dataType: 'json',
+    dataType: 'json'
   }).done(function(response) {
     callback(response.results[0]);
   });

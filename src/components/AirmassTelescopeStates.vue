@@ -47,7 +47,7 @@ export default {
   name: 'AirmassTelescopeStates',
   components: {
     Airmass,
-    TelescopeStates,
+    TelescopeStates
   },
   props: {
     airmassData: {
@@ -63,16 +63,16 @@ export default {
       required: true
     }
   },
-  data: function () {
+  data: function() {
     return {};
   },
   methods: {
-    updateAirmassRange: function (window) {
+    updateAirmassRange: function(window) {
       this.$refs.airmass.updateWindow(window);
     },
-    updateTelescopeStatesRange: function (window) {
+    updateTelescopeStatesRange: function(window) {
       this.$refs.telescope_states.updateWindow(window);
-    },
-  },
+    }
+  }
 };
 </script>

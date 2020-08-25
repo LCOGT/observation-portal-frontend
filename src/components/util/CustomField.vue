@@ -11,16 +11,9 @@
       label-cols-sm="4"
       :label-for="field"
     >
-      <template
-        slot="label"
-      >
+      <template slot="label">
         {{ label }}
-        <sup
-          v-if="desc"
-          v-b-tooltip="tooltipConfig"
-          class="text-primary"
-          :title="desc"
-        >
+        <sup v-if="desc" v-b-tooltip="tooltipConfig" class="text-primary" :title="desc">
           ?
         </sup>
       </template>
@@ -35,101 +28,98 @@
         />
         <slot name="inline-input" />
       </b-input-group>
-      <span
-        v-for="error in errors"
-        :key="error"
-        class="errors text-danger"
-      >
+      <span v-for="error in errors" :key="error" class="errors text-danger">
         {{ error }}
       </span>
     </b-form-group>
-    <span
-      v-show="!$parent.show"
-      class="mr-4"
-    >
+    <span v-show="!$parent.show" class="mr-4">
       {{ label }}: <strong>{{ displayValue(value) }}</strong>
     </span>
   </span>
 </template>
 <script>
-  import _ from 'lodash';
+import _ from 'lodash';
 
-  import { tooltipConfig } from '@/utils.js';
+import { tooltipConfig } from '@/utils.js';
 
-  export default {
-    props: {
-      value: {
-        validator: () => true,
-        required: true
-      },
-      label: {
-        type: String,
-        required: true
-      },
-      field: {
-        type: String,
-        default: function () { return _.kebabCase(this.label); }
-      },
-      errors: {
-        validator: () => true,
-        default: function () { return null; },
-      },
-      type: {
-        type: String,
-        default: 'text'
-      },
-      desc: {
-        type: String,
-        default: ''
+export default {
+  props: {
+    value: {
+      validator: () => true,
+      required: true
+    },
+    label: {
+      type: String,
+      required: true
+    },
+    field: {
+      type: String,
+      default: function() {
+        return _.kebabCase(this.label);
       }
     },
-    data: function() {
-      return {
-        tooltipConfig: tooltipConfig
+    errors: {
+      validator: () => true,
+      default: function() {
+        return null;
       }
     },
-    computed: {
-      hasErrors: function() {
-        return !_.isEmpty(this.errors);
-      },
-      validationState: function() {
-        if (this.errors === null) {
-          // No validation displayed
-          return null;
-        } else if (this.hasErrors) {
-          return false;
-        } else {
-          return null;
-        }
-      }
+    type: {
+      type: String,
+      default: 'text'
     },
-    methods: {
-      displayValue: function(value) {
-        if (value === 0) {
-          return '0';
-        } else if (value === '' || value === null) {
-          return '...'
-        } else {
-        return value;
-        }
-      },
-      update: function(value) {
-        this.$emit('input', value);
-      },
-      blur: function(value) {
-        this.$emit('blur', value);
+    desc: {
+      type: String,
+      default: ''
+    }
+  },
+  data: function() {
+    return {
+      tooltipConfig: tooltipConfig
+    };
+  },
+  computed: {
+    hasErrors: function() {
+      return !_.isEmpty(this.errors);
+    },
+    validationState: function() {
+      if (this.errors === null) {
+        // No validation displayed
+        return null;
+      } else if (this.hasErrors) {
+        return false;
+      } else {
+        return null;
       }
     }
-  };
+  },
+  methods: {
+    displayValue: function(value) {
+      if (value === 0) {
+        return '0';
+      } else if (value === '' || value === null) {
+        return '...';
+      } else {
+        return value;
+      }
+    },
+    update: function(value) {
+      this.$emit('input', value);
+    },
+    blur: function(value) {
+      this.$emit('blur', value);
+    }
+  }
+};
 </script>
 <style scoped>
-  .errors {
-    font-size: 90%;
-  }
-  .extra-help-text,
-  .extra-help-text div {
-    font-size: 90%;
-    margin-left: auto !important;
-    max-width: 220px;
-  }
+.errors {
+  font-size: 90%;
+}
+.extra-help-text,
+.extra-help-text div {
+  font-size: 90%;
+  margin-left: auto !important;
+  max-width: 220px;
+}
 </style>

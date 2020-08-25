@@ -9,27 +9,16 @@
     title="Constraints"
     @show="show = $event"
   >
-    <custom-alert
-      v-for="error in errors.non_field_errors"
-      :key="error"
-      alertclass="danger"
-      :dismissible="false"
-    >
+    <custom-alert v-for="error in errors.non_field_errors" :key="error" alertclass="danger" :dismissible="false">
       {{ error }}
     </custom-alert>
     <b-container class="p-0">
       <b-row>
-        <b-col
-          v-show="show"
-          md="6"
-        >
+        <b-col v-show="show" md="6">
           <ul>
             <li>
               Advice on
-              <a
-                href="https://lco.global/documentation/airmass-limit"
-                target="_blank"
-              >
+              <a href="https://lco.global/documentation/airmass-limit" target="_blank">
                 setting the airmass limit.
               </a>
             </li>
@@ -60,40 +49,38 @@
   </panel>
 </template>
 <script>
-  import { collapseMixin } from '@/utils.js';
-  import Panel from '@/components/util/Panel.vue';
-  import CustomAlert from '@/components/util/CustomAlert.vue';
-  import CustomField from '@/components/util/CustomField.vue';
+import { collapseMixin } from '@/utils.js';
+import Panel from '@/components/util/Panel.vue';
+import CustomAlert from '@/components/util/CustomAlert.vue';
+import CustomField from '@/components/util/CustomField.vue';
 
-  export default {
-    components: {
-      CustomField,
-      Panel,
-      CustomAlert
+export default {
+  components: {
+    CustomField,
+    Panel,
+    CustomAlert
+  },
+  mixins: [collapseMixin],
+  props: {
+    constraints: {
+      type: Object,
+      required: true
     },
-    mixins: [
-      collapseMixin
-    ],
-    props: {
-      constraints: {
-        type: Object,
-        required: true
-      },
-      errors: {
-        type: Object,
-        required: true
-      },
-      parentshow: {
-        type: Boolean
-      }
+    errors: {
+      type: Object,
+      required: true
     },
-    data: function() {
-      return {'show': true};
-    },
-    methods: {
-      update: function(){
-        this.$emit('constraintsupdate');
-      }
+    parentshow: {
+      type: Boolean
     }
-  };
+  },
+  data: function() {
+    return { show: true };
+  },
+  methods: {
+    update: function() {
+      this.$emit('constraintsupdate');
+    }
+  }
+};
 </script>
