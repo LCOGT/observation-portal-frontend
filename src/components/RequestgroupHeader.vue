@@ -135,7 +135,7 @@ export default {
           },
           error: function(response) {
             if(response.status === 429) {
-              alert('Too many cancel requests, your request to cancel has been throttled. Please contact support.');
+              alert('Your account has submitted too many cancel requests in a day, so your request to cancel has been throttled. Please contact support.');
             } else {
               alert(response.responseJSON.errors[0]);
             }
