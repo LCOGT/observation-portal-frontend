@@ -14,7 +14,9 @@ import $ from 'jquery';
 export default {
   props: {
     frame: {
-      type: Object,
+      validator: function(value) {
+        return value === null || typeof value === 'object';
+      },
       default: function() {
         return null;
       }

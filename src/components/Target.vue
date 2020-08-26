@@ -238,7 +238,9 @@ export default {
       required: true
     },
     errors: {
-      type: [Object, null],
+      validator: function(value) {
+        return value === null || typeof value === 'object';
+      },
       required: true
     },
     simpleInterface: {

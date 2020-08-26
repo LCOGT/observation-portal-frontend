@@ -49,7 +49,9 @@ export default {
   },
   props: {
     value: {
-      validator: () => true,
+      validator: function(value) {
+        return value === null || value === undefined || typeof value === 'string' || typeof value === 'number';
+      },
       required: true
     },
     label: {
@@ -67,7 +69,9 @@ export default {
       required: true
     },
     errors: {
-      validator: () => true,
+      validator: function(value) {
+        return value === null || typeof value === 'object';
+      },
       default: function() {
         return null;
       }

@@ -61,10 +61,10 @@ export default {
       }
     },
     errors: {
-      validator: () => true,
-      default: function() {
-        return {};
-      }
+      validator: function(value) {
+        return value === undefined || value === null || typeof value === 'object';
+      },
+      required: true
     },
     desc: {
       type: String,

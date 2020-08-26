@@ -21,7 +21,9 @@ export default {
   mixins: [plotZoomMixin],
   props: {
     data: {
-      type: Object,
+      validator: function(value) {
+        return value === undefined || typeof value === 'object';
+      },
       default: function() {
         return undefined;
       }
