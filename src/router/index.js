@@ -10,6 +10,7 @@ import AccountsGet from '../views/AccountsGet.vue';
 import AccountsForm from '../views/AccountsForm.vue';
 import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
 import RequestgroupDetail from '../views/RequestgroupDetail.vue';
+import ObservationDetail from '../views/ObservationDetail.vue';
 import Compose from '../views/Compose.vue';
 import NotFound from '../components/NotFound.vue';
 import store from '../store/index.js';
@@ -63,6 +64,22 @@ const routes = [
     component: RequestgroupDetail,
     meta: {
       title: 'Request Detail'
+    }
+  },
+  {
+    path: '/observations',
+    name: 'observations',
+    component: NotFound,
+    meta: {
+      title: 'Observations'
+    }
+  },
+  {
+    path: '/observations/:id',
+    name: 'observationDetail',
+    component: ObservationDetail,
+    meta: {
+      title: 'Observation Detail'
     }
   },
   {
