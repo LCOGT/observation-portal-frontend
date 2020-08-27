@@ -81,9 +81,9 @@
         <br />
       </div>
     </section>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
+    <b-container :fluid="isFluidPage">
+      <b-row>
+        <b-col md="12">
           <b-alert
             v-for="message in messages"
             :key="message.text"
@@ -94,10 +94,10 @@
           >
             {{ message.text }}
           </b-alert>
-        </div>
-      </div>
+        </b-col>
+      </b-row>
       <router-view />
-    </div>
+    </b-container>
     <div class="footer">
       Copyright © {{ year }} Las Cumbres Observatory. All rights reserved.
       <br />
@@ -135,6 +135,9 @@ export default {
     },
     messages: function() {
       return this.$store.state.messages;
+    },
+    isFluidPage: function() {
+      return this.$route.meta.isFluidPage;
     }
   },
   methods: {

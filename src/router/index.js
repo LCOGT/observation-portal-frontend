@@ -10,6 +10,7 @@ import AccountsGet from '../views/AccountsGet.vue';
 import AccountsForm from '../views/AccountsForm.vue';
 import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
 import RequestgroupDetail from '../views/RequestgroupDetail.vue';
+import Observations from '../views/Observations.vue';
 import ObservationDetail from '../views/ObservationDetail.vue';
 import Compose from '../views/Compose.vue';
 import NotFound from '../components/NotFound.vue';
@@ -69,9 +70,10 @@ const routes = [
   {
     path: '/observations',
     name: 'observations',
-    component: NotFound,
+    component: Observations,
     meta: {
-      title: 'Observations'
+      title: 'Observations',
+      isFluidPage: true
     }
   },
   {
