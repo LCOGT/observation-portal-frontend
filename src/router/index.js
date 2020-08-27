@@ -4,7 +4,7 @@ import Home from '../views/Home.vue';
 import Tools from '../views/Tools.vue';
 import Login from '../views/Login.vue';
 import Profile from '../views/Profile.vue';
-import Register from '../views/Register.vue'
+import Register from '../views/Register.vue';
 import AcceptTerms from '../views/AcceptTerms.vue';
 import AccountsGet from '../views/AccountsGet.vue';
 import AccountsForm from '../views/AccountsForm.vue';
@@ -158,12 +158,12 @@ const routes = [
       title: 'Accounts'
     }
   },
-  { 
+  {
     path: '*',
     name: 'notFound',
     component: NotFound
   }
-]
+];
 
 const router = new VueRouter({
   mode: 'history',
@@ -174,7 +174,10 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // Set the title of each page
   const baseTitle = _.split(document.title, '|')[0];
-  const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title);
+  const nearestWithTitle = to.matched
+    .slice()
+    .reverse()
+    .find(r => r.meta && r.meta.title);
   // If a route with a title was found, set the document (page) title to that value.
   if (nearestWithTitle) {
     document.title = baseTitle + ' | ' + nearestWithTitle.meta.title;
@@ -182,7 +185,7 @@ router.beforeEach((to, from, next) => {
     document.title = baseTitle;
   }
   next();
-})
+});
 
 router.beforeEach((to, from, next) => {
   // Redirect to the Accept Terms page if the user is logged in but has not
@@ -209,13 +212,13 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // Route requires the user to be logged in, check if logged in and if not, redirect to login page.
     if (!store.state.userIsAuthenticated) {
-      next({ name: 'login', query: { next: to.name }})
+      next({ name: 'login', query: { next: to.name } });
     } else {
-      next()
+      next();
     }
   } else {
-    next()
+    next();
   }
-})
+});
 
 export default router;

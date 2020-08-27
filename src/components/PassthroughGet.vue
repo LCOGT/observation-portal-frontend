@@ -1,9 +1,8 @@
 <template>
   <div>
-    <a v-if="asLink" @click="performGet" :class="linkClasses">{{ linkText }}</a>
-    <div v-else id="passthrough-container">
+    <a v-if="asLink" :class="linkClasses" @click="performGet">{{ linkText }}</a>
+    <div v-else id="passthrough-container" />
   </div>
-</div>
 </template>
 <script>
 import $ from 'jquery';
@@ -11,7 +10,10 @@ import $ from 'jquery';
 export default {
   name: 'PassthroughGet',
   props: {
-    endpoint: String,
+    endpoint: {
+      type: String,
+      required: true
+    },
     successRedirectViewName: {
       type: String,
       default: ''
@@ -29,15 +31,15 @@ export default {
       default: ''
     }
   },
-  mounted: function() {
-    if (!this.asLink) {
-      this.performGet();
-    }
-  },
   computed: {
     url: function() {
       let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
       return this.$store.state.urls.observationPortalApi + endpoint + '?passthrough=true';
+    }
+  },
+  mounted: function() {
+    if (!this.asLink) {
+      this.performGet();
     }
   },
   methods: {
@@ -49,7 +51,7 @@ export default {
         success: function(response) {
           if (that.successRedirectViewName) {
             // Successful submission, and a redirect has been set. Navigate to the specified view name.
-            let successPathname = that.$router.resolve({ name: that.successRedirectViewName});
+            let successPathname = that.$router.resolve({ name: that.successRedirectViewName });
             window.location.pathname = successPathname.href;
           } else {
             // Successful submission, and no redirect has been set. Replace the contents with
@@ -60,11 +62,11 @@ export default {
         },
         error: function(response) {
           if (!that.asLink && response.status === 404) {
-            that.$router.replace({name: 'notFound'});
+            that.$router.replace({ name: 'notFound' });
           }
           console.log('there was an error');
         }
-      })
+      });
     }
   }
 };

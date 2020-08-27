@@ -3,32 +3,32 @@
     <b-col md="10">
       <b-row>
         <b-col md="4" class="requestgroup-block border-right">
-          <router-link v-if="link" class="requestgroup-title" :to="{ name: 'requestDetail', params: { id: request.id } }"
-            ># {{ request.id }}</router-link
-          >
+          <router-link v-if="link" class="requestgroup-title" :to="{ name: 'requestDetail', params: { id: request.id } }">
+            # {{ request.id }}
+          </router-link>
           <span v-else class="requestgroup-title"># {{ request.id }}</span>
           <p>
-            <i class="far fa-clock"></i>
+            <i class="far fa-clock" />
             <span title="Total exposure time + observing overhead">Duration: {{ request.duration }} seconds</span>
           </p>
           <p>
-            <i class="fa fa-camera"></i>
+            <i class="fa fa-camera" />
             Instrument: {{ instrumentName }}
           </p>
         </b-col>
         <b-col md="4" class="requestgroup-block border-right">
           <p>
             <span :class="request.state | stateToBsClass('text')">
-              <i :class="request.state | stateToIcon"></i>
+              <i :class="request.state | stateToIcon" />
               {{ request.state }}
             </span>
           </p>
           <p>
-            <i class="fa fa-clipboard-check"></i>
+            <i class="fa fa-clipboard-check" />
             Acceptability Threshold: {{ request.acceptability_threshold }}%
           </p>
           <p>
-            <i class="fa fa-calendar"></i>
+            <i class="fa fa-calendar" />
             {{ request.modified | formatDate }}
           </p>
         </b-col>
@@ -36,15 +36,15 @@
           <b-row class="border-right mx-auto">
             <div>
               <div class="btn-group mr-2" role="group" aria-label="button group">
-                <a :href="requestApiUrl" class="btn btn-outline-secondary btn-sm"> <i class="fa fa-fw fa-code"></i> View in API </a>
+                <a :href="requestApiUrl" class="btn btn-outline-secondary btn-sm"> <i class="fa fa-fw fa-code" /> View in API </a>
                 <button
                   v-if="request.state === 'COMPLETED'"
                   class="btn btn-outline-secondary btn-sm"
                   type="button"
-                  @click="downloadAllData"
                   :disabled="!archiveDataIsAvailable"
+                  @click="downloadAllData"
                 >
-                  <i class="fa fa-fw fa-download"></i> Download
+                  <i class="fa fa-fw fa-download" /> Download
                 </button>
               </div>
             </div>
@@ -54,10 +54,14 @@
     </b-col>
     <b-col md="2" class="text-center my-auto">
       <template v-if="request.state == 'COMPLETED'">
-        <b-img v-if="thumbnailUrl" :src="thumbnailUrl" fluid :alt="frame.filename" :title="frame.filename"></b-img>
-        <div v-else-if="thumbnailError">{{ thumbnailError }}</div>
-        <div v-else-if="archiveError">{{ archiveError }}</div>
-        <i v-else class="fa fa-spin fa-spinner"></i>
+        <b-img v-if="thumbnailUrl" :src="thumbnailUrl" fluid :alt="frame.filename" :title="frame.filename" />
+        <div v-else-if="thumbnailError">
+          {{ thumbnailError }}
+        </div>
+        <div v-else-if="archiveError">
+          {{ archiveError }}
+        </div>
+        <i v-else class="fa fa-spin fa-spinner" />
       </template>
       <template v-else-if="request.state == 'PENDING'">
         <div>
@@ -72,7 +76,7 @@
           <div v-else-if="schedulingInformation.error">
             {{ schedulingInformation.error }}
           </div>
-          <i v-else class="fa fa-spinner fa-spin"></i>
+          <i v-else class="fa fa-spinner fa-spin" />
         </div>
       </template>
     </b-col>
@@ -87,19 +91,32 @@ import { downloadAll, getLatestFrame } from '@/archive.js';
 
 export default {
   name: 'RequestRow',
+  filters: {
+    stateToBsClass: function(state, prefix) {
+      return stateToBsClass(state, prefix);
+    },
+    stateToIcon: function(state) {
+      return stateToIcon(state);
+    },
+    formatDate(value) {
+      return formatDate(value);
+    }
+  },
   props: {
     request: {
       type: Object,
+      required: true
     },
     instruments: {
       type: Object,
+      required: true
     },
     link: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
-  data: function () {
+  data: function() {
     return {
       thumbnailUrl: '',
       thumbnailError: '',
@@ -107,41 +124,30 @@ export default {
       frame: {},
       schedulingInformation: {
         found: false,
-        error: '',
-      },
+        error: ''
+      }
     };
   },
-  filters: {
-    stateToBsClass: function (state, prefix) {
-      return stateToBsClass(state, prefix);
-    },
-    stateToIcon: function (state) {
-      return stateToIcon(state);
-    },
-    formatDate(value) {
-      return formatDate(value);
-    },
-  },
   computed: {
-    observationPortalApiUrl: function () {
+    observationPortalApiUrl: function() {
       return this.$store.state.urls.observationPortalApi;
     },
-    archiveApiUrl: function () {
+    archiveApiUrl: function() {
       return this.$store.state.urls.archiveApi;
     },
-    thumbnailServiceUrl: function () {
+    thumbnailServiceUrl: function() {
       return this.$store.state.urls.thumbnailService;
     },
-    archiveClientUrl: function () {
+    archiveClientUrl: function() {
       return this.$store.state.urls.archiveClient;
     },
-    archiveToken: function () {
+    archiveToken: function() {
       return this.$store.state.archiveToken;
     },
-    requestApiUrl: function () {
+    requestApiUrl: function() {
       return this.$store.state.urls.observationPortalApi + '/api/requests/' + this.request.id + '/';
     },
-    instrumentName: function () {
+    instrumentName: function() {
       let instrumentType = _.get(this.request, ['configurations', 0, 'instrument_type']);
       if (instrumentType && instrumentType in this.instruments) {
         return this.instruments[instrumentType].name;
@@ -149,11 +155,11 @@ export default {
         return instrumentType;
       }
     },
-    archiveDataIsAvailable: function () {
+    archiveDataIsAvailable: function() {
       return this.frame.id ? true : false;
-    },
+    }
   },
-  created: function () {
+  created: function() {
     let that = this;
     this.$store.dispatch('getArchiveToken').then(() => {
       that.loadLatestThumbnail();
@@ -163,10 +169,10 @@ export default {
     }
   },
   methods: {
-    downloadAllData: function () {
+    downloadAllData: function() {
       downloadAll(this.request.id, this.archiveApiUrl, this.archiveClientUrl, this.archiveToken);
     },
-    loadLatestThumbnail: function () {
+    loadLatestThumbnail: function() {
       const thumbnailSize = 75;
       let that = this;
       getLatestFrame(this.request.id, this.archiveApiUrl, function(frame) {
@@ -176,34 +182,36 @@ export default {
           that.frame = frame;
           $.ajax({
             url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
-            dataType: 'json',
-          }).done(function(response) {
-            that.thumbnailUrl = response.url;
-          }).fail(function() {
-            that.thumbnailError = 'Could not load thumbnail for this file';
+            dataType: 'json'
           })
+            .done(function(response) {
+              that.thumbnailUrl = response.url;
+            })
+            .fail(function() {
+              that.thumbnailError = 'Could not load thumbnail for this file';
+            });
         }
-      })
+      });
     },
-    getPendingDetails: function () {
+    getPendingDetails: function() {
       let that = this;
-      $.getJSON(this.observationPortalApiUrl + '/api/requests/' + this.request.id + '/observations/?exclude_canceled=true', function (data) {
+      $.getJSON(this.observationPortalApiUrl + '/api/requests/' + this.request.id + '/observations/?exclude_canceled=true', function(data) {
         if (data.length > 0) {
           data = data.reverse(); // get the latest non canceled block
           that.schedulingInformation = {
             found: true,
             site: data[0].site,
             start: data[0].start,
-            end: data[0].end,
+            end: data[0].end
           };
         } else {
           that.schedulingInformation = {
             found: false,
-            error: 'No scheduling information found',
+            error: 'No scheduling information found'
           };
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>

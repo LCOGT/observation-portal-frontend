@@ -7,14 +7,14 @@
     </template>
     <template v-else-if="!dataLoaded">
       <div class="text-center my-2">
-        <i class="fa fa-spin fa-spinner"></i>
+        <i class="fa fa-spin fa-spinner" />
       </div>
     </template>
     <template v-else-if="dataLoaded && !requestgroup.id">
-      <not-found></not-found>
+      <not-found />
     </template>
     <template v-else>
-      <requestgroup-header :requestgroup="requestgroup"></requestgroup-header>
+      <requestgroup-header :requestgroup="requestgroup" />
       <b-row>
         <b-col>
           <b-breadcrumb class="bg-light">
@@ -31,8 +31,8 @@
         </b-col>
       </b-row>
       <template v-if="requestDetail">
-        <request-row :request="request" :instruments="instruments"></request-row>
-        <request-detail :request="request"></request-detail>
+        <request-row :request="request" :instruments="instruments" />
+        <request-detail :request="request" />
       </template>
       <template v-else>
         <b-table
@@ -56,7 +56,7 @@
           :total-rows="numberOfRequests"
           :per-page="perPage"
           aria-controls="requests-table"
-        ></b-pagination>
+        />
       </template>
     </template>
   </b-col>
@@ -77,7 +77,7 @@ export default {
     RequestRow,
     NotFound
   },
-  data: function () {
+  data: function() {
     return {
       requestgroup: {},
       instruments: {},
@@ -86,17 +86,17 @@ export default {
       requestgroupLoadError: false,
       fields: [{ key: 'requestRow', tdClass: 'p-0' }],
       currentPage: 1,
-      perPage: 10,
+      perPage: 10
     };
   },
   computed: {
-    observationPortalApiUrl: function () {
+    observationPortalApiUrl: function() {
       return this.$store.state.urls.observationPortalApi;
     },
-    dataLoaded: function () {
+    dataLoaded: function() {
       return this.requestgroupLoaded && this.archiveTokenLoaded;
     },
-    numberOfRequests: function () {
+    numberOfRequests: function() {
       if (this.requestgroup.requests) {
         return this.requestgroup.requests.length;
       } else {
@@ -122,7 +122,7 @@ export default {
       return requestDict;
     }
   },
-  created: function () {
+  created: function() {
     let that = this;
     // Get the archive token here before the rest of the components are rendered since
     // a variety of them need the token, and doing this ensures only one request to get
@@ -138,50 +138,56 @@ export default {
     this.getInstruments();
   },
   methods: {
-    getInstruments: function () {
+    getInstruments: function() {
       let that = this;
       $.ajax({
         url: this.observationPortalApiUrl + '/api/instruments/',
-        dataType: 'json',
-      }).done(function (response) {
+        dataType: 'json'
+      }).done(function(response) {
         that.instruments = response;
       });
     },
-    getRequestgroupByRequestgroupId: function () {
+    getRequestgroupByRequestgroupId: function() {
       let that = this;
       $.ajax({
         url: this.observationPortalApiUrl + '/api/requestgroups/' + this.id + '/',
         dataType: 'json'
-      }).done(function (response) {
-        that.requestgroup = response;
-        if (response.requests.length === 1) {
-          that.$router.replace({
-            name: 'requestDetail',
-            params: { id: response.requests[0].id },
-          });
-        }
-      }).fail(function (response) {
-        if (response.status !== 404) {
-          that.requestgroupLoadError = true;
-        }
-      }).always(function () {
-        that.requestgroupLoaded = true;
-      });
+      })
+        .done(function(response) {
+          that.requestgroup = response;
+          if (response.requests.length === 1) {
+            that.$router.replace({
+              name: 'requestDetail',
+              params: { id: response.requests[0].id }
+            });
+          }
+        })
+        .fail(function(response) {
+          if (response.status !== 404) {
+            that.requestgroupLoadError = true;
+          }
+        })
+        .always(function() {
+          that.requestgroupLoaded = true;
+        });
     },
-    getRequestgroupByRequestId: function () {
+    getRequestgroupByRequestId: function() {
       let that = this;
       $.ajax({
         url: this.observationPortalApiUrl + '/api/requestgroups/' + '?request_id=' + this.id,
         dataType: 'json'
-      }).done(function (response) {
-        if (response.results.length > 0) {
-          that.requestgroup = response.results[0];
-        }
-      }).fail(function () {
-        that.requestgroupLoadError = true;
-      }).always(function () {
-        that.requestgroupLoaded = true;
-      });
+      })
+        .done(function(response) {
+          if (response.results.length > 0) {
+            that.requestgroup = response.results[0];
+          }
+        })
+        .fail(function() {
+          that.requestgroupLoadError = true;
+        })
+        .always(function() {
+          that.requestgroupLoaded = true;
+        });
     }
   }
 };

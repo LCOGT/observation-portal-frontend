@@ -1,7 +1,7 @@
 <template>
   <div id="form-container">
-    <b-form></b-form>
-    <slot></slot>
+    <b-form />
+    <slot />
   </div>
 </template>
 <script>
@@ -10,7 +10,10 @@ import $ from 'jquery';
 export default {
   name: 'PassthroughForm',
   props: {
-    endpoint: String,
+    endpoint: {
+      type: String,
+      required: true
+    },
     retrievedFormElementSelector: {
       type: String,
       default: 'form'
@@ -22,7 +25,13 @@ export default {
   },
   data: function() {
     return {
-      formElementSelector: 'form',
+      formElementSelector: 'form'
+    };
+  },
+  computed: {
+    url: function() {
+      let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
+      return this.$store.state.urls.observationPortalApi + endpoint + '?passthrough=true';
     }
   },
   mounted: function() {
@@ -32,12 +41,6 @@ export default {
       that.submitForm();
     });
     this.getInitialForm();
-  },
-  computed: {
-    url: function() {
-      let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
-      return this.$store.state.urls.observationPortalApi + endpoint + '?passthrough=true';
-    }
   },
   methods: {
     replaceForm(form) {
@@ -55,7 +58,7 @@ export default {
           let form = that.readFormFromResponse(response);
           that.replaceForm(form);
         }
-      })
+      });
     },
     submitForm: function() {
       let that = this;
@@ -71,7 +74,7 @@ export default {
             that.replaceForm(updatedForm);
           } else if (that.successRedirectViewName) {
             // Successful submission, and a redirect has been set. Navigate to the specified view name.
-            let successPathname = that.$router.resolve({ name: that.successRedirectViewName});
+            let successPathname = that.$router.resolve({ name: that.successRedirectViewName });
             window.location = successPathname.href;
           } else {
             // Successful submission, and no redirect has been set. Replace the contents with the main content
@@ -82,9 +85,9 @@ export default {
         },
         error: function(response) {
           // TODO: Display an error message asking the user to try again
-          console.log('there was a problem!', response)
+          console.log('there was a problem!', response);
         }
-      })
+      });
     }
   }
 };

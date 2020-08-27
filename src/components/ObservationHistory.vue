@@ -1,40 +1,40 @@
 <template>
   <div>
-    <div class="observationHistoryPlot" id="plot">
-      <plot-controls v-show="showZoomControls" v-on:plotZoom="plotZoom"></plot-controls>
+    <div id="plot" class="observationHistoryPlot">
+      <plot-controls v-show="showZoomControls" @plotZoom="plotZoom" />
     </div>
     <div class="observationHistoryPlotLegend text-center">
       <ul class="list-inline mt-1">
         <li class="list-inline-item">
-          <span class="legend-item CANCELED align-middle mb-1 mr-1"></span>
+          <span class="legend-item CANCELED align-middle mb-1 mr-1" />
           Superseded by new schedule
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item SCHEDULED align-middle mb-1 mr-1"></span>
+          <span class="legend-item SCHEDULED align-middle mb-1 mr-1" />
           Scheduled
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item NOT_ATTEMPTED align-middle mb-1 mr-1"></span>
+          <span class="legend-item NOT_ATTEMPTED align-middle mb-1 mr-1" />
           Not Attempted
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item IN_PROGRESS align-middle mb-1 mr-1"></span>
+          <span class="legend-item IN_PROGRESS align-middle mb-1 mr-1" />
           In Progress
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item FAILED align-middle mb-1 mr-1"></span>
+          <span class="legend-item FAILED align-middle mb-1 mr-1" />
           Failed
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item ABORTED align-middle mb-1 mr-1"></span>
+          <span class="legend-item ABORTED align-middle mb-1 mr-1" />
           Aborted
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item PARTIALLY-COMPLETED align-middle mb-1 mr-1"></span>
+          <span class="legend-item PARTIALLY-COMPLETED align-middle mb-1 mr-1" />
           Partially Completed
         </li>
         <li class="list-inline-item ml-3">
-          <span class="legend-item COMPLETED align-middle mb-1 mr-1"></span>
+          <span class="legend-item COMPLETED align-middle mb-1 mr-1" />
           Completed
         </li>
       </ul>
@@ -51,19 +51,20 @@ import PlotControls from '@/components/util/PlotControls.vue';
 import { plotZoomMixin } from '@/components/util/plotMixins.js';
 
 export default {
+  components: {
+    PlotControls
+  },
+  mixins: [plotZoomMixin],
   props: {
     data: {
       type: Array,
+      required: true
     },
     showZoomControls: {
-      type: Boolean,
-    },
+      type: Boolean
+    }
   },
-  mixins: [plotZoomMixin],
-  components: {
-    PlotControls,
-  },
-  data: function () {
+  data: function() {
     let options = {
       groupOrder: 'content',
       maxHeight: '450px',
@@ -73,19 +74,19 @@ export default {
       selectable: false,
       snap: null,
       zoomKey: 'ctrlKey',
-      moment: function (date) {
+      moment: function(date) {
         return vis.moment(date).utc();
       },
       tooltip: {
-        overflowMethod: 'cap',
-      },
+        overflowMethod: 'cap'
+      }
     };
     return {
-      options: options,
+      options: options
     };
   },
   computed: {
-    toVis: function () {
+    toVis: function() {
       let visGroups = new vis.DataSet();
       let visData = new vis.DataSet();
       let timeline_min = 0;
@@ -151,7 +152,7 @@ export default {
               end: previousObservation.end,
               toggle: 'tooltip',
               html: true,
-              type: 'range',
+              type: 'range'
             });
             index++;
             previousObservationIndex = i + 1;
@@ -181,7 +182,7 @@ export default {
           end: previousObservation.end,
           toggle: 'tooltip',
           html: true,
-          type: 'range',
+          type: 'range'
         });
         index++;
         timeline_min = new Date(visData.get(index - 1)['start']);
@@ -202,10 +203,10 @@ export default {
         }
       }
       return { datasets: visData, groups: visGroups, window: { start: timeline_min, end: timeline_max } };
-    },
+    }
   },
   watch: {
-    data: function () {
+    data: function() {
       let datasets = this.toVis;
       //Need to first zero out the items and groups or vis.js throws an error
       this.plot.setItems(new vis.DataSet());
@@ -213,12 +214,12 @@ export default {
       this.plot.setGroups(datasets.groups);
       this.plot.setItems(datasets.datasets);
       this.plot.setWindow(datasets.window.start, datasets.window.end);
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.plot = this.buildPlot();
     let that = this;
-    this.plot.on('click', function (event) {
+    this.plot.on('click', function(event) {
       if (event.item !== null) {
         // An observation on the timeline was cliked, get that observation info
         let item = that.toVis.datasets.get(event.item);
@@ -229,11 +230,11 @@ export default {
     });
   },
   methods: {
-    buildPlot: function () {
+    buildPlot: function() {
       // Set a unique name for the plot element, since vis.js needs this to separate plots
       this.$el.setAttribute('class', _.uniqueId(this.$el.className));
       return new vis.Timeline(document.getElementById('plot'), new vis.DataSet([]), this.options);
-    },
-  },
+    }
+  }
 };
 </script>

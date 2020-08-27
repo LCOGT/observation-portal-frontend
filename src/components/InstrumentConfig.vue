@@ -1,27 +1,23 @@
 <template>
-  <panel :show="show"
+  <panel
+    :id="'instrumentconfig' + $parent.$parent.$parent.index + $parent.index + index"
+    :show="show"
     title="Instrument Configuration"
     icon="fas fa-camera-retro"
-    :id="'instrumentconfig' + $parent.$parent.$parent.index + $parent.index + index"
-    :index="index" 
+    :index="index"
     :errors="errors"
-    :canremove="this.index > 0" 
+    :canremove="index > 0"
     :cancopy="true"
     @remove="$emit('remove')"
     @copy="$emit('copy')"
     @show="show = $event"
   >
-    <custom-alert 
-      v-for="error in topLevelErrors"
-      :key="error" 
-      alertclass="danger" 
-      :dismissible="false"
-    >
+    <custom-alert v-for="error in topLevelErrors" :key="error" alertclass="danger" :dismissible="false">
       {{ error }}
     </custom-alert>
     <b-container class="p-0">
       <b-row>
-        <b-col md="6" v-show="show">
+        <b-col v-show="show" md="6">
           <ul>
             <li>
               Try the
@@ -33,37 +29,30 @@
         </b-col>
         <b-col :md="show ? 6 : 12">
           <b-form>
-            <custom-field 
-              v-model="instrumentconfig.exposure_count" 
-              label="Exposure Count" 
-              field="exposure_count" 
+            <custom-field
+              v-model="instrumentconfig.exposure_count"
+              label="Exposure Count"
+              field="exposure_count"
               type="number"
-              :errors="errors.exposure_count" 
+              :errors="errors.exposure_count"
               @input="update"
             />
             <custom-field
               v-if="selectedinstrument != '2M0-SCICAM-MUSCAT'"
-              v-model="instrumentconfig.exposure_time" 
-              label="Exposure Time" 
-              field="exposure_time" 
-              :errors="errors.exposure_time" 
+              v-model="instrumentconfig.exposure_time"
+              label="Exposure Time"
+              field="exposure_time"
+              :errors="errors.exposure_time"
               desc="Seconds"
               @input="update"
             >
-            <div 
-              slot="extra-help-text"
-              v-if="suggestedLampFlatSlitExposureTime" 
-            >
-              Suggested exposure time for a Lamp Flat with 
-              slit {{ instrumentconfig.optical_elements.slit }} and readout mode {{ instrumentconfig.mode }}
-              is <strong>{{ suggestedLampFlatSlitExposureTime }} seconds</strong>
-            </div>     
-            <div 
-              slot="extra-help-text"
-              v-else-if="suggestedArcExposureTime" 
-            >
-              Suggested exposure time for an Arc is <strong>{{ suggestedArcExposureTime }} seconds</strong>
-            </div>        
+              <div v-if="suggestedLampFlatSlitExposureTime" slot="extra-help-text">
+                Suggested exposure time for a Lamp Flat with slit {{ instrumentconfig.optical_elements.slit }} and readout mode
+                {{ instrumentconfig.mode }} is <strong>{{ suggestedLampFlatSlitExposureTime }} seconds</strong>
+              </div>
+              <div v-else-if="suggestedArcExposureTime" slot="extra-help-text">
+                Suggested exposure time for an Arc is <strong>{{ suggestedArcExposureTime }} seconds</strong>
+              </div>
             </custom-field>
 
             <!-- MUSCAT instrument specific fields -->
@@ -124,28 +113,25 @@
               :errors="errors.mode"
               @input="update"
             />
-            <div 
-              v-for="opticalElementGroup in availableOpticalElementGroups"
-              :key="opticalElementGroup.type"
-            >
+            <div v-for="opticalElementGroup in availableOpticalElementGroups" :key="opticalElementGroup.type">
               <custom-select
                 v-model="instrumentconfig.optical_elements[opticalElementGroup.type]"
                 :label="opticalElementGroup.label"
                 :field="opticalElementGroup.type"
                 :options="opticalElementGroup.options"
-                :lowerOptions="true"
+                :lower-options="true"
                 :errors="{}"
                 @input="updateOpticalElement"
               />
             </div>
-            <div v-if="rotatorModeOptions.length > 0">                  
-              <custom-select 
-                v-model="instrumentconfig.rotator_mode" 
-                label="Rotator Mode" 
+            <div v-if="rotatorModeOptions.length > 0">
+              <custom-select
+                v-model="instrumentconfig.rotator_mode"
+                label="Rotator Mode"
                 desc="The slit position. At the parallactic slit angle, atmospheric dispersion is along the slit."
                 :errors="errors.rotator_mode"
                 :options="rotatorModeOptions"
-                @input="update" 
+                @input="update"
               />
 
               <!-- TODO: Validate required field values -->
@@ -156,36 +142,36 @@
                 :label="field | formatField"
                 :errors="null"
                 :desc="field | getFieldDescription"
-                @input="updateInstrumentConfigExtraParam($event, field)" 
+                @input="updateInstrumentConfigExtraParam($event, field)"
               />
             </div>
 
             <!-- TODO: Validate to make sure this is a floating point number -->
 
-            <custom-field 
-              v-if="datatype == 'IMAGE' && !simple_interface" 
-              v-model="defocus" 
-              label="Defocus" 
-              field="defocus" 
-              :errors="null" 
-              desc="Observations may be defocused to prevent the CCD from saturating on bright targets. This 
-                    term describes the offset (in mm) of the secondary mirror from its default (focused) 
+            <custom-field
+              v-if="datatype == 'IMAGE' && !simpleInterface"
+              v-model="defocus"
+              label="Defocus"
+              field="defocus"
+              :errors="null"
+              desc="Observations may be defocused to prevent the CCD from saturating on bright targets. This
+                    term describes the offset (in mm) of the secondary mirror from its default (focused)
                     position. The limits are ± 3mm."
               @input="update"
             />
           </b-form>
         </b-col>
-      </b-row>    
+      </b-row>
     </b-container>
   </panel>
 </template>
 <script>
 import _ from 'lodash';
 
-import { 
-  collapseMixin, 
-  lampFlatDefaultExposureTime, 
-  arcDefaultExposureTime, 
+import {
+  collapseMixin,
+  lampFlatDefaultExposureTime,
+  arcDefaultExposureTime,
   extractTopLevelErrors,
   getFieldDescription,
   formatField
@@ -196,41 +182,11 @@ import Panel from '@/components/util/Panel.vue';
 import CustomAlert from '@/components/util/CustomAlert.vue';
 
 export default {
-  props: [
-    'errors',
-    'index',
-    'simple_interface',
-    'available_instruments',
-    'selectedinstrument',
-    'datatype',
-    'configurationType',
-    'instrumentconfig',
-    'show',
-    'duration_data'
-  ],
   components: {
     CustomField,
     CustomSelect,
     Panel,
     CustomAlert
-  },
-  mixins: [
-    collapseMixin
-  ],
-  data: function() {
-    return {
-      defocus: 0,
-      exposure_time_g: 0,
-      exposure_time_r: 0,
-      exposure_time_i: 0,
-      exposure_time_z: 0,
-      exposure_mode: "SYNCHRONOUS",
-      opticalElementUpdates: 0,
-      exposureModeOptions: [
-          {value: "SYNCHRONOUS", text: "Synchronous"},
-          {value: "ASYNCHRONOUS", text: "Asynchronous"}
-      ]
-    }
   },
   filters: {
     formatField: function(value) {
@@ -240,46 +196,76 @@ export default {
       return getFieldDescription(value);
     }
   },
-  mounted: function() {
-    // If a draft is loaded in that has any extra_params set, update the corresponding params
-    // here since extra_params is not reactive and cannot be watched 
-    if (this.instrumentconfig.extra_params.defocus) {
-      this.defocus = this.instrumentconfig.extra_params.defocus;
+  mixins: [collapseMixin],
+  props: {
+    errors: {
+      type: Object,
+      required: true
+    },
+    index: {
+      type: Number,
+      required: true
+    },
+    simpleInterface: {
+      type: Boolean
+    },
+    availableInstruments: {
+      type: Object,
+      required: true
+    },
+    selectedinstrument: {
+      type: String,
+      required: true
+    },
+    datatype: {
+      type: String,
+      required: true
+    },
+    configurationType: {
+      type: String,
+      required: true
+    },
+    instrumentconfig: {
+      type: Object,
+      required: true
+    },
+    show: {
+      type: Boolean
     }
-    if (this.instrumentconfig.extra_params.exposure_time_g) {
-      this.exposure_time_g = this.instrumentconfig.extra_params.exposure_time_g;
-    }
-    if (this.instrumentconfig.extra_params.exposure_time_r) {
-      this.exposure_time_r = this.instrumentconfig.extra_params.exposure_time_r;
-    }
-    if (this.instrumentconfig.extra_params.exposure_time_i) {
-      this.exposure_time_i = this.instrumentconfig.extra_params.exposure_time_i;
-    }
-    if (this.instrumentconfig.extra_params.exposure_time_z) {
-      this.exposure_time_z = this.instrumentconfig.extra_params.exposure_time_z;
-    }
-    if (this.instrumentconfig.extra_params.exposure_mode) {
-      this.exposure_mode = this.instrumentconfig.extra_params.exposure_mode;
-    }
+  },
+  data: function() {
+    return {
+      defocus: 0,
+      exposure_time_g: 0,
+      exposure_time_r: 0,
+      exposure_time_i: 0,
+      exposure_time_z: 0,
+      exposure_mode: 'SYNCHRONOUS',
+      opticalElementUpdates: 0,
+      exposureModeOptions: [
+        { value: 'SYNCHRONOUS', text: 'Synchronous' },
+        { value: 'ASYNCHRONOUS', text: 'Asynchronous' }
+      ]
+    };
   },
   computed: {
     topLevelErrors: function() {
       return extractTopLevelErrors(this.errors);
     },
     instrumentHasRotatorModes: function() {
-      return this.available_instruments[this.selectedinstrument] && 'rotator' in this.available_instruments[this.selectedinstrument].modes;
+      return this.availableInstruments[this.selectedinstrument] && 'rotator' in this.availableInstruments[this.selectedinstrument].modes;
     },
     instrumentHasReadoutModes: function() {
-      return this.available_instruments[this.selectedinstrument] && 'readout' in this.available_instruments[this.selectedinstrument].modes;
+      return this.availableInstruments[this.selectedinstrument] && 'readout' in this.availableInstruments[this.selectedinstrument].modes;
     },
     readoutModeOptions: function() {
-      if (this.selectedinstrument in this.available_instruments && this.instrumentHasReadoutModes) {
+      if (this.selectedinstrument in this.availableInstruments && this.instrumentHasReadoutModes) {
         let readoutModes = [];
-        for (let rm in this.available_instruments[this.selectedinstrument].modes.readout.modes) {
+        for (let rm in this.availableInstruments[this.selectedinstrument].modes.readout.modes) {
           readoutModes.push({
-              text: this.available_instruments[this.selectedinstrument].modes.readout.modes[rm].name,
-              value: this.available_instruments[this.selectedinstrument].modes.readout.modes[rm].code,
-              binning: this.available_instruments[this.selectedinstrument].modes.readout.modes[rm].validation_schema.bin_x.default
+            text: this.availableInstruments[this.selectedinstrument].modes.readout.modes[rm].name,
+            value: this.availableInstruments[this.selectedinstrument].modes.readout.modes[rm].code,
+            binning: this.availableInstruments[this.selectedinstrument].modes.readout.modes[rm].validation_schema.bin_x.default
           });
         }
         return readoutModes;
@@ -288,40 +274,42 @@ export default {
       }
     },
     availableOpticalElementGroups: function() {
-      if (this.simple_interface) {
+      if (this.simpleInterface) {
         return {
           filters: {
             type: 'filter',
             label: 'Filter',
             options: [
-              {value: 'b', text: 'Blue'},
-              {value: 'v', text: 'Green'},
-              {value: 'rp', text: 'Red'}
+              { value: 'b', text: 'Blue' },
+              { value: 'v', text: 'Green' },
+              { value: 'rp', text: 'Red' }
             ]
           }
-        }
-      } else if (this.selectedinstrument in this.available_instruments) {
+        };
+      } else if (this.selectedinstrument in this.availableInstruments) {
         let oe_groups = {};
-        for (let oe_group_type in this.available_instruments[this.selectedinstrument].optical_elements) {
-          // Each optical element group type has an 's' on the end, but the optical element that is 
+        for (let oe_group_type in this.availableInstruments[this.selectedinstrument].optical_elements) {
+          // Each optical element group type has an 's' on the end, but the optical element that is
           // submitted in the optical_elements should have a key that is the same as a group, without the 's'
           let oe_type = oe_group_type.substring(0, oe_group_type.length - 1);
           oe_groups[oe_type] = {};
           oe_groups[oe_type]['type'] = oe_type;
-          oe_groups[oe_type]['label'] = _.capitalize(oe_type).split("_").join(" ");
+          oe_groups[oe_type]['label'] = _.capitalize(oe_type)
+            .split('_')
+            .join(' ');
           let elements = [];
-          for (let element in this.available_instruments[this.selectedinstrument].optical_elements[oe_group_type]) {
-            if (this.available_instruments[this.selectedinstrument].optical_elements[oe_group_type][element].schedulable) {
+          for (let element in this.availableInstruments[this.selectedinstrument].optical_elements[oe_group_type]) {
+            if (this.availableInstruments[this.selectedinstrument].optical_elements[oe_group_type][element].schedulable) {
               elements.push({
-                value: this.available_instruments[this.selectedinstrument].optical_elements[oe_group_type][element].code,
-                text: this.available_instruments[this.selectedinstrument].optical_elements[oe_group_type][element].name,
-                default: this.available_instruments[this.selectedinstrument].optical_elements[oe_group_type][element].default
+                value: this.availableInstruments[this.selectedinstrument].optical_elements[oe_group_type][element].code,
+                text: this.availableInstruments[this.selectedinstrument].optical_elements[oe_group_type][element].name,
+                default: this.availableInstruments[this.selectedinstrument].optical_elements[oe_group_type][element].default
               });
             }
           }
           oe_groups[oe_type]['options'] = _.sortBy(elements, 'text');
         }
-        return oe_groups; 
+        return oe_groups;
       } else {
         return [];
       }
@@ -330,16 +318,16 @@ export default {
       let options = [];
       let requiredModeFields = [];
       if (this.instrumentHasRotatorModes) {
-        let modes = this.available_instruments[this.selectedinstrument].modes.rotator.modes;
+        let modes = this.availableInstruments[this.selectedinstrument].modes.rotator.modes;
         for (let i in modes) {
-          requiredModeFields = [];          
+          requiredModeFields = [];
           if ('extra_params' in modes[i].validation_schema) {
             for (let j in modes[i].validation_schema.extra_params.schema) {
-              requiredModeFields.push(j)
+              requiredModeFields.push(j);
             }
-          }         
+          }
           options.push({
-            value: modes[i].code, 
+            value: modes[i].code,
             text: modes[i].name,
             requiredFields: requiredModeFields
           });
@@ -372,6 +360,121 @@ export default {
       } else {
         return undefined;
       }
+    }
+  },
+  watch: {
+    'instrumentconfig.mode': function() {
+      this.updateBinning();
+    },
+    rotatorModeOptions: function() {
+      if (this.instrumentHasRotatorModes) {
+        this.instrumentconfig.rotator_mode = this.availableInstruments[this.selectedinstrument].modes.rotator.default;
+      } else {
+        this.instrumentconfig.rotator_mode = '';
+      }
+      this.update();
+    },
+    requiredRotatorModeFields: function(newValue, oldValue) {
+      // TODO: Implement rotator mode and required rotator mode fields history
+      const defaultRequiredFieldValue = 0;
+      for (let idx in oldValue) {
+        this.instrumentconfig.extra_params[oldValue[idx]] = undefined;
+      }
+      for (let idx in newValue) {
+        this.instrumentconfig.extra_params[newValue[idx]] = defaultRequiredFieldValue;
+      }
+      this.update();
+    },
+    readoutModeOptions: function() {
+      // TODO: Implement history
+      this.instrumentconfig.mode = this.availableInstruments[this.selectedinstrument].modes.readout.default;
+      this.updateBinning();
+      this.update();
+    },
+    availableOpticalElementGroups: function(value) {
+      // TODO: Implement optical element history
+      this.instrumentconfig.optical_elements = {};
+      if (this.simpleInterface) {
+        this.instrumentconfig.optical_elements.filter = 'b';
+      } else {
+        for (let oe_type in value) {
+          for (let oe_value_idx in value[oe_type]['options']) {
+            if (value[oe_type]['options'][oe_value_idx].default) {
+              this.instrumentconfig.optical_elements[oe_type] = value[oe_type]['options'][oe_value_idx].value;
+            }
+          }
+        }
+      }
+      this.updateOpticalElement();
+    },
+    defocus: function(value) {
+      this.instrumentconfig.extra_params.defocus = value || undefined;
+      this.update();
+    },
+    exposure_time_g: function(value) {
+      this.instrumentconfig.extra_params.exposure_time_g = value || undefined;
+      this.updateExposureTime();
+    },
+    exposure_time_r: function(value) {
+      this.instrumentconfig.extra_params.exposure_time_r = value || undefined;
+      this.updateExposureTime();
+    },
+    exposure_time_i: function(value) {
+      this.instrumentconfig.extra_params.exposure_time_i = value || undefined;
+      this.updateExposureTime();
+    },
+    exposure_time_z: function(value) {
+      this.instrumentconfig.extra_params.exposure_time_z = value || undefined;
+      this.updateExposureTime();
+    },
+    exposure_mode: function(value) {
+      this.instrumentconfig.extra_params.exposure_mode = value || undefined;
+      this.update();
+    },
+    selectedinstrument: function(value) {
+      if (value === '2M0-SCICAM-MUSCAT') {
+        this.instrumentconfig.extra_params.exposure_time_g = this.exposure_time_g = this.instrumentconfig.exposure_time;
+        this.instrumentconfig.extra_params.exposure_time_r = this.exposure_time_r = this.instrumentconfig.exposure_time;
+        this.instrumentconfig.extra_params.exposure_time_i = this.exposure_time_i = this.instrumentconfig.exposure_time;
+        this.instrumentconfig.extra_params.exposure_time_z = this.exposure_time_z = this.instrumentconfig.exposure_time;
+        this.instrumentconfig.extra_params.exposure_mode = this.exposure_mode = 'SYNCHRONOUS';
+      } else {
+        this.instrumentconfig.extra_params.exposure_time_g = undefined;
+        this.instrumentconfig.extra_params.exposure_time_r = undefined;
+        this.instrumentconfig.extra_params.exposure_time_i = undefined;
+        this.instrumentconfig.extra_params.exposure_time_z = undefined;
+        this.instrumentconfig.extra_params.exposure_mode = undefined;
+      }
+    },
+    datatype: function(value) {
+      if (value === 'IMAGE') {
+        this.instrumentconfig.extra_params.defocus = this.defocus;
+      } else {
+        this.instrumentconfig.extra_params.defocus = undefined;
+      }
+      this.update();
+    }
+  },
+  mounted: function() {
+    // If a draft is loaded in that has any extra_params set, update the corresponding params
+    // here since extra_params is not reactive and cannot be watched
+    if (this.instrumentconfig.extra_params.defocus) {
+      this.defocus = this.instrumentconfig.extra_params.defocus;
+    }
+    if (this.instrumentconfig.extra_params.exposure_time_g) {
+      this.exposure_time_g = this.instrumentconfig.extra_params.exposure_time_g;
+    }
+    if (this.instrumentconfig.extra_params.exposure_time_r) {
+      this.exposure_time_r = this.instrumentconfig.extra_params.exposure_time_r;
+    }
+    if (this.instrumentconfig.extra_params.exposure_time_i) {
+      this.exposure_time_i = this.instrumentconfig.extra_params.exposure_time_i;
+    }
+    if (this.instrumentconfig.extra_params.exposure_time_z) {
+      this.exposure_time_z = this.instrumentconfig.extra_params.exposure_time_z;
+    }
+    if (this.instrumentconfig.extra_params.exposure_mode) {
+      this.exposure_mode = this.instrumentconfig.extra_params.exposure_mode;
     }
   },
   methods: {
@@ -412,102 +515,6 @@ export default {
         }
       }
     }
-  },
-  watch: {
-    'instrumentconfig.mode': function() {
-      this.updateBinning();
-    },
-    rotatorModeOptions: function() {
-      if (this.instrumentHasRotatorModes) {
-        this.instrumentconfig.rotator_mode = this.available_instruments[this.selectedinstrument].modes.rotator.default;
-      } else {
-        this.instrumentconfig.rotator_mode = '';
-      }
-      this.update();
-    },
-    requiredRotatorModeFields: function(newValue, oldValue) {
-      // TODO: Implement rotator mode and required rotator mode fields history
-      const defaultRequiredFieldValue = 0;
-      for (let idx in oldValue) {
-        this.instrumentconfig.extra_params[oldValue[idx]] = undefined;
-      }
-      for (let idx in newValue) {
-        this.instrumentconfig.extra_params[newValue[idx]] = defaultRequiredFieldValue;
-      }
-      this.update();
-    },
-    readoutModeOptions: function() {
-      // TODO: Implement history
-      this.instrumentconfig.mode = this.available_instruments[this.selectedinstrument].modes.readout.default;
-      this.updateBinning();
-      this.update();
-    },
-    availableOpticalElementGroups: function(value) {
-      // TODO: Implement optical element history
-      this.instrumentconfig.optical_elements = {};
-      if (this.simple_interface) {
-        this.instrumentconfig.optical_elements.filter = 'b';
-      } else {
-        for (let oe_type in value) {
-          for (let oe_value_idx in value[oe_type]['options'])
-          {
-            if (value[oe_type]['options'][oe_value_idx].default)
-            {
-              this.instrumentconfig.optical_elements[oe_type] = value[oe_type]['options'][oe_value_idx].value;
-            }
-          }
-        }
-      }
-      this.updateOpticalElement();
-    },
-    defocus: function(value) {
-      this.instrumentconfig.extra_params.defocus = value || undefined;
-      this.update();
-    },
-    exposure_time_g: function(value) {
-      this.instrumentconfig.extra_params.exposure_time_g = value || undefined;
-      this.updateExposureTime();
-    },
-    exposure_time_r: function(value) {
-      this.instrumentconfig.extra_params.exposure_time_r = value || undefined;
-      this.updateExposureTime();
-    },
-    exposure_time_i: function(value) {
-      this.instrumentconfig.extra_params.exposure_time_i = value || undefined;
-      this.updateExposureTime();
-    },
-    exposure_time_z: function(value) {
-      this.instrumentconfig.extra_params.exposure_time_z = value || undefined;
-      this.updateExposureTime();
-    },
-    exposure_mode: function(value) {
-      this.instrumentconfig.extra_params.exposure_mode = value || undefined;
-      this.update();
-    },
-    selectedinstrument: function(value) {
-      if (value === '2M0-SCICAM-MUSCAT') {
-        this.instrumentconfig.extra_params.exposure_time_g = this.exposure_time_g = this.instrumentconfig.exposure_time;
-        this.instrumentconfig.extra_params.exposure_time_r = this.exposure_time_r = this.instrumentconfig.exposure_time;
-        this.instrumentconfig.extra_params.exposure_time_i = this.exposure_time_i = this.instrumentconfig.exposure_time;
-        this.instrumentconfig.extra_params.exposure_time_z = this.exposure_time_z = this.instrumentconfig.exposure_time;
-        this.instrumentconfig.extra_params.exposure_mode = this.exposure_mode = "SYNCHRONOUS";
-      }
-      else {
-        this.instrumentconfig.extra_params.exposure_time_g = undefined;
-        this.instrumentconfig.extra_params.exposure_time_r = undefined;
-        this.instrumentconfig.extra_params.exposure_time_i = undefined;
-        this.instrumentconfig.extra_params.exposure_time_z = undefined;
-        this.instrumentconfig.extra_params.exposure_mode = undefined;
-      }
-    },
-    datatype: function(value) {
-      if (value === 'IMAGE') {
-        this.instrumentconfig.extra_params.defocus = this.defocus;
-      } else {
-        this.instrumentconfig.extra_params.defocus = undefined;
-      }
-      this.update();
-    }
   }
-}
+};
 </script>

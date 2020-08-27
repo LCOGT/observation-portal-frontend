@@ -1,6 +1,7 @@
 <template>
-  <panel :show="show"
+  <panel
     :id="'target' + $parent.$parent.$parent.index + $parent.index"
+    :show="show"
     :errors="errors"
     :canremove="false"
     :cancopy="false"
@@ -8,51 +9,34 @@
     title="Target"
     @show="show = $event"
   >
-    <custom-alert
-      v-for="error in errors.non_field_errors"
-      :key="error"
-      alertclass="danger"
-      :dismissible="false"
-    >
+    <custom-alert v-for="error in errors.non_field_errors" :key="error" alertclass="danger" :dismissible="false">
       {{ error }}
     </custom-alert>
     <b-container class="p-0">
       <b-row>
-        <b-col md="6" v-show="show">
-          <archive
-            v-if="target.ra && target.dec"
-            :ra="target.ra"
-            :dec="target.dec"
-          />
+        <b-col v-show="show" md="6">
+          <archive v-if="target.ra && target.dec" :ra="target.ra" :dec="target.dec" />
         </b-col>
         <b-col :md="show ? 6 : 12">
           <b-form>
-            <custom-field
-              v-model="target.name"
-              label="Name"
-              field="name"
-              :errors="errors.name"
-              @input="update"
-            >
-              <div
-                v-show="lookingUP || lookupFail"
-                slot="extra-help-text"
-              >
-                <i v-show="lookingUP" class="fa fa-spinner fa-spin fa-fw"></i> {{ lookupText }}
+            <custom-field v-model="target.name" label="Name" field="name" :errors="errors.name" @input="update">
+              <div v-show="lookingUP || lookupFail" slot="extra-help-text">
+                <i v-show="lookingUP" class="fa fa-spinner fa-spin fa-fw" /> {{ lookupText }}
               </div>
             </custom-field>
-            <custom-select v-if="!simple_interface"
+            <custom-select
+              v-if="!simpleInterface"
               v-model="target.type"
               label="Type"
               field="type"
               :errors="errors.type"
               :options="[
-                {value: 'ICRS',text: 'Sidereal'},
-                {value: 'ORBITAL_ELEMENTS',text:'Non-Sidereal'}
+                { value: 'ICRS', text: 'Sidereal' },
+                { value: 'ORBITAL_ELEMENTS', text: 'Non-Sidereal' }
               ]"
               @input="update"
             />
-            <span class="sidereal" v-show="target.type === 'ICRS'">
+            <span v-show="target.type === 'ICRS'" class="sidereal">
               <custom-field
                 v-model="ra_display"
                 label="Right Ascension"
@@ -61,10 +45,7 @@
                 :errors="errors.ra"
                 @blur="updateRA"
               >
-                <div
-                  slot="extra-help-text"
-                  v-if="target.ra"
-                >
+                <div v-if="target.ra" slot="extra-help-text">
                   {{ ra_help_text }}
                 </div>
               </custom-field>
@@ -76,14 +57,12 @@
                 :errors="errors.dec"
                 @blur="updateDec"
               >
-                <div
-                  slot="extra-help-text"
-                  v-if="target.dec"
-                >
+                <div v-if="target.dec" slot="extra-help-text">
                   {{ dec_help_text }}
                 </div>
               </custom-field>
-              <custom-field v-if="!simple_interface"
+              <custom-field
+                v-if="!simpleInterface"
                 v-model="target.proper_motion_ra"
                 label="Proper Motion RA"
                 field="proper_motion_ra"
@@ -91,7 +70,8 @@
                 :errors="errors.proper_motion_ra"
                 @input="update"
               />
-              <custom-field v-if="!simple_interface"
+              <custom-field
+                v-if="!simpleInterface"
                 v-model="target.proper_motion_dec"
                 label="Proper Motion Dec"
                 field="proper_motion_dec"
@@ -99,7 +79,8 @@
                 :errors="errors.proper_motion_dec"
                 @input="update"
               />
-              <custom-field v-if="!simple_interface"
+              <custom-field
+                v-if="!simpleInterface"
                 v-model="target.epoch"
                 label="Epoch"
                 field="epoch"
@@ -107,7 +88,8 @@
                 :errors="errors.epoch"
                 @input="update"
               />
-              <custom-field v-if="!simple_interface"
+              <custom-field
+                v-if="!simpleInterface"
                 v-model="target.parallax"
                 label="Parallax"
                 field="parallax"
@@ -116,7 +98,7 @@
                 @input="update"
               />
             </span>
-            <span class="non-sidereal" v-show="target.type === 'ORBITAL_ELEMENTS'">
+            <span v-show="target.type === 'ORBITAL_ELEMENTS'" class="non-sidereal">
               <custom-select
                 v-model="target.scheme"
                 label="Scheme"
@@ -124,9 +106,9 @@
                 desc="The orbital elements scheme to use with this target"
                 :errors="errors.scheme"
                 :options="[
-                  {value: 'MPC_MINOR_PLANET', text: 'MPC Minor Planet'},
-                  {value: 'MPC_COMET', text: 'MPC Comet'},
-                  {value: 'JPL_MAJOR_PLANET', text: 'JPL Major Planet'}
+                  { value: 'MPC_MINOR_PLANET', text: 'MPC Minor Planet' },
+                  { value: 'MPC_COMET', text: 'MPC Comet' },
+                  { value: 'JPL_MAJOR_PLANET', text: 'JPL Major Planet' }
                 ]"
                 @input="update"
               />
@@ -224,109 +206,101 @@
   </panel>
 </template>
 <script>
-  import _ from 'lodash';
-  import $ from 'jquery';
+import _ from 'lodash';
+import $ from 'jquery';
 
-  import {
-    collapseMixin, sexagesimalRaToDecimal, sexagesimalDecToDecimal,
-    julianToModifiedJulian, decimalRaToSexigesimal, decimalDecToSexigesimal
-  } from '@/utils.js';
-  import Archive from '@/components/Archive.vue';
-  import Panel from '@/components/util/Panel.vue';
-  import CustomAlert from '@/components/util/CustomAlert.vue';
-  import CustomField from '@/components/util/CustomField.vue';
-  import CustomSelect from '@/components/util/CustomSelect.vue';
+import {
+  collapseMixin,
+  sexagesimalRaToDecimal,
+  sexagesimalDecToDecimal,
+  julianToModifiedJulian,
+  decimalRaToSexigesimal,
+  decimalDecToSexigesimal
+} from '@/utils.js';
+import Archive from '@/components/Archive.vue';
+import Panel from '@/components/util/Panel.vue';
+import CustomAlert from '@/components/util/CustomAlert.vue';
+import CustomField from '@/components/util/CustomField.vue';
+import CustomSelect from '@/components/util/CustomSelect.vue';
 
-  export default {
-    props: [
-      'target',
-      'errors',
-      'parentshow',
-      'simple_interface'
-    ],
-    components: {
-      CustomField,
-      CustomSelect,
-      Panel,
-      CustomAlert,
-      Archive
+export default {
+  components: {
+    CustomField,
+    CustomSelect,
+    Panel,
+    CustomAlert,
+    Archive
+  },
+  mixins: [collapseMixin],
+  props: {
+    target: {
+      type: Object,
+      required: true
     },
-    mixins: [
-      collapseMixin
-    ],
-    data: function() {
-      let ns_target_params = {
-        scheme: 'MPC_MINOR_PLANET',
-        orbinc: null,
-        longascnode: null,
-        argofperih: null,
-        eccentricity: null,
-        meandist: null,
-        meananom: null,
-        perihdist: null,
-        epochofperih: null
-      };
-      let sid_target_params = _.cloneDeep(this.target);
-      delete sid_target_params['name'];
-      delete sid_target_params['type'];
-      return {
-        show: true,
-        lookingUP: false,
-        lookupFail: false,
-        lookupText: '',
-        lookupReq: undefined,
-        ns_target_params: ns_target_params,
-        sid_target_params: sid_target_params,
-        ra_display: this.target.ra,
-        dec_display: this.target.dec,
-        ra_help_text: this.raHelp(this.target.ra),
-        dec_help_text: this.decHelp(this.target.dec)
-      };
+    errors: {
+      validator: function(value) {
+        return value === null || typeof value === 'object';
+      },
+      required: true
     },
-    methods: {
-      update: function() {
-        this.$emit('targetupdate', {});
-      },
-      updateRA: function() {
-        this.target.ra = sexagesimalRaToDecimal(this.ra_display);
-        this.ra_help_text = this.raHelp(this.ra_display);
-        this.update();
-      },
-      updateDec: function() {
-        this.target.dec = sexagesimalDecToDecimal(this.dec_display);
-        this.dec_help_text = this.decHelp(this.dec_display);
-        this.update();
-      },
-      raHelp: function(ra) {
-        if (isNaN(Number(ra))) {
-          return 'Decimal: ' + Number(sexagesimalRaToDecimal(ra));
-        } else {
-          return 'Sexagesimal: ' + decimalRaToSexigesimal(ra).str;
-        }
-      },
-      decHelp: function(dec){
-        if (isNaN(Number(dec))) {
-          return 'Decimal: ' + Number(sexagesimalDecToDecimal(dec));
-        } else {
-          return 'Sexagesimal: ' + decimalDecToSexigesimal(dec).str;
-        }
+    simpleInterface: {
+      type: Boolean
+    },
+    parentshow: {
+      type: Boolean
+    }
+  },
+  data: function() {
+    let ns_target_params = {
+      scheme: 'MPC_MINOR_PLANET',
+      orbinc: null,
+      longascnode: null,
+      argofperih: null,
+      eccentricity: null,
+      meandist: null,
+      meananom: null,
+      perihdist: null,
+      epochofperih: null
+    };
+    let sid_target_params = _.cloneDeep(this.target);
+    delete sid_target_params['name'];
+    delete sid_target_params['type'];
+    return {
+      show: true,
+      lookingUP: false,
+      lookupFail: false,
+      lookupText: '',
+      lookupReq: undefined,
+      ns_target_params: ns_target_params,
+      sid_target_params: sid_target_params,
+      ra_display: this.target.ra,
+      dec_display: this.target.dec,
+      ra_help_text: this.raHelp(this.target.ra),
+      dec_help_text: this.decHelp(this.target.dec)
+    };
+  },
+  watch: {
+    'target.name': _.debounce(function(name) {
+      this.lookingUP = true;
+      this.lookupFail = false;
+      this.lookupText = 'Searching for coordinates...';
+      let that = this;
+      if (this.lookupReq) {
+        this.lookupReq.abort();
       }
-    },
-    watch: {
-      'target.name': _.debounce(function(name) {
-        this.lookingUP = true;
-        this.lookupFail = false;
-        this.lookupText = 'Searching for coordinates...';
-        let that = this;
-        if (this.lookupReq) {
-          this.lookupReq.abort();
-        }
-        let target_type = 'SIDEREAL';
-        if (this.target.type === 'ORBITAL_ELEMENTS') {
-          target_type = 'NON_SIDEREAL';
-        }
-        this.lookupReq = $.getJSON('https://simbad2k.lco.global/' + encodeURIComponent(name) + '?target_type='
-          + encodeURIComponent(target_type) + '&scheme=' + encodeURIComponent(this.target.scheme)).done(function(data) {
+      let target_type = 'SIDEREAL';
+      if (this.target.type === 'ORBITAL_ELEMENTS') {
+        target_type = 'NON_SIDEREAL';
+      }
+      this.lookupReq = $.getJSON(
+        'https://simbad2k.lco.global/' +
+          encodeURIComponent(name) +
+          '?target_type=' +
+          encodeURIComponent(target_type) +
+          '&scheme=' +
+          encodeURIComponent(this.target.scheme)
+      )
+        .done(function(data) {
           if (_.get(data, ['error'], null) === null) {
             that.target.ra = _.get(data, ['ra_d'], null);
             that.target.dec = _.get(data, ['dec_d'], null);
@@ -351,38 +325,69 @@
             that.lookupText = 'Could not find any matching objects';
             that.lookupFail = true;
           }
-        }).fail(function(_response, status) {
-          if (status !== "abort") {
+        })
+        .fail(function(_response, status) {
+          if (status !== 'abort') {
             that.lookupText = 'Could not find any matching objects';
             that.lookupFail = true;
           }
-        }).always(function(_response, status) {
-          if (status !== "abort") {
+        })
+        .always(function(_response, status) {
+          if (status !== 'abort') {
             that.lookingUP = false;
           }
           that.update();
         });
-      }, 500),
-      'target.type': function(value) {
-        let that = this;
-        if (value === 'ICRS') {
-          for (let x in that.ns_target_params) {
-            that.ns_target_params[x] = that.target[x];
-            that.target[x] = undefined;
-          }
-          for (let y in that.sid_target_params) {
-            that.target[y] = that.sid_target_params[y];
-          }
-        } else if (value === 'ORBITAL_ELEMENTS') {
-          for (let z in this.sid_target_params) {
-            that.sid_target_params[z] = that.target[z];
-            that.target[z] = undefined;
-          }
-          for (let a in that.ns_target_params) {
-            that.target[a] = that.ns_target_params[a];
-          }
+    }, 500),
+    'target.type': function(value) {
+      let that = this;
+      if (value === 'ICRS') {
+        for (let x in that.ns_target_params) {
+          that.ns_target_params[x] = that.target[x];
+          that.target[x] = undefined;
+        }
+        for (let y in that.sid_target_params) {
+          that.target[y] = that.sid_target_params[y];
+        }
+      } else if (value === 'ORBITAL_ELEMENTS') {
+        for (let z in this.sid_target_params) {
+          that.sid_target_params[z] = that.target[z];
+          that.target[z] = undefined;
+        }
+        for (let a in that.ns_target_params) {
+          that.target[a] = that.ns_target_params[a];
         }
       }
     }
-  };
+  },
+  methods: {
+    update: function() {
+      this.$emit('targetupdate', {});
+    },
+    updateRA: function() {
+      this.target.ra = sexagesimalRaToDecimal(this.ra_display);
+      this.ra_help_text = this.raHelp(this.ra_display);
+      this.update();
+    },
+    updateDec: function() {
+      this.target.dec = sexagesimalDecToDecimal(this.dec_display);
+      this.dec_help_text = this.decHelp(this.dec_display);
+      this.update();
+    },
+    raHelp: function(ra) {
+      if (isNaN(Number(ra))) {
+        return 'Decimal: ' + Number(sexagesimalRaToDecimal(ra));
+      } else {
+        return 'Sexagesimal: ' + decimalRaToSexigesimal(ra).str;
+      }
+    },
+    decHelp: function(dec) {
+      if (isNaN(Number(dec))) {
+        return 'Decimal: ' + Number(sexagesimalDecToDecimal(dec));
+      } else {
+        return 'Sexagesimal: ' + decimalDecToSexigesimal(dec).str;
+      }
+    }
+  }
+};
 </script>

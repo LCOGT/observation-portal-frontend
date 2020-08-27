@@ -1,6 +1,6 @@
 <template>
   <div class="telescopeStatesPlot">
-    <plot-controls v-show="showZoomControls" v-on:plotZoom="plotZoom" />
+    <plot-controls v-show="showZoomControls" @plotZoom="plotZoom" />
   </div>
 </template>
 <script>
@@ -15,12 +15,30 @@ import { plotZoomMixin } from '@/components/util/plotMixins.js';
 
 export default {
   name: 'TelescopeStates',
-  props: ['data', 'activeObservation', 'showZoomControls'],
-  mixins: [plotZoomMixin],
   components: {
-    PlotControls,
+    PlotControls
   },
-  data: function () {
+  mixins: [plotZoomMixin],
+  props: {
+    data: {
+      validator: function(value) {
+        return value === undefined || typeof value === 'object';
+      },
+      default: function() {
+        return undefined;
+      }
+    },
+    activeObservation: {
+      type: Object,
+      default: function() {
+        return null;
+      }
+    },
+    showZoomControls: {
+      type: Boolean
+    }
+  },
+  data: function() {
     let event_types = {
       AVAILABLE: 'Available',
       NOT_OK_TO_OPEN: '',
@@ -28,7 +46,7 @@ export default {
       SITE_AGENT_UNRESPONSIVE: 'No Connection to Telescope',
       OFFLINE: 'Manually Disabled',
       ENCLOSURE_INTERLOCK: '',
-      SEQUENCER_UNAVAILABLE: '',
+      SEQUENCER_UNAVAILABLE: ''
     };
 
     let options = {
@@ -40,21 +58,21 @@ export default {
       dataAttributes: ['toggle', 'html'],
       selectable: false,
       zoomKey: 'ctrlKey',
-      moment: function (date) {
+      moment: function(date) {
         return vis.moment(date).utc();
       },
       tooltip: {
-        overflowMethod: 'cap',
-      },
+        overflowMethod: 'cap'
+      }
     };
 
     return {
       options: options,
-      event_types: event_types,
+      event_types: event_types
     };
   },
   computed: {
-    toVis: function () {
+    toVis: function() {
       let plotSites = new vis.DataSet();
       let visData = new vis.DataSet();
 
@@ -82,7 +100,7 @@ export default {
             id: g,
             content: siteCodeToName[site] + ' ' + used_telescopes[site],
             title: sorted_telescopes[telescope],
-            style: 'color: ' + siteToColor[sorted_telescopes[telescope].split('.')[0]] + ';' + 'width: 130px;',
+            style: 'color: ' + siteToColor[sorted_telescopes[telescope].split('.')[0]] + ';' + 'width: 130px;'
           });
           for (let index in this.data[sorted_telescopes[telescope]]) {
             let event = this.data[sorted_telescopes[telescope]][index];
@@ -106,7 +124,7 @@ export default {
               end: event['end'],
               toggle: 'tooltip',
               html: true,
-              type: 'range',
+              type: 'range'
             });
           }
           if (
@@ -130,39 +148,39 @@ export default {
               end: this.activeObservation.end,
               toggle: 'tooltip',
               html: true,
-              type: 'range',
+              type: 'range'
             });
           }
           g++;
         }
       }
       return { datasets: visData, groups: plotSites };
-    },
+    }
   },
   watch: {
-    data: function () {
+    data: function() {
       let datasets = this.toVis;
       //Need to first zero out the items and groups or vis.js throws an error
       this.plot.setItems(new vis.DataSet());
       this.plot.setGroups(new vis.DataSet());
       this.plot.setGroups(datasets.groups);
       this.plot.setItems(datasets.datasets);
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.plot = this.buildPlot();
   },
   methods: {
-    buildPlot: function () {
+    buildPlot: function() {
       // Set a unique name for the plot element, since vis.js needs this to separate plots
       this.$el.setAttribute('class', _.uniqueId(this.$el.className));
       let plot = new vis.Timeline(this.$el, new vis.DataSet([]), this.options);
       let that = this;
-      plot.on('rangechanged', function () {
+      plot.on('rangechanged', function() {
         that.$emit('rangechanged', that.plot.getWindow());
       });
       return plot;
-    },
-  },
+    }
+  }
 };
 </script>

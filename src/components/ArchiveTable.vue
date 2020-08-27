@@ -1,13 +1,11 @@
 <template>
   <div>
     <div id="archive-table-toolbar">
-      <b-button @click="downloadSelected" variant="outline-secondary" size="sm"> <i class="fa fa-check"></i> Download Selected </b-button>
-      <b-button @click="downloadAll" variant="outline-secondary" size="sm"> <i class="fa fa-download"></i> Download All </b-button>
-      <b-link :href="archiveLink" target="_blank" class="btn btn-sm btn-outline-secondary">
-        <i class="fa fa-arrow-right"></i> View on Archive
-      </b-link>
+      <b-button variant="outline-secondary" size="sm" @click="downloadSelected"> <i class="fa fa-check" /> Download Selected </b-button>
+      <b-button variant="outline-secondary" size="sm" @click="downloadAll"> <i class="fa fa-download" /> Download All </b-button>
+      <b-link :href="archiveLink" target="_blank" class="btn btn-sm btn-outline-secondary"> <i class="fa fa-arrow-right" /> View on Archive </b-link>
     </div>
-    <table id="archive-table" class="table-sm"></table>
+    <table id="archive-table" class="table-sm" />
   </div>
 </template>
 <script>
@@ -20,66 +18,43 @@ export default {
   props: {
     requestid: {
       type: Number,
-    },
-  },
-  watch: {
-    requestid: function () {
-      this.refreshTable();
-    },
-  },
-  methods: {
-    downloadSelected: function () {
-      let frameIds = [];
-      let selections = $('#archive-table').bootstrapTable('getSelections');
-      if (selections.length == 0) {
-        alert('Please select at least one frame to download');
-        return;
-      }
-      for (let i = 0; i < selections.length; i++) {
-        frameIds.push(selections[i].id);
-      }
-      downloadZip(frameIds, this.archiveApiUrl, this.archiveToken);
-    },
-    downloadAll: function () {
-      downloadAll(this.requestid, this.archiveApiUrl, this.archiveClientUrl, this.archiveToken);
-    },
-    refreshTable: function () {
-      if (this.requestid) {
-        $('#archive-table').bootstrapTable('refresh', {
-          url: this.archiveApiUrl + '/frames/?limit=1000&exclude_OBSTYPE=GUIDE&REQNUM=' + this.requestid,
-        });
-      }
-    },
+      required: true
+    }
   },
   computed: {
-    archiveApiUrl: function () {
+    archiveApiUrl: function() {
       return this.$store.state.urls.archiveApi;
     },
-    archiveClientUrl: function () {
+    archiveClientUrl: function() {
       return this.$store.state.urls.archiveClient;
     },
-    archiveToken: function () {
+    archiveToken: function() {
       return this.$store.state.archiveToken;
     },
-    archiveLink: function () {
+    archiveLink: function() {
       return this.archiveClientUrl + '/?REQNUM=' + this.requestid + '&start=2014-01-01';
-    },
+    }
   },
-  mounted: function () {
+  watch: {
+    requestid: function() {
+      this.refreshTable();
+    }
+  },
+  mounted: function() {
     let that = this;
     $('#archive-table').bootstrapTable({
       url: null,
-      responseHandler: function (res) {
+      responseHandler: function(res) {
         if (res.count > 1000) {
           alert('More than 1000 results found, please view on archive to view all data');
         }
         that.$emit('dataLoaded', res.results);
         return res.results;
       },
-      onClickRow: function (row) {
+      onClickRow: function(row) {
         that.$emit('rowClicked', row);
       },
-      formatNoMatches: function () {
+      formatNoMatches: function() {
         return 'No data available.';
       },
       queryParamsType: '',
@@ -97,36 +72,36 @@ export default {
         {
           field: 'state',
           title: '',
-          checkbox: true,
+          checkbox: true
         },
         {
           field: 'filename',
           title: 'filename',
-          sortable: 'true',
+          sortable: 'true'
         },
         {
           field: 'DATE_OBS',
           title: 'DATE_OBS',
           sortable: 'true',
-          formatter: function (value) {
+          formatter: function(value) {
             return formatDate(value);
-          },
+          }
         },
         {
           field: 'FILTER',
           title: 'filter',
-          sortable: 'true',
+          sortable: 'true'
         },
         {
           field: 'OBSTYPE',
           title: 'obstype',
-          sortable: 'true',
+          sortable: 'true'
         },
         {
           field: 'RLEVEL',
           title: 'Reduction',
           sortable: 'true',
-          formatter: function (value) {
+          formatter: function(value) {
             switch (value) {
               case 0:
                 return 'raw';
@@ -135,14 +110,38 @@ export default {
               case 91:
                 return 'reduced';
             }
-          },
-        },
-      ],
+          }
+        }
+      ]
     });
     this.$store.dispatch('getArchiveToken').then(() => {
       that.refreshTable();
     });
   },
+  methods: {
+    downloadSelected: function() {
+      let frameIds = [];
+      let selections = $('#archive-table').bootstrapTable('getSelections');
+      if (selections.length == 0) {
+        alert('Please select at least one frame to download');
+        return;
+      }
+      for (let i = 0; i < selections.length; i++) {
+        frameIds.push(selections[i].id);
+      }
+      downloadZip(frameIds, this.archiveApiUrl, this.archiveToken);
+    },
+    downloadAll: function() {
+      downloadAll(this.requestid, this.archiveApiUrl, this.archiveClientUrl, this.archiveToken);
+    },
+    refreshTable: function() {
+      if (this.requestid) {
+        $('#archive-table').bootstrapTable('refresh', {
+          url: this.archiveApiUrl + '/frames/?limit=1000&exclude_OBSTYPE=GUIDE&REQNUM=' + this.requestid
+        });
+      }
+    }
+  }
 };
 </script>
 <style scoped>

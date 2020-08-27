@@ -61,5 +61,10 @@ npm run test:e2e
 
 ### Lints and fixes files
 ```
-npm run lint
+npm run lint:fix
+```
+
+### Checks for linting errors without fixing them
+```
+npm run lint:check
 ```

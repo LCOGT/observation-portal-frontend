@@ -1,107 +1,111 @@
 <template>
   <span>
     <b-form-group
-      :id="field + '-datetimegroup-' + $parent.id"
       v-show="$parent.show"
+      :id="field + '-datetimegroup-' + $parent.id"
       label-size="sm"
       label-align-sm="right"
       label-cols-sm="4"
       :label-for="field"
     >
-      <template 
-        slot="label"
-      >
+      <template slot="label">
         {{ label }}
-        <sup 
-          v-if="desc"
-          class="text-primary" 
-          v-b-tooltip=tooltipConfig 
-          :title="desc"
-        >
+        <sup v-if="desc" v-b-tooltip="tooltipConfig" class="text-primary" :title="desc">
           ?
         </sup>
       </template>
-      <VueCtkDateTimePicker 
+      <VueCtkDateTimePicker
+        :id="field + '-datetimefield-' + $parent.id"
         v-model="value"
         label=""
         :format="datetimeFormat"
         :formatted="datetimeFormat"
-        :id="field + '-datetimefield-' + $parent.id" 
         :error="hasErrors"
         :no-header="true"
         :no-button-now="true"
         :no-button="true"
         @input="update($event)"
       />
-      <span 
-        class="errors text-danger" 
-        v-for="error in errors" 
-        :key="error"
-      >
+      <span v-for="error in errors" :key="error" class="errors text-danger">
         {{ error }}
-      </span>    
+      </span>
     </b-form-group>
-    <span 
-      class="mr-4" 
-      v-show="!$parent.show"
-    >
+    <span v-show="!$parent.show" class="mr-4">
       {{ label }}: <strong>{{ value || '...' }}</strong>
     </span>
   </span>
 </template>
 <script>
-  import _ from 'lodash';
-  import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
+import _ from 'lodash';
+import VueCtkDateTimePicker from 'vue-ctk-date-time-picker';
 
-  import { datetimeFormat, tooltipConfig } from '@/utils.js';
-  
-  export default {
-    props: [
-      'value',
-      'label', 
-      'field', 
-      'errors', 
-      'type', 
-      'desc',
-    ],
-    components: {
-      VueCtkDateTimePicker
+import { datetimeFormat, tooltipConfig } from '@/utils.js';
+
+export default {
+  components: {
+    VueCtkDateTimePicker
+  },
+  props: {
+    value: {
+      type: String,
+      required: true
     },
-    data: function() {
-      return {
-        tooltipConfig: tooltipConfig,
-        datetimeFormat: datetimeFormat
+    label: {
+      type: String,
+      default: ''
+    },
+    field: {
+      type: String,
+      default: function() {
+        return _.kebabCase(this.label);
       }
     },
-    computed: {
-      hasErrors: function() {
-        return !_.isEmpty(this.errors);
-      }
+    errors: {
+      validator: function(value) {
+        return value === undefined || value === null || typeof value === 'object';
+      },
+      required: true
     },
-    methods: {
-      update: function(value) {
-        this.$emit('input', value);
-      }
+    desc: {
+      type: String,
+      default: ''
     }
-  };
+  },
+  data: function() {
+    return {
+      tooltipConfig: tooltipConfig,
+      datetimeFormat: datetimeFormat
+    };
+  },
+  computed: {
+    hasErrors: function() {
+      return !_.isEmpty(this.errors);
+    }
+  },
+  methods: {
+    update: function(value) {
+      this.$emit('input', value);
+    }
+  }
+};
 </script>
 <style scoped>
-  @import '~vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
+@import '~vue-ctk-date-time-picker/dist/vue-ctk-date-time-picker.css';
 </style>
 <style>
-  /* 
+/*
    * Override the default ctk datetime picker styles to look like other
-   * bootstrap 4 input fields, using scoped style does not work 
+   * bootstrap 4 input fields, using scoped style does not work
    */
-  .date-time-picker .field .field-input {
-    color: inherit !important;
-    font-size: 0.875rem !important;
-    padding-top: 0rem !important;
-    font-family: inherit !important;
-    height: 38px !important;
-    min-height: 38px !important;
-  }
-  .date-time-picker span.errors {
-    font-size: 90%;
-  }
+.date-time-picker .field .field-input {
+  color: inherit !important;
+  font-size: 0.875rem !important;
+  padding-top: 0rem !important;
+  font-family: inherit !important;
+  height: 38px !important;
+  min-height: 38px !important;
+}
+.date-time-picker span.errors {
+  font-size: 90%;
+}
 </style>

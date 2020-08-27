@@ -15,47 +15,50 @@ import { siteToColor, siteCodeToName } from '@/utils.js';
 import { plotZoomMixin } from '@/components/util/plotMixins.js';
 
 export default {
+  components: {
+    PlotControls
+  },
+  mixins: [plotZoomMixin],
   props: {
-    data: Object,
+    data: {
+      type: Object,
+      required: true
+    },
     showZoomControls: Boolean,
     alignleft: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
-  mixins: [plotZoomMixin],
-  components: {
-    PlotControls,
-  },
-  data: function () {
+  data: function() {
     let options = {
       dataAxis: {
         left: {
-          format: function (value) {
+          format: function(value) {
             return Math.abs(value).toPrecision(2);
-          },
+          }
         },
-        width: this.alignleft ? '129px' : '',
+        width: this.alignleft ? '129px' : ''
       },
       orientation: 'top',
       legend: {
         enabled: true,
         left: {
           visible: true,
-          position: 'bottom-right',
-        },
+          position: 'bottom-right'
+        }
       },
       zoomKey: 'ctrlKey',
-      moment: function (date) {
+      moment: function(date) {
         return vis.moment(date).utc();
-      },
+      }
     };
     return {
-      options: options,
+      options: options
     };
   },
   computed: {
-    toVis: function () {
+    toVis: function() {
       let plotSites = new vis.DataSet();
       let visData = new vis.DataSet();
       if (!$.isEmptyObject(this.data)) {
@@ -75,11 +78,11 @@ export default {
                 enabled: true,
                 size: 9,
                 style: 'circle',
-                styles: 'stroke:' + siteToColor[site] + '; fill: ' + siteToColor[site] + '; visibility: hidden;',
+                styles: 'stroke:' + siteToColor[site] + '; fill: ' + siteToColor[site] + '; visibility: hidden;'
               },
-              excludeFromLegend: false,
+              excludeFromLegend: false
             },
-            style: 'stroke: ' + siteToColor[site] + ';',
+            style: 'stroke: ' + siteToColor[site] + ';'
           });
           for (p = 0; p < airmass_times.length; p++) {
             current_time = new Date(airmass_times[p] + 'Z');
@@ -96,11 +99,11 @@ export default {
                     enabled: true,
                     size: 7,
                     style: 'circle',
-                    styles: 'stroke:' + siteToColor[site] + '; fill: ' + siteToColor[site] + '; visibility: hidden;',
+                    styles: 'stroke:' + siteToColor[site] + '; fill: ' + siteToColor[site] + '; visibility: hidden;'
                   },
-                  excludeFromLegend: true,
+                  excludeFromLegend: true
                 },
-                style: 'stroke: ' + siteToColor[site] + ';',
+                style: 'stroke: ' + siteToColor[site] + ';'
               });
             }
             last_time = current_time;
@@ -112,9 +115,9 @@ export default {
                 label: {
                   content:
                     'Site: ' + siteCodeToName[site] + '<br>Time: ' + airmass_times[p].replace('T', ' ') + '<br>Airmass: ' + airmasses[p].toFixed(2),
-                  className: 'graphtt',
-                },
-              },
+                  className: 'graphtt'
+                }
+              }
             ]);
           }
           i++;
@@ -125,9 +128,9 @@ export default {
           content: 'limit',
           options: {
             drawPoints: { enabled: false },
-            excludeFromLegend: false,
+            excludeFromLegend: false
           },
-          style: 'stroke: black;',
+          style: 'stroke: black;'
         });
         if (airmass_limit) {
           let limitMin = new Date(visData.min('x')['x']);
@@ -136,15 +139,15 @@ export default {
           limitMax.setMinutes(limitMax.getMinutes() + 30);
           visData.add([
             { x: limitMin, y: -1 * airmass_limit, group: i },
-            { x: limitMax, y: -1 * airmass_limit, group: i },
+            { x: limitMax, y: -1 * airmass_limit, group: i }
           ]);
         }
       }
       return { datasets: visData, groups: plotSites };
-    },
+    }
   },
   watch: {
-    data: function () {
+    data: function() {
       let datasets = this.toVis;
       // Need to first zero out the items and groups or vis.js throws an error
       this.plot.setItems(new vis.DataSet());
@@ -152,23 +155,33 @@ export default {
       this.plot.setGroups(datasets.groups);
       this.plot.setItems(datasets.datasets);
       this.plot.fit();
-    },
+    }
   },
-  mounted: function () {
+  mounted: function() {
     this.plot = this.buildPlot();
   },
   methods: {
-    buildPlot: function () {
+    buildPlot: function() {
       // Set a unique name for the plot element, since vis.js needs this to separate plots
       this.$el.setAttribute('class', _.uniqueId(this.$el.className));
       let plot = new vis.Graph2d(this.$el, new vis.DataSet([]), this.options);
       let that = this;
-      plot.on('changed', function () {
+      plot.on('changed', function() {
         $(that.$el)
           .find('.vis-point')
-          .each(function () {
-            $(this).attr('title', $(this).next().text());
-            $(this).attr('data-original-title', $(this).next().text());
+          .each(function() {
+            $(this).attr(
+              'title',
+              $(this)
+                .next()
+                .text()
+            );
+            $(this).attr(
+              'data-original-title',
+              $(this)
+                .next()
+                .text()
+            );
             $(this).attr('data-html', 'true');
             let label = $(this).next();
             $(this).appendTo($(this).parent());
@@ -176,15 +189,15 @@ export default {
           });
         $(that.$el)
           .find('.vis-legend svg path')
-          .each(function () {
+          .each(function() {
             $(this).appendTo($(this).parent());
           });
       });
-      plot.on('rangechanged', function () {
+      plot.on('rangechanged', function() {
         that.$emit('rangechanged', that.plot.getWindow());
       });
       return plot;
-    },
-  },
+    }
+  }
 };
 </script>
