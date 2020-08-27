@@ -2,14 +2,16 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import Tools from '../views/Tools.vue';
-import NotFound from '../views/NotFound.vue';
 import Login from '../views/Login.vue';
 import Profile from '../views/Profile.vue';
-import Register from '../views/Register.vue'
+import Register from '../views/Register.vue';
 import AcceptTerms from '../views/AcceptTerms.vue';
 import AccountsGet from '../views/AccountsGet.vue';
 import AccountsForm from '../views/AccountsForm.vue';
 import AccountRemovalRequest from '../views/AccountRemovalRequest.vue';
+import RequestgroupDetail from '../views/RequestgroupDetail.vue';
+import Compose from '../views/Compose.vue';
+import NotFound from '../components/NotFound.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
 
@@ -43,15 +45,25 @@ const routes = [
   },
   {
     path: '/proposals/:id',
-    name: 'proposalsDetail',
+    name: 'proposalDetail',
     // TODO: Update component
     component: NotFound
   },
   {
     path: '/requestgroups/:id',
-    name: 'requestgroupsDetail',
-    // TODO: Update component
-    component: NotFound
+    name: 'requestgroupDetail',
+    component: RequestgroupDetail,
+    meta: {
+      title: 'Request Group Detail'
+    }
+  },
+  {
+    path: '/requests/:id',
+    name: 'requestDetail',
+    component: RequestgroupDetail,
+    meta: {
+      title: 'Request Detail'
+    }
   },
   {
     path: '/apply',
@@ -62,8 +74,11 @@ const routes = [
   {
     path: '/create',
     name: 'create',
-    // TODO: Update with create component
-    component: NotFound
+    component: Compose,
+    meta: {
+      title: 'Create New Request',
+      requiresAuth: true
+    }
   },
   {
     path: '/tools',
@@ -143,12 +158,12 @@ const routes = [
       title: 'Accounts'
     }
   },
-  { 
+  {
     path: '*',
     name: 'notFound',
     component: NotFound
   }
-]
+];
 
 const router = new VueRouter({
   mode: 'history',
@@ -159,7 +174,10 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // Set the title of each page
   const baseTitle = _.split(document.title, '|')[0];
-  const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title);
+  const nearestWithTitle = to.matched
+    .slice()
+    .reverse()
+    .find(r => r.meta && r.meta.title);
   // If a route with a title was found, set the document (page) title to that value.
   if (nearestWithTitle) {
     document.title = baseTitle + ' | ' + nearestWithTitle.meta.title;
@@ -167,7 +185,7 @@ router.beforeEach((to, from, next) => {
     document.title = baseTitle;
   }
   next();
-})
+});
 
 router.beforeEach((to, from, next) => {
   // Redirect to the Accept Terms page if the user is logged in but has not
@@ -190,5 +208,17 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // Route requires the user to be logged in, check if logged in and if not, redirect to login page.
+    if (!store.state.userIsAuthenticated) {
+      next({ name: 'login', query: { next: to.name } });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
 
 export default router;
