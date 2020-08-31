@@ -224,7 +224,7 @@ export default {
         // An observation on the timeline was cliked, get that observation info
         let item = that.toVis.datasets.get(event.item);
         if (item !== null) {
-          window.location.assign('/observations/' + item.observationId);
+          that.$router.push({ name: 'observationDetail', params: { id: item.observationId } });
         }
       }
     });
