@@ -2,7 +2,7 @@
   <b-row class="p-3">
     <b-col cols="10" md="10">
       <custom-pagination
-        v-show="!isBusy"
+        v-if="!isBusy"
         table-id="observations-table"
         :per-page="queryParams.limit"
         :total-rows="data.count"
@@ -59,7 +59,7 @@
         </b-table>
       </b-row>
       <custom-pagination
-        v-show="!isBusy"
+        v-if="!isBusy"
         table-id="observations-table"
         :per-page="queryParams.limit"
         :total-rows="data.count"

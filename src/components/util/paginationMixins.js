@@ -12,7 +12,7 @@ export var paginationAndFilteringMixin = {
   
   The query parameter filters that are used in API requests are set in the current URL as well. This allows
   the user to copy the query params and paste them into a separate request to the API endpoint if they wish to see
-  the exact results returned by the API.
+  the exact results returned by the API, or to share the exact page they are looking at.
   
   Query parameters that are set multiple times are represented as arrays in the `queryParams` object. For example,
   when filtering for observations from two sites, the query string will include "site=abc&site=def", which in the
@@ -38,7 +38,7 @@ export var paginationAndFilteringMixin = {
     };
   },
   created: function() {
-    this.updateData();
+    this.update();
   },
   computed: {
     url: function() {
@@ -155,11 +155,21 @@ export var paginationAndFilteringMixin = {
       // before a new set of data is retrieved.
       return;
     },
-    updateData: function() {
+    update: function() {
       this.beforeDataUpdate();
       this.getData();
+      this.updateRoute();
+    },
+    updateRoute: function() {
       if (this.$route.fullPath !== this.$router.resolve({ query: this.apiRequestQueryParams }).href) {
-        this.$router.push({ query: this.apiRequestQueryParams });
+        // inComponentNavigation can be used to determine if the route change was triggered from here or from elsewhere
+        let newRoute = { query: this.apiRequestQueryParams, params: { inComponentNavigation: true } };
+        if (_.isEmpty(this.$route.query)) {
+          // The home page was navigated to without any query params, replace with the new params
+          this.$router.replace(newRoute);
+        } else {
+          this.$router.push(newRoute);
+        }
       }
     },
     calculateCurrentPage: function(offset, limit) {
@@ -183,21 +193,21 @@ export var paginationAndFilteringMixin = {
       // have been set.
       event.preventDefault();
       this.goToFirstPage();
-      this.updateData();
+      this.update();
     },
     onReset: function(event) {
       // Call this method to reset the query parameters to their default values.
       event.preventDefault();
       this.queryParams = copyObject(this.defaultQueryParams);
       this.goToFirstPage();
-      this.updateData();
+      this.update();
     },
     onPageChange: function(newPage) {
       // Call this method to get a new page of results.
       if (this.isNumberAndChanged(newPage, this.currentPage)) {
         this.currentPage = newPage;
         this.queryParams.offset = this.calculateOffset(newPage);
-        this.updateData();
+        this.update();
       }
     },
     onLimitChange: function(newLimit) {
@@ -205,7 +215,16 @@ export var paginationAndFilteringMixin = {
       if (this.isNumberAndChanged(newLimit, this.queryParams.limit)) {
         this.queryParams.limit = newLimit;
         this.goToFirstPage();
-        this.updateData();
+        this.update();
+      }
+    }
+  },
+  watch: {
+    $route: function(to) {
+      if (!to.params.inComponentNavigation) {
+        this.queryParams = this.getMergedQueryParams(this.defaultQueryParams);
+        this.currentPage = this.calculateCurrentPage(this.queryParams.offset, this.queryParams.limit);
+        this.update();
       }
     }
   }

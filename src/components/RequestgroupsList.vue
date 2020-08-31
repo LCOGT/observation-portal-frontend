@@ -151,7 +151,7 @@
         </template>
       </b-table>
       <custom-pagination
-        v-show="!isBusy"
+        v-if="!isBusy"
         table-id="requestgroups-table"
         :per-page="queryParams.limit"
         :total-rows="data.count"
