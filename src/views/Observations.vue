@@ -237,7 +237,7 @@ export default {
         request_state: [],
         instrument_type: [],
         configuration_type: [],
-        ordering: '',
+        ordering: '-start',
         start_after: '',
         start_before: '',
         modified_after: '',
