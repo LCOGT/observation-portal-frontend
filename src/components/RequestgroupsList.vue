@@ -248,7 +248,7 @@ export default {
       return options;
     },
     viewAuthoredRequestsOnly: function() {
-      return this.profile.profile && this.profile.profile.view_authored_requests_only;
+      return this.profile.profile && this.profile.profile.view_authored_requests_only && !this.profile.profile.staff_view;
     }
   },
   methods: {
@@ -276,14 +276,6 @@ export default {
       } else {
         return;
       }
-    },
-    setUserIfAuthoredOnly: function() {
-      if (this.viewAuthoredRequestsOnly) {
-        this.queryParams.user = this.profile.username;
-      }
-    },
-    beforeDataUpdate: function() {
-      this.setUserIfAuthoredOnly();
     }
   }
 };
