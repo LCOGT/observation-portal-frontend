@@ -12,7 +12,6 @@
         </div>
       </template>
       <template v-else-if="dataLoaded && !observation.site">
-        {{ observation.id }}
         <not-found />
       </template>
       <template v-else>
