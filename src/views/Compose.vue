@@ -243,8 +243,7 @@ export default {
           data: JSON.stringify(that.requestgroup),
           contentType: 'application/json',
           success: function(data) {
-            // TODO: Use the router
-            window.location = '/requestgroups/' + data.id;
+            that.$router.push({ name: 'requestgroupDetail', params: { id: data.id } });
           }
         });
       }

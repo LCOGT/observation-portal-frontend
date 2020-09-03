@@ -86,7 +86,7 @@ export default {
       requestgroupLoadError: false,
       fields: [{ key: 'requestRow', tdClass: 'p-0' }],
       currentPage: 1,
-      perPage: 10
+      perPage: 25
     };
   },
   computed: {

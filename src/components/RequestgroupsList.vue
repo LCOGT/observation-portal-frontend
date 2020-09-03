@@ -13,46 +13,46 @@
             <b-form @submit="onSubmit" @reset="onReset">
               <b-form-group id="input-group-order" label-for="input-order" label-class="m-0" class="my-2">
                 <template v-slot:label> <i class="fa fa-sort" /> Sort </template>
-                <b-form-select id="input-order" v-model="rgQueryParams.order" :options="orderOptions" size="sm" />
+                <b-form-select id="input-order" v-model="queryParams.order" :options="orderOptions" size="sm" />
               </b-form-group>
               <b-form-group id="input-group-state" label-for="input-state" label-class="m-0" class="my-2">
                 <template v-slot:label> <i class="fas fa-sync" /> State </template>
-                <b-form-select id="input-state" v-model="rgQueryParams.state" :options="stateOptions" size="sm" />
+                <b-form-select id="input-state" v-model="queryParams.state" :options="stateOptions" size="sm" />
               </b-form-group>
               <b-form-group id="input-group-name" label-for="input-name" label-class="m-0" class="my-2">
-                <b-form-input id="input-name" v-model="rgQueryParams.name" placeholder="Name contains" size="sm" />
+                <b-form-input id="input-name" v-model="queryParams.name" placeholder="Name contains" size="sm" />
                 <template v-slot:label> <i class="fa fa-paragraph" /> Name Contains </template>
               </b-form-group>
               <b-form-group id="input-group-target" label-for="input-target" label-class="m-0" class="my-2">
-                <b-form-input id="input-target" v-model="rgQueryParams.target" placeholder="Target Name Contains" size="sm" />
+                <b-form-input id="input-target" v-model="queryParams.target" placeholder="Target Name Contains" size="sm" />
                 <template v-slot:label> <i class="fa fa-crosshairs" /> Target Name Contains </template>
               </b-form-group>
               <b-form-group id="input-group-proposal" label-for="input-proposal" label-class="m-0" class="my-2">
                 <template v-slot:label> <i class="fa fa-users" /> Proposal </template>
-                <b-form-select id="input-proposal" v-model="rgQueryParams.proposal" :options="proposalOptions" size="sm" />
+                <b-form-select id="input-proposal" v-model="queryParams.proposal" :options="proposalOptions" size="sm" />
               </b-form-group>
               <b-form-group id="input-group-created-after" label-for="input-created-after" label-class="m-0" class="my-2">
-                <b-form-input id="input-created-after" v-model="rgQueryParams.created_after" type="date" size="sm" />
+                <b-form-input id="input-created-after" v-model="queryParams.created_after" type="date" size="sm" />
                 <template v-slot:label>
                   <i class="fa fa-calendar"> <i class="fa fa-arrow-right" /> </i> Submitted After
                 </template>
               </b-form-group>
               <b-form-group id="input-group-created-before" label-for="input-created-before" label-class="m-0" class="my-2">
-                <b-form-input id="input-created-before" v-model="rgQueryParams.created_before" type="date" size="sm" />
+                <b-form-input id="input-created-before" v-model="queryParams.created_before" type="date" size="sm" />
                 <template v-slot:label> <i class="fa fa-arrow-left" /> <i class="fa fa-calendar" /> Submitted Before </template>
               </b-form-group>
               <div v-if="!viewAuthoredRequestsOnly">
                 <b-form-group id="input-group-user" label-for="input-user" label-class="m-0" class="my-2">
-                  <b-form-input id="input-user" v-model="rgQueryParams.user" placeholder="Username Contains" size="sm" />
+                  <b-form-input id="input-user" v-model="queryParams.user" placeholder="Username Contains" size="sm" />
                   <template v-slot:label> <i class="fa fa-user" /> Username Contains </template>
                 </b-form-group>
               </div>
               <b-dropdown-divider />
               <b-button-group class="mx-4">
-                <b-button type="submit" variant="outline-info">
+                <b-button type="submit" variant="outline-info" :disabled="isBusy">
                   <span class="text-nowrap">Filter Results</span>
                 </b-button>
-                <b-button type="reset" variant="outline-danger">
+                <b-button type="reset" variant="outline-danger" :disabled="isBusy">
                   <span class="text-nowrap">Clear All Fields</span>
                 </b-button>
               </b-button-group>
@@ -62,15 +62,7 @@
       </b-col>
     </b-row>
     <div>
-      <b-table
-        id="requestgroups-table"
-        :items="requestgroups.results"
-        :fields="fields"
-        :tbody-tr-class="requestGroupRowClass"
-        :busy="isBusy"
-        small
-        show-empty
-      >
+      <b-table id="requestgroups-table" :items="data.results" :fields="fields" :tbody-tr-class="requestGroupRowClass" :busy="isBusy" small show-empty>
         <template v-slot:head(requestgroupInfo)>
           <b-row>
             <b-col md="4" cols="12">
@@ -158,31 +150,25 @@
           </b-row>
         </template>
       </b-table>
-      <b-row class="row">
-        <b-col md="9" cols="12">
-          <b-pagination
-            v-if="requestgroups.count > rgQueryParams.limit"
-            :value="currentPage"
-            :total-rows="requestgroups.count"
-            :per-page="rgQueryParams.limit"
-            aria-controls="requestgroups-table"
-            @change="onPageChange"
-          />
-        </b-col>
-        <b-col md="3" cols="12">
-          <b-form-group label-for="perPageSelect">
-            <b-form-select id="perPageSelect" :value="rgQueryParams.limit" :options="perPageOptions" @change="onLimitChange" />
-          </b-form-group>
-        </b-col>
-      </b-row>
+      <custom-pagination
+        v-if="!isBusy"
+        table-id="requestgroups-table"
+        :per-page="queryParams.limit"
+        :total-rows="data.count"
+        :current-page="currentPage"
+        display-per-page-dropdown
+        @pageChange="onPageChange"
+        @limitChange="onLimitChange"
+      ></custom-pagination>
     </div>
   </b-container>
 </template>
 <script>
-import $ from 'jquery';
 import _ from 'lodash';
 
-import { timeFromNow, formatDate, copyObject, stateToBsClass, stateToIcon } from '@/utils.js';
+import { timeFromNow, formatDate, stateToBsClass, stateToIcon } from '@/utils.js';
+import { paginationAndFilteringMixin } from '@/components/util/paginationMixins.js';
+import CustomPagination from '@/components/util/CustomPagination.vue';
 
 export default {
   name: 'RequestgroupsList',
@@ -212,6 +198,10 @@ export default {
       return formatDate(value);
     }
   },
+  components: {
+    CustomPagination
+  },
+  mixins: [paginationAndFilteringMixin],
   data: function() {
     const stateOptions = [
       { value: '', text: '---------' },
@@ -231,48 +221,18 @@ export default {
       { value: 'end', text: 'End of window' },
       { value: '-end', text: 'End of window (descending)' }
     ];
-    const defaultRgQueryParams = {
-      proposal: '',
-      order: orderOptions[0].value,
-      state: stateOptions[0].value,
-      name: '',
-      target: '',
-      created_after: '',
-      created_before: '',
-      user: '',
-      limit: 20,
-      offset: 0
-    };
-    let rgQueryParams = this.getMergedRgQueryParams(defaultRgQueryParams);
-    let currentPage = this.calculateCurrentPage(rgQueryParams.offset, rgQueryParams.limit);
     return {
       orderOptions: orderOptions,
       stateOptions: stateOptions,
-      rgQueryParams: rgQueryParams,
-      defaultRgQueryParams: defaultRgQueryParams,
-      requestgroups: { count: 0, results: [] },
-      fields: [{ key: 'requestgroupInfo', tdClass: 'p-0 m-0', thClass: 'border-0' }],
-      rgQueryErrors: [],
-      isBusy: false,
-      currentPage: currentPage,
-      perPageOptions: [
-        { value: '5', text: 'Show: 5' },
-        { value: '10', text: 'Show: 10' },
-        { value: '20', text: 'Show: 20' },
-        { value: '50', text: 'Show: 50' },
-        { value: '100', text: 'Show: 100' }
-      ]
+      fields: [{ key: 'requestgroupInfo', tdClass: 'p-0 m-0', thClass: 'border-0' }]
     };
   },
   computed: {
     profile: function() {
       return this.$store.state.profile;
     },
-    observationPortalApiUrl: function() {
-      return this.$store.state.urls.observationPortalApi;
-    },
     proposalOptions: function() {
-      let selected = this.rgQueryParams.proposal;
+      let selected = this.queryParams.proposal;
       let proposalInQuery = _.get(this.$route, 'query.proposal', '');
       let staffView = _.get(this.profile, 'profile.staff_view', false);
       let options = [{ value: '', text: '---------', selected: selected === '' }];
@@ -288,128 +248,33 @@ export default {
       return options;
     },
     viewAuthoredRequestsOnly: function() {
-      return this.profile.profile && this.profile.profile.view_authored_requests_only;
+      return this.profile.profile && this.profile.profile.view_authored_requests_only && !this.profile.profile.staff_view;
     }
   },
-  created: function() {
-    this.updateRequestgroups();
-  },
   methods: {
+    initializeDataEndpoint: function() {
+      return '/api/requestgroups/';
+    },
+    initializeDefaultQueryParams: function() {
+      const defaultQueryParams = {
+        proposal: '',
+        order: '',
+        state: '',
+        name: '',
+        target: '',
+        created_after: '',
+        created_before: '',
+        user: '',
+        limit: 20,
+        offset: 0
+      };
+      return defaultQueryParams;
+    },
     requestGroupRowClass: function(item, type) {
       if (type === 'row') {
         return stateToBsClass(item.state, 'requestgroup');
       } else {
         return;
-      }
-    },
-    getMergedRgQueryParams: function(baseRgQueryParams) {
-      // Add any requestgroup query parameters that are in the url to the
-      // request query param object so that the API request will include them.
-      let mergedRgQueryParams = copyObject(baseRgQueryParams);
-      for (let key in this.$route.query) {
-        if (_.has(mergedRgQueryParams, key)) {
-          mergedRgQueryParams[key] = this.$route.query[key];
-        }
-      }
-      return mergedRgQueryParams;
-    },
-    calculateCurrentPage(offset, limit) {
-      // The offset is always a multiple of the limit
-      return offset / limit + 1;
-    },
-    calculateOffset(currentPage) {
-      return (currentPage - 1) * this.rgQueryParams.limit;
-    },
-    setUserIfAuthoredOnly: function() {
-      if (this.viewAuthoredRequestsOnly) {
-        this.rgQueryParams.user = this.profile.username;
-      }
-    },
-    clearErrors: function() {
-      for (let error of this.rgQueryErrors) {
-        this.$store.commit('deleteMessage', error);
-      }
-      this.rgQueryErrors = [];
-    },
-    setErrors: function(errorsObject) {
-      for (let field in errorsObject) {
-        let message = '';
-        if (field === 'retrieving') {
-          message = errorsObject[field];
-        } else {
-          message = field + ': ' + errorsObject[field];
-        }
-        this.rgQueryErrors.push(message);
-        this.$store.commit('addMessage', { text: message, variant: 'danger' });
-      }
-    },
-    getRequestgroups: function() {
-      // TODO: Cancel any currently running request
-      this.isBusy = true;
-      let url = this.observationPortalApiUrl + '/api/requestgroups/';
-      let that = this;
-      $.getJSON(url, this.rgQueryParams)
-        .done(function(data) {
-          that.requestgroups = data;
-          that.clearErrors();
-        })
-        .fail(function(data) {
-          that.requestgroups = { count: 0, results: [] };
-          that.currentPage = 1;
-          that.clearErrors();
-          if (data.status === 400) {
-            that.setErrors(data.responseJSON);
-          } else {
-            that.setErrors({ retrieving: 'There was a problem retrieving observation requests, please try again.' });
-          }
-        })
-        .always(function() {
-          that.isBusy = false;
-        });
-    },
-    updateRequestgroups: function() {
-      this.setUserIfAuthoredOnly();
-      this.getRequestgroups();
-      let newQueryParams = copyObject(this.$route.query);
-      for (let rgKey in this.rgQueryParams) {
-        newQueryParams[rgKey] = this.rgQueryParams[rgKey];
-      }
-      if (!_.isEqual(newQueryParams, this.$route.query)) {
-        this.$router.push({ query: newQueryParams });
-      }
-    },
-    goToFirstPage: function() {
-      this.currentPage = 1;
-      this.rgQueryParams.offset = 0;
-    },
-    isNumberAndChanged: function(newInt, oldInt) {
-      newInt = _.parseInt(newInt);
-      oldInt = _.parseInt(oldInt);
-      return _.isNumber(newInt) && newInt !== oldInt;
-    },
-    onSubmit: function(event) {
-      event.preventDefault();
-      this.goToFirstPage();
-      this.updateRequestgroups();
-    },
-    onReset: function(event) {
-      event.preventDefault();
-      this.rgQueryParams = copyObject(this.defaultRgQueryParams);
-      this.goToFirstPage();
-      this.updateRequestgroups();
-    },
-    onPageChange: function(newPage) {
-      if (this.isNumberAndChanged(newPage, this.currentPage)) {
-        this.currentPage = newPage;
-        this.rgQueryParams.offset = this.calculateOffset(newPage);
-        this.updateRequestgroups();
-      }
-    },
-    onLimitChange: function(newLimit) {
-      if (this.isNumberAndChanged(newLimit, this.rgQueryParams.limit)) {
-        this.rgQueryParams.limit = newLimit;
-        this.goToFirstPage();
-        this.updateRequestgroups();
       }
     }
   }
