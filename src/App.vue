@@ -39,7 +39,7 @@
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'proposals', query: { active: true } }">
+            <router-link class="nav-link" :to="{ name: 'proposals', query: { active: 'True' } }">
               Manage Proposals
             </router-link>
           </li>

@@ -8,7 +8,8 @@ const EMPTY_PROFILE_DATA = {
   profile: {},
   tokens: {},
   proposals: [],
-  available_instrument_types: []
+  available_instrument_types: [],
+  proposal_notifications: []
 };
 
 export default new Vuex.Store({

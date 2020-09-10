@@ -13,6 +13,8 @@ import RequestgroupDetail from '../views/RequestgroupDetail.vue';
 import Observations from '../views/Observations.vue';
 import ObservationDetail from '../views/ObservationDetail.vue';
 import Compose from '../views/Compose.vue';
+import ProposalList from '../views/ProposalList.vue';
+import ProposalDetail from '../views/ProposalDetail.vue';
 import NotFound from '../components/NotFound.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
@@ -42,12 +44,24 @@ const routes = [
   {
     path: '/proposals',
     name: 'proposals',
-    // TODO: Update with proposals component
-    component: NotFound
+    component: ProposalList,
+    meta: {
+      title: 'Proposal List',
+      requiresAuth: true
+    }
   },
   {
     path: '/proposals/:id',
     name: 'proposalDetail',
+    component: ProposalDetail,
+    props: true,
+    meta: {
+      title: 'Proposal Detail'
+    }
+  },
+  {
+    path: '/proposals/semesteradmin/:id',
+    name: 'semesterAdminTable',
     // TODO: Update component
     component: NotFound
   },

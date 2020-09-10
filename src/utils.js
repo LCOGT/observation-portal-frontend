@@ -246,6 +246,15 @@ function formatValue(value) {
   return value;
 }
 
+function formatFloat(value, precision) {
+  let valueAsNumber = Number(value);
+  if (valueAsNumber === 0 || valueAsNumber) {
+    return valueAsNumber.toFixed(precision);
+  } else {
+    return value;
+  }
+}
+
 function copyObject(source) {
   let copy = {};
   _.assign(copy, source);
@@ -529,5 +538,6 @@ export {
   csrfSafeMethod,
   extractTopLevelErrors,
   stateToBsClass,
-  stateToIcon
+  stateToIcon,
+  formatFloat
 };
