@@ -1,303 +1,320 @@
 <template>
-  <b-col>
-    <template v-if="proposalLoadError">
-      <p class="text-center my-2">
-        Oops, there was a problem getting your data, please try again
-      </p>
-    </template>
-    <template v-else-if="!proposalLoaded">
-      <div class="text-center my-2">
-        <i class="fa fa-spin fa-spinner" />
-      </div>
-    </template>
-    <template v-else-if="proposalLoaded && !proposal.id">
-      <not-found />
-    </template>
-    <template v-else>
-      <b-row>
-        <b-col md="8">
-          <h3>
-            {{ proposal.id }} <small>{{ proposal.title }}</small>
-          </h3>
-          <p>{{ proposal.abstract }}</p>
+  <b-row>
+    <b-col md="8">
+      <template v-if="proposalLoadError">
+        <p class="text-center my-2">
+          Oops, there was a problem getting your data, please try again
+        </p>
+      </template>
+      <template v-else-if="!proposalLoaded">
+        <div class="text-center my-2">
+          <i class="fa fa-spin fa-spinner" />
+        </div>
+      </template>
+      <template v-else-if="proposalLoaded && !proposal.id">
+        <not-found />
+      </template>
+      <template v-else>
+        <h3>
+          {{ proposal.id }} <small>{{ proposal.title }}</small>
+        </h3>
+        <p>{{ proposal.abstract }}</p>
+        <h4>
+          Total Observation Requests:
+          <router-link :to="{ name: 'home', query: { proposal: id } }" title="View requests">{{ requestgroupCount }}</router-link>
+        </h4>
+        <template v-if="principleInvestigators.length === 1">
           <h4>
-            Total Observation Requests:
-            <router-link :to="{ name: 'home', query: { proposal: id } }" title="View requests">{{ requestgroupCount }}</router-link>
+            Principal Investigator: {{ principleInvestigators[0].first_name }} {{ principleInvestigators[0].last_name }}
+            <a :href="'mailto:' + principleInvestigators[0].email">{{ principleInvestigators[0].email }}</a>
           </h4>
-          <template v-if="principleInvestigators.length === 1">
-            <h4>
-              Principal Investigator: {{ principleInvestigators[0].first_name }} {{ principleInvestigators[0].last_name }}
-              <a :href="'mailto:' + principleInvestigators[0].email">{{ principleInvestigators[0].email }}</a>
-            </h4>
+        </template>
+        <template v-else>
+          <h4>
+            Principal Investigators:
+            <ul>
+              <li v-for="pi in principleInvestigators" :key="pi.username">
+                {{ pi.first_name }} {{ pi.last_name }} <a :href="'mailto:' + pi.email">{{ pi.email }}</a>
+              </li>
+            </ul>
+          </h4>
+        </template>
+        <template v-if="userIsPI">
+          <h4>
+            Co Investigators
+            <small>
+              <b-link v-b-toggle.collapse-cois href="#">
+                <span class="when-open"><i class="fa fa-eye"></i></span>
+                <span class="when-closed"><i class="fa fa-eye fa-eye-slash"></i></span>
+              </b-link>
+            </small>
+          </h4>
+          <b-collapse id="collapse-cois" visible>
+            <div id="cilist">
+              <br />
+              <b-form-group v-if="paginateCoInvestigatorTable" label="Filter" label-for="CoIfilterInput" label-sr-only>
+                <b-input-group>
+                  <b-form-input id="CoIfilterInput" v-model="coInvestigatorTable.filter" type="search" placeholder="Type to Search"></b-form-input>
+                  <b-input-group-append>
+                    <b-button :disabled="!coInvestigatorTable.filter" @click="coInvestigatorTable.filter = ''">Clear</b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
+              <b-table
+                id="coinvestigator-table"
+                :items="coInvestigators"
+                :fields="coInvestigatorTable.fields"
+                :per-page="coInvestigatorTable.perPage"
+                :current-page="coInvestigatorTable.currentPage"
+                :filter-included-fields="coInvestigatorTable.filterOn"
+                :filter="coInvestigatorTable.filter"
+                responsive
+                @filtered="onFiltered"
+              >
+                <template v-slot:cell(remove_member)="data">
+                  <b-link
+                    href="#"
+                    :disabled="deleteMembership.isBusy"
+                    @click="
+                      confirm(getMembershipDeleteConfirmationMessage(data.item.email), deleteCoInvestigatorMembership, { membershipId: data.item.id })
+                    "
+                  >
+                    <i class="fa fa-trash"></i>
+                  </b-link>
+                </template>
+                <template v-slot:cell(simple_interface)="data">
+                  <i v-if="data.item.simple_interface" class="fa fa-check"></i>
+                </template>
+                <template v-slot:cell(email)="data">
+                  <a :href="'mailto:' + data.item.email">{{ data.item.email }}</a>
+                </template>
+                <template v-slot:cell(time_limit)="data">
+                  <span v-if="data.item.time_limit < 0">No Limit</span>
+                  <span v-else>{{ (data.item.time_limit / 3600) | formatFloat(3) }}</span>
+                  <template v-if="userIsPI">
+                    <b-link v-b-toggle="'collapse-' + data.item.username" href="#"><i class="fas fa-edit"></i></b-link>
+                    <b-collapse :id="'collapse-' + data.item.username">
+                      <b-form>
+                        <b-form-group>
+                          <b-form-input
+                            :id="'dropdown-form-user-limit-' + data.item.username"
+                            v-model="limit.timeLimitPerUser[data.item.username]"
+                            type="number"
+                            size="sm"
+                            min="0"
+                            step="0.01"
+                            placeholder="Hours"
+                          ></b-form-input>
+                        </b-form-group>
+                        <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="resetUserLimit(data.item.username)">
+                          Remove Limit
+                        </b-button>
+                        <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="setUserLimit(data.item.username)">
+                          Set Limit
+                        </b-button>
+                      </b-form>
+                    </b-collapse>
+                  </template>
+                </template>
+                <template v-slot:cell(time_used_by_user)="data">
+                  {{ data.item.time_used_by_user | formatFloat(3) }}
+                </template>
+              </b-table>
+              <custom-pagination
+                v-if="paginateCoInvestigatorTable"
+                table-id="coinvestigator-table"
+                :total-rows="coInvestigatorTable.totalRows"
+                :per-page="coInvestigatorTable.perPage"
+                :current-page="coInvestigatorTable.currentPage"
+                @pageChange="onPageChange"
+              ></custom-pagination>
+              <br />
+            </div>
+          </b-collapse>
+        </template>
+        <h4>Time Allocation</h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Semester</th>
+              <th>Telescope Class</th>
+              <th>Hours</th>
+              <th>Used/Allocated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-for="(timeallocations, semester) in timeallocationsBySemester">
+              <tr :key="semester">
+                <td colspan="4">{{ semester }}</td>
+              </tr>
+              <template v-for="(timeallocation, idx) in timeallocations">
+                <tr :key="semester + '-instrument-type-' + idx">
+                  <td></td>
+                  <td>{{ timeallocation.instrument_type }}</td>
+                  <td colspan="2"></td>
+                </tr>
+                <tr :key="semester + '-std-time-' + idx">
+                  <td colspan="2"></td>
+                  <td>Standard</td>
+                  <td>
+                    <div class="progress">
+                      <div class="progress-bar" role="progress-bar">
+                        {{ timeallocation.std_time_used | formatFloat(1) }}/{{ timeallocation.std_allocation | formatFloat(1) }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr :key="semester + '-tc-time-' + idx">
+                  <td colspan="2"></td>
+                  <td>Time Critical</td>
+                  <td>
+                    <div class="progress">
+                      <div class="progress-bar" role="progress-bar">
+                        {{ timeallocation.tc_time_used | formatFloat(1) }}/{{ timeallocation.tc_allocation | formatFloat(1) }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr :key="semester + '-rr-time-' + idx">
+                  <td colspan="2"></td>
+                  <td>Rapid Response</td>
+                  <td>
+                    <div class="progress">
+                      <div class="progress-bar" role="progress-bar">
+                        {{ timeallocation.rr_time_used | formatFloat(1) }}/{{ timeallocation.rr_allocation | formatFloat(1) }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr :key="semester + '-ipp-' + idx">
+                  <td colspan="2"></td>
+                  <td>IPP</td>
+                  <td>Available: {{ timeallocation.ipp_time_available | formatFloat(1) }} Limit: {{ timeallocation.ipp_limit | formatFloat(1) }}</td>
+                </tr>
+              </template>
+            </template>
+          </tbody>
+        </table>
+      </template>
+    </b-col>
+    <b-col md="4">
+      <strong>Email Notifications</strong>
+      <div class="help-block">
+        You will recieve notifications whenever a requested observation on this proposal is completed.
+      </div>
+      <b-form @submit="updateProposalNotification">
+        <b-form-group id="checkbox-group-proposal-notification" label-for="checkbox-proposal-notification">
+          <b-form-checkbox id="checkbox-proposal-notification" v-model="proposalNotifications.enabled">
+            Notifications enabled
+          </b-form-checkbox>
+        </b-form-group>
+        <b-button type="submit" variant="primary" :disabled="proposalNotifications.isBusy">
+          Save
+        </b-button>
+      </b-form>
+      <br />
+      <dl>
+        <dt>Links</dt>
+        <dd><a :href="archiveLink" target="_blank">View Data on the LCO Science Archive</a></dd>
+      </dl>
+      <template v-if="userIsPI">
+        <strong>Global Hour Limit</strong>
+        <div class="help-block">
+          <!-- TODO: Translate this -->
+          Use this form to set an hour limit for every Co-I on the proposal.
+        </div>
+        <b-form inline @submit="setGlobalLimit" @reset="resetGlobalLimit">
+          <b-form-group id="input-group-global-time-limit" label-for="input-global-time-limit" label="Global Limit (Hours)" label-sr-only>
+            <b-form-input
+              id="input-global-time-limit"
+              v-model="limit.globalTimeLimit"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Hours"
+              required
+            />
+          </b-form-group>
+          <b-button type="reset" variant="outline-secondary" :disabled="limit.isBusy">
+            Remove Limit
+          </b-button>
+          <b-button type="submit" variant="outline-secondary" :disabled="limit.isBusy">
+            Set Global Limit
+          </b-button>
+        </b-form>
+        <br />
+        <strong>Invite Co-Investigators</strong>
+        <div class="help-block">
+          <!-- TODO: translate -->
+          Invite co-investigators by entering their email address below and pressing "add". If you would like to add multiple address at once, enter
+          them below, comma separated. If the user is already registered with LCO, they will be added to this proposal. If not, they will be invited.
+        </div>
+        <b-form @submit="inviteCoInvestigators">
+          <b-form-group
+            id="input-group-invite-co-investigator"
+            label-for="input-invite-co-investigator"
+            label="Invite a Co-Investigator"
+            label-sr-only
+          >
+            <b-form-input id="input-invite-co-investigator" v-model="invite.emailAddresses" placeholder="Email Address(s)" required />
+          </b-form-group>
+          <b-button type="submit" variant="outline-secondary" :disabled="invite.isBusy">
+            Add
+          </b-button>
+        </b-form>
+        <br />
+        <dl>
+          <!-- TODO: Translate this -->
+          <dt>Pending Invitations</dt>
+          <template v-if="invitationsList.isBusy">
+            <div class="text-center my-2">
+              <i class="fa fa-spin fa-spinner" />
+            </div>
+          </template>
+          <template v-else-if="pendingInvitations.length > 0">
+            <dd v-for="invitation in pendingInvitations" :key="invitation.id">
+              <div>
+                <a :href="'mailto:' + invitation.email">{{ invitation.email }}</a>
+              </div>
+              <div>Invited: {{ invitation.sent | formatDate }}</div>
+              <b-link
+                :disabled="deleteInvite.isBusy"
+                @click="confirm(getDeleteInvitationConfirmationMessage(invitation.email), deleteInvitation, { invitationId: invitation.id })"
+              >
+                Delete Invitation
+              </b-link>
+            </dd>
+            <br />
           </template>
           <template v-else>
-            <h4>
-              Principal Investigators:
-              <ul>
-                <li v-for="pi in principleInvestigators" :key="pi.username">
-                  {{ pi.first_name }} {{ pi.last_name }} <a :href="'mailto:' + pi.email">{{ pi.email }}</a>
-                </li>
-              </ul>
-            </h4>
+            <p>No pending invitations.</p>
           </template>
-          <template v-if="userIsPI">
-            <h4>
-              Co Investigators
-              <small>
-                <b-link v-b-toggle.collapse-cois href="#">
-                  <span class="when-open"><i class="fa fa-eye"></i></span>
-                  <span class="when-closed"><i class="fa fa-eye fa-eye-slash"></i></span>
-                </b-link>
-              </small>
-            </h4>
-            <b-collapse id="collapse-cois" visible>
-              <div id="cilist">
-                <!-- TODO: If there are more than 25 members, paginate the results -->
-                <!-- <form method="get" role="form" action="">
-          <div class="form-row">
-            <div class="col mb-0 mt-auto">{% bootstrap_field members_filter.form.first_name form_group_class="form-group mb-0 mt-auto" %}</div>
-            <div class="col mb-0 mt-auto">{% bootstrap_field members_filter.form.last_name form_group_class="form-group mb-0 mt-auto" %}</div>
-            <div class="col mb-0 mt-auto">{% bootstrap_field members_filter.form.username form_group_class="form-group mb-0 mt-auto" %}</div>
-            <div class="col mb-0 mt-auto">{% bootstrap_field members_filter.form.email form_group_class="form-group mb-0 mt-auto" %}</div>
-            <div class="col-1 mb-0 mt-auto">{% bootstrap_button button_type="submit" content="Filter" button_class="btn-outline-secondary" %}</div>
-          </div>
-        </form> -->
-                <br />
-                <table class="table table-responsive">
-                  <thead>
-                    <tr>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th>UserId</th>
-                      <th>Email</th>
-                      <th>Hour Limit</th>
-                      <th>Hours Requested</th>
-                      <th v-if="proposal.public">Simple Interface</th>
-                      <th v-if="userIsPI">Remove</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="coi in coInvestigators" :key="coi.username">
-                      <td>{{ coi.first_name }}</td>
-                      <td>{{ coi.last_name }}</td>
-                      <td>{{ coi.username }}</td>
-                      <td>
-                        <a :href="'mailto:' + coi.email">{{ coi.email }}</a>
-                      </td>
-                      <td>
-                        <span v-if="coi.time_limit < 0">No Limit</span>
-                        <span v-else>{{ (coi.time_limit / 3600) | formatFloat(3) }}</span>
-                        <template v-if="userIsPI">
-                          <b-link v-b-toggle="'collapse-' + coi.username" href="#"><i class="fas fa-edit"></i></b-link>
-                          <b-collapse :id="'collapse-' + coi.username">
-                            <b-form>
-                              <b-form-group>
-                                <b-form-input
-                                  :id="'dropdown-form-user-limit-' + coi.username"
-                                  v-model="limit.timeLimitPerUser[coi.username]"
-                                  type="number"
-                                  size="sm"
-                                  min="0"
-                                  step="0.01"
-                                  placeholder="Hours"
-                                ></b-form-input>
-                              </b-form-group>
-                              <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="resetUserLimit(coi.username)">
-                                Remove Limit
-                              </b-button>
-                              <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="setUserLimit(coi.username)">
-                                Set Limit
-                              </b-button>
-                            </b-form>
-                          </b-collapse>
-                        </template>
-                      </td>
-                      <td>{{ coi.time_used_by_user | formatFloat(3) }}</td>
-                      <td v-if="proposal.public"><i v-if="simpleInterface" class="fa fa-check"></i></td>
-                      <td v-if="userIsPI">
-                        <!-- TODO: Replace with button to delete membership {% url 'proposals:membership-delete' mem.id %} -->
-                        <a href="#"><i class="fa fa-trash"></i></a>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <!-- TODO: If there are more than 25 members, keep this row -->
-                <div class="row">
-                  <div class="col">
-                    <!-- <span class="float-left"> {% bootstrap_pagination members_page size="small" parameter_name="ci_page" extra=request.GET.urlencode %}</span>
-            <span class="float-right">{{ members_page.paginator.count }} Co Investigators</span> -->
-                  </div>
-                </div>
-                <br />
-              </div>
-            </b-collapse>
-          </template>
-          <h4>Time Allocation</h4>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Semester</th>
-                <th>Telescope Class</th>
-                <th>Hours</th>
-                <th>Used/Allocated</th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="(timeallocations, semester) in timeallocationsBySemester">
-                <tr :key="semester">
-                  <td colspan="4">{{ semester }}</td>
-                </tr>
-                <template v-for="(timeallocation, idx) in timeallocations">
-                  <tr :key="semester + '-instrument-type-' + idx">
-                    <td></td>
-                    <td>{{ timeallocation.instrument_type }}</td>
-                    <td colspan="2"></td>
-                  </tr>
-                  <tr :key="semester + '-std-time-' + idx">
-                    <td colspan="2"></td>
-                    <td>Standard</td>
-                    <td>
-                      <div class="progress">
-                        <div class="progress-bar" role="progress-bar">
-                          {{ timeallocation.std_time_used | formatFloat(1) }}/{{ timeallocation.std_allocation | formatFloat(1) }}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr :key="semester + '-tc-time-' + idx">
-                    <td colspan="2"></td>
-                    <td>Time Critical</td>
-                    <td>
-                      <div class="progress">
-                        <div class="progress-bar" role="progress-bar">
-                          {{ timeallocation.tc_time_used | formatFloat(1) }}/{{ timeallocation.tc_allocation | formatFloat(1) }}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr :key="semester + '-rr-time-' + idx">
-                    <td colspan="2"></td>
-                    <td>Rapid Response</td>
-                    <td>
-                      <div class="progress">
-                        <div class="progress-bar" role="progress-bar">
-                          {{ timeallocation.rr_time_used | formatFloat(1) }}/{{ timeallocation.rr_allocation | formatFloat(1) }}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr :key="semester + '-ipp-' + idx">
-                    <td colspan="2"></td>
-                    <td>IPP</td>
-                    <td>
-                      Available: {{ timeallocation.ipp_time_available | formatFloat(1) }} Limit: {{ timeallocation.ipp_limit | formatFloat(1) }}
-                    </td>
-                  </tr>
-                </template>
-              </template>
-            </tbody>
-          </table>
-        </b-col>
-        <b-col md="4">
-          <strong>Email Notifications</strong>
-          <div class="help-block">
-            You will recieve notifications whenever a requested observation on this proposal is completed.
-          </div>
-          <b-form @submit="updateProposalNotification">
-            <b-form-group id="checkbox-group-proposal-notification" label-for="checkbox-proposal-notification">
-              <b-form-checkbox id="checkbox-proposal-notification" v-model="proposalNotifications.enabled">
-                Notifications enabled
-              </b-form-checkbox>
-            </b-form-group>
-            <b-button type="submit" variant="primary" :disabled="proposalNotifications.isBusy">
-              Save
-            </b-button>
-          </b-form>
-          <br />
-          <dl>
-            <dt>Links</dt>
-            <dd><a :href="archiveLink" target="_blank">View Data on the LCO Science Archive</a></dd>
-          </dl>
-          <template v-if="userIsPI">
-            <strong>Global Hour Limit</strong>
-            <div class="help-block">
-              <!-- TODO: Translate this -->
-              Use this form to set an hour limit for every Co-I on the proposal.
-            </div>
-            <b-form inline @submit="setGlobalLimit" @reset="resetGlobalLimit">
-              <b-form-group id="input-group-global-time-limit" label-for="input-global-time-limit" label="Global Limit (Hours)" label-sr-only>
-                <b-form-input
-                  id="input-global-time-limit"
-                  v-model="limit.globalTimeLimit"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="Hours"
-                  required
-                />
-              </b-form-group>
-              <b-button type="reset" variant="outline-secondary" :disabled="limit.isBusy">
-                Remove Limit
-              </b-button>
-              <b-button type="submit" variant="outline-secondary" :disabled="limit.isBusy">
-                Set Global Limit
-              </b-button>
-            </b-form>
-            <br />
-            <strong>Invite Co-Investigators</strong>
-            <div class="help-block">
-              <!-- TODO: translate -->
-              Invite co-investigators by entering their email address below and pressing "add". If you would like to add multiple address at once,
-              enter them below, comma separated. If the user is already registered with LCO, they will be added to this proposal. If not, they will be
-              invited.
-            </div>
-            <!-- TODO: form to invite people -->
-            <!-- <form method="POST" action="{% url 'proposals:invite' pk=object.id %}" class="form-inline">
-        {% csrf_token %}
-        <div class="form-group mr-md-2">
-          <label class="sr-only" for="email">Invite a Co-Investigator</label>
-          <input name="email" class="form-control" placeholder="Email Address(s)" />
-        </div>
-        <button type="submit" class="btn btn-outline-secondary">Add</button>
-      </form> -->
-            <br />
-            <dl>
-              <!-- TODO: Translate this -->
-              <dt>Pending Invitations</dt>
-              <!-- TODO: Add these after adding the endpoint that gets proposal invites -->
-
-              <!-- {% for invite in object.proposalinvite_set.all %} {% if not invite.used %}
-        <dd>
-          <a href="mailto:{{ invite.email }}">{{ invite.email }}</a>
-        </dd>
-        <dd>Invited: {{ invite.sent }}</dd>
-        <dd><a href="{% url 'proposals:proposalinvite-delete' invite.id %}">Delete</a></dd>
-        {% endif %} {% empty %}
-        <p>No pending invitations.</p>
-        {% endfor %} -->
-            </dl>
-          </template>
-        </b-col>
-      </b-row>
-    </template>
-  </b-col>
+        </dl>
+      </template>
+    </b-col>
+  </b-row>
 </template>
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
 
-import { formatFloat } from '@/utils.js';
+import { formatFloat, formatDate } from '@/utils.js';
 import NotFound from '@/components/NotFound.vue';
+import CustomPagination from '@/components/util/CustomPagination.vue';
 
 export default {
   name: 'ProposalDetail',
   filters: {
     formatFloat: function(value, precision) {
       return formatFloat(value, precision);
+    },
+    formatDate: function(date) {
+      return formatDate(date);
     }
   },
   components: {
-    NotFound
+    NotFound,
+    CustomPagination
   },
   props: {
     id: {
@@ -310,7 +327,44 @@ export default {
       proposal: {},
       proposalLoadError: false,
       proposalLoaded: false,
+      invitations: [],
       requestgroupCount: 0,
+      coInvestigatorTable: {
+        perPage: 25,
+        currentPage: 1,
+        totalRows: 0,
+        filterOn: ['first_name', 'last_name', 'username', 'email'],
+        filter: null,
+        fields: [
+          {
+            key: 'first_name',
+            sortable: true
+          },
+          {
+            key: 'last_name',
+            sortable: true
+          },
+          {
+            key: 'username',
+            label: 'UserId',
+            sortable: true
+          },
+          {
+            key: 'email',
+            sortable: true
+          },
+          {
+            key: 'time_limit',
+            label: 'Hour Limit',
+            sortable: true
+          },
+          {
+            key: 'time_used_by_user',
+            label: 'Hours Requested',
+            sortable: true
+          }
+        ]
+      },
       proposalNotifications: {
         enabled: false,
         isBusy: false
@@ -318,6 +372,19 @@ export default {
       limit: {
         timeLimitPerUser: {}, // Keys are username, values are time limit
         globalTimeLimit: null,
+        isBusy: false
+      },
+      invite: {
+        emailAddresses: '',
+        isBusy: false
+      },
+      deleteInvite: {
+        isBusy: false
+      },
+      deleteMembership: {
+        isBusy: false
+      },
+      invitationsList: {
         isBusy: false
       }
     };
@@ -332,6 +399,9 @@ export default {
     coInvestigators: function() {
       return _.filter(this.proposal.users, { role: 'CI' });
     },
+    paginateCoInvestigatorTable: function() {
+      return this.coInvestigators.length > 25;
+    },
     principleInvestigators: function() {
       return _.filter(this.proposal.users, { role: 'PI' });
     },
@@ -343,15 +413,18 @@ export default {
       }
       return false;
     },
-    simpleInterface: function() {
-      return this.profile && this.profile.profile && this.profile.profile.simple_interface;
-    },
     timeallocationsBySemester: function() {
       return _.groupBy(this.proposal.timeallocation_set, 'semester');
+    },
+    pendingInvitations: function() {
+      return _.filter(this.invitations, function(invitation) {
+        return !invitation.used ? true : false;
+      });
     }
   },
   watch: {
     coInvestigators: function(newCois) {
+      this.coInvestigatorTable.totalRows = newCois.length;
       for (let coi of newCois) {
         if (coi.time_limit >= 0) {
           this.limit.timeLimitPerUser[coi.username] = coi.time_limit / 3600;
@@ -359,17 +432,40 @@ export default {
           this.limit.timeLimitPerUser[coi.username] = null;
         }
       }
+    },
+    proposal: function(proposal) {
+      let fieldDefinition = { key: 'simple_interface' };
+      if (proposal.public && !this.fieldAlreadyExists(fieldDefinition.key)) {
+        this.coInvestigatorTable.fields.push(fieldDefinition);
+      }
+    },
+    userIsPI: function(userIsPI) {
+      let fieldDefinition = { key: 'remove_member', label: 'Remove' };
+      if (userIsPI && !this.fieldAlreadyExists(fieldDefinition.key)) {
+        this.coInvestigatorTable.fields.push(fieldDefinition);
+      }
     }
   },
   created: function() {
     this.getProposal();
     this.getRequestgroupCount();
+    this.getInvitations();
     if (this.$store.state.profile.proposal_notifications.indexOf(this.id) > -1) {
       this.proposalNotifications.enabled = true;
     }
   },
   methods: {
-    getRequestgroupCount() {
+    fieldAlreadyExists: function(key) {
+      let fieldAlreadyExists = false;
+      for (let field of this.coInvestigatorTable.fields) {
+        if (field.key === key) {
+          fieldAlreadyExists = true;
+          break;
+        }
+      }
+      return fieldAlreadyExists;
+    },
+    getRequestgroupCount: function() {
       let that = this;
       $.ajax({
         url: this.observationPortalApiUrl + '/api/requestgroups/?proposal=' + this.id + '&limit=1'
@@ -377,10 +473,22 @@ export default {
         that.requestgroupCount = response.count;
       });
     },
+    getInvitations: function() {
+      this.invitationsList.isBusy = true;
+      let that = this;
+      $.ajax({
+        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/invitations/'
+      })
+        .done(function(response) {
+          that.invitations = response;
+        })
+        .always(function() {
+          that.invitationsList.isBusy = false;
+        });
+    },
     getProposal: function() {
       this.proposalLoaded = false;
       this.proposalLoadError = false;
-      this.proposal = {};
       let that = this;
       $.ajax({
         url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/'
@@ -397,8 +505,12 @@ export default {
           that.proposalLoaded = true;
         });
     },
+    clearMessages: function() {
+      this.$store.commit('clearAllMessages');
+    },
     updateProposalNotification: function(evt) {
       evt.preventDefault();
+      this.clearMessages();
       this.proposalNotifications.isBusy = true;
       let that = this;
       $.ajax({
@@ -417,14 +529,15 @@ export default {
           that.proposalNotifications.isBusy = false;
         });
     },
-    setMembershipLimit: function(data) {
+    setMembershipLimit: function(membershipLimitPostData) {
+      this.clearMessages();
       this.limit.isBusy = true;
       let that = this;
       $.ajax({
         method: 'POST',
         url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/limit/',
         contentType: 'application/json',
-        data: JSON.stringify(data)
+        data: JSON.stringify(membershipLimitPostData)
       })
         .done(function(response) {
           that.$store.commit('addMessage', { text: response.message, variant: 'success' });
@@ -433,7 +546,7 @@ export default {
         .fail(function(response) {
           if (response.status === 400) {
             that.$store.commit('addMessage', { text: 'Please enter a valid limit', variant: 'danger' });
-          } else if (response.status === 404) {
+          } else if (response.status === 403) {
             // This should never actually happen given that only PIs are shown the forms to update the limits
             that.$store.commit('addMessage', { text: 'You must be a principle investigator to update limits', variant: 'danger' });
           } else {
@@ -453,6 +566,7 @@ export default {
       this.limit.globalTimeLimit = null;
     },
     resetGlobalLimit: function(evt) {
+      // A negative number means no limit
       this.setGlobalLimit(evt, -1);
     },
     setUserLimit: function(username, timeLimit) {
@@ -462,7 +576,144 @@ export default {
       });
     },
     resetUserLimit: function(username) {
+      // A negative number means no limit
       this.setUserLimit(username, -1);
+    },
+    parseInviteBadRequestErrors: function(emails, errors) {
+      // Put the errors returned from a bad request to send out invitations into a list of
+      // strings that are useful to the user.
+      let errorMessages = [];
+      for (let error in errors) {
+        if (error === 'emails') {
+          for (let invalidEmailIndex in errors[error]) {
+            let message;
+            if (errors[error] instanceof Array) {
+              message = errors[error].join(',');
+            } else {
+              message = errors[error][invalidEmailIndex];
+            }
+            errorMessages.push(emails[invalidEmailIndex] + ': ' + message);
+          }
+        } else {
+          errorMessages.push(errors[error]);
+        }
+      }
+      return errorMessages;
+    },
+    getArrayOfEmailsToInvite: function() {
+      // Remove whitespace from the comma-separated emails that the user entered, and
+      // turn it into an array of email addresses
+      let emails = _.replace(this.invite.emailAddresses, /\s/g, '');
+      emails = _.trim(emails, ',');
+      emails = _.split(emails, ',');
+      return emails;
+    },
+    inviteCoInvestigators: function(evt) {
+      evt.preventDefault();
+      this.clearMessages();
+      this.invite.isBusy = true;
+      let emails = this.getArrayOfEmailsToInvite();
+      let that = this;
+      $.ajax({
+        method: 'POST',
+        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/invitations/',
+        data: JSON.stringify({ emails: emails }),
+        contentType: 'application/json'
+      })
+        .done(function(response) {
+          that.$store.commit('addMessage', { text: response.message, variant: 'success' });
+          that.getInvitations();
+          that.getProposal();
+        })
+        .fail(function(response) {
+          if (response.status === 400) {
+            for (let errorMessage of that.parseInviteBadRequestErrors(emails, response.responseJSON)) {
+              that.$store.commit('addMessage', { text: errorMessage, variant: 'danger' });
+            }
+          } else {
+            that.$store.commit('addMessage', { text: 'There was a problem adding co-investigators, please try again', variant: 'danger' });
+          }
+        })
+        .always(function() {
+          that.invite.isBusy = false;
+        });
+    },
+    confirm: function(confirmationMessage, callback, args) {
+      // Display a modal where the user can either proceed or cancel running the callback
+      this.$bvModal.msgBoxConfirm(confirmationMessage).then(proceed => {
+        if (proceed) {
+          callback(args);
+        }
+      });
+    },
+    getDeleteInvitationConfirmationMessage: function(email) {
+      return 'Are you sure you want to delete the invitation for ' + email + ' for this proposal?';
+    },
+    deleteInvitation: function(args) {
+      this.clearMessages();
+      this.deleteInvite.isBusy = true;
+      let that = this;
+      $.ajax({
+        method: 'DELETE',
+        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/invitations/',
+        data: { invitation_id: args.invitationId }
+      })
+        .done(function() {
+          that.$store.commit('addMessage', { text: 'Invitation deleted', variant: 'success' });
+          that.getInvitations();
+        })
+        .fail(function(response) {
+          if (response.status === 404) {
+            // The proposal invitation does not exist, maybe it was deleted while this page was open.
+            that.$store.commit('addMessage', {
+              text: 'The invitation that you tried to delete does not exist, please try refreshing your page to get an updated list',
+              variant: 'danger'
+            });
+          } else {
+            that.$store.commit('addMessage', { text: 'There was a problem deleting the invitation, please try again', variant: 'danger' });
+          }
+        })
+        .always(function() {
+          that.deleteInvite.isBusy = false;
+        });
+    },
+    getMembershipDeleteConfirmationMessage: function(email) {
+      return 'Are you sure you want to remove ' + email + ' from this proposal?';
+    },
+    deleteCoInvestigatorMembership: function(args) {
+      this.clearMessages();
+      this.deleteMembership.isBusy = true;
+      let that = this;
+      $.ajax({
+        method: 'DELETE',
+        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/membership/',
+        data: { membership_id: args.membershipId }
+      })
+        .done(function() {
+          that.$store.commit('addMessage', { text: 'Membership deleted', variant: 'success' });
+          that.getProposal();
+        })
+        .fail(function(response) {
+          if (response.status === 404) {
+            that.$store.commit('addMessage', {
+              text: 'The membership that you tried to delete does not exist, please try refreshing your page to get an updated list',
+              variant: 'danger'
+            });
+          } else {
+            that.$store.commit('addMessage', { text: 'There was a problem deleting the membership, please try again', variant: 'danger' });
+          }
+        })
+        .always(function() {
+          that.deleteMembership.isBusy = false;
+        });
+    },
+    onFiltered: function(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      this.coInvestigatorTable.totalRows = filteredItems.length;
+      this.coInvestigatorTable.currentPage = 1;
+    },
+    onPageChange: function(newPage) {
+      this.coInvestigatorTable.currentPage = newPage;
     }
   }
 };
