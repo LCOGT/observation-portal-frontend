@@ -686,7 +686,7 @@ export default {
       let that = this;
       $.ajax({
         method: 'DELETE',
-        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/membership/',
+        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/memberships/',
         data: { membership_id: args.membershipId }
       })
         .done(function() {
