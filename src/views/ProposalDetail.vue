@@ -21,7 +21,7 @@
         <p>{{ proposal.abstract }}</p>
         <h4>
           Total Observation Requests:
-          <router-link :to="{ name: 'home', query: { proposal: id } }" title="View requests">{{ requestgroupCount }}</router-link>
+          <router-link :to="{ name: 'home', query: { proposal: id } }" title="View requests">{{ proposal.requestgroup_count }}</router-link>
         </h4>
         <template v-if="principleInvestigators.length === 1">
           <h4>
@@ -98,7 +98,7 @@
                         <b-form-group>
                           <b-form-input
                             :id="'dropdown-form-user-limit-' + data.item.username"
-                            v-model="limit.timeLimitPerUser[data.item.username]"
+                            v-model="limit.timeLimitPerUser[data.item.id]"
                             type="number"
                             size="sm"
                             min="0"
@@ -106,10 +106,10 @@
                             placeholder="Hours"
                           ></b-form-input>
                         </b-form-group>
-                        <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="resetUserLimit(data.item.username)">
+                        <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="resetUserLimit(data.item.id)">
                           Remove Limit
                         </b-button>
-                        <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="setUserLimit(data.item.username)">
+                        <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="setUserLimit(data.item.id)">
                           Set Limit
                         </b-button>
                       </b-form>
@@ -328,7 +328,6 @@ export default {
       proposalLoadError: false,
       proposalLoaded: false,
       invitations: [],
-      requestgroupCount: 0,
       coInvestigatorTable: {
         perPage: 25,
         currentPage: 1,
@@ -370,7 +369,7 @@ export default {
         isBusy: false
       },
       limit: {
-        timeLimitPerUser: {}, // Keys are username, values are time limit
+        timeLimitPerUser: {}, // Keys are membership IDs, values are time limit
         globalTimeLimit: null,
         isBusy: false
       },
@@ -427,9 +426,9 @@ export default {
       this.coInvestigatorTable.totalRows = newCois.length;
       for (let coi of newCois) {
         if (coi.time_limit >= 0) {
-          this.limit.timeLimitPerUser[coi.username] = coi.time_limit / 3600;
+          this.limit.timeLimitPerUser[coi.id] = coi.time_limit / 3600;
         } else {
-          this.limit.timeLimitPerUser[coi.username] = null;
+          this.limit.timeLimitPerUser[coi.id] = null;
         }
       }
     },
@@ -448,7 +447,6 @@ export default {
   },
   created: function() {
     this.getProposal();
-    this.getRequestgroupCount();
     this.getInvitations();
     if (this.$store.state.profile.proposal_notifications.indexOf(this.id) > -1) {
       this.proposalNotifications.enabled = true;
@@ -465,22 +463,14 @@ export default {
       }
       return fieldAlreadyExists;
     },
-    getRequestgroupCount: function() {
-      let that = this;
-      $.ajax({
-        url: this.observationPortalApiUrl + '/api/requestgroups/?proposal=' + this.id + '&limit=1'
-      }).done(function(response) {
-        that.requestgroupCount = response.count;
-      });
-    },
     getInvitations: function() {
       this.invitationsList.isBusy = true;
       let that = this;
       $.ajax({
-        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/invitations/'
+        url: this.observationPortalApiUrl + '/api/invitations/?proposal=' + this.id
       })
         .done(function(response) {
-          that.invitations = response;
+          that.invitations = response.results;
         })
         .always(function() {
           that.invitationsList.isBusy = false;
@@ -515,7 +505,7 @@ export default {
       let that = this;
       $.ajax({
         method: 'POST',
-        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/proposalnotifications/',
+        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/notification/',
         data: { enabled: this.proposalNotifications.enabled }
       })
         .done(function(response) {
@@ -535,7 +525,7 @@ export default {
       let that = this;
       $.ajax({
         method: 'POST',
-        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/limit/',
+        url: this.observationPortalApiUrl + '/api/memberships/limit/',
         contentType: 'application/json',
         data: JSON.stringify(membershipLimitPostData)
       })
@@ -561,7 +551,7 @@ export default {
       evt.preventDefault();
       this.setMembershipLimit({
         time_limit_hours: globalTimeLimit || this.limit.globalTimeLimit,
-        usernames: _.map(this.coInvestigators, 'username')
+        membership_ids: _.map(this.coInvestigators, 'id')
       });
       this.limit.globalTimeLimit = null;
     },
@@ -569,15 +559,15 @@ export default {
       // A negative number means no limit
       this.setGlobalLimit(evt, -1);
     },
-    setUserLimit: function(username, timeLimit) {
+    setUserLimit: function(membershipId, timeLimit) {
       this.setMembershipLimit({
-        time_limit_hours: timeLimit || this.limit.timeLimitPerUser[username],
-        usernames: [username]
+        time_limit_hours: timeLimit || this.limit.timeLimitPerUser[membershipId],
+        membership_ids: [membershipId]
       });
     },
-    resetUserLimit: function(username) {
+    resetUserLimit: function(membershipId) {
       // A negative number means no limit
-      this.setUserLimit(username, -1);
+      this.setUserLimit(membershipId, -1);
     },
     parseInviteBadRequestErrors: function(emails, errors) {
       // Put the errors returned from a bad request to send out invitations into a list of
@@ -616,7 +606,7 @@ export default {
       let that = this;
       $.ajax({
         method: 'POST',
-        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/invitations/',
+        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/invite/',
         data: JSON.stringify({ emails: emails }),
         contentType: 'application/json'
       })
@@ -655,8 +645,7 @@ export default {
       let that = this;
       $.ajax({
         method: 'DELETE',
-        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/invitations/',
-        data: { invitation_id: args.invitationId }
+        url: this.observationPortalApiUrl + '/api/invitations/' + args.invitationId + '/'
       })
         .done(function() {
           that.$store.commit('addMessage', { text: 'Invitation deleted', variant: 'success' });
@@ -686,8 +675,7 @@ export default {
       let that = this;
       $.ajax({
         method: 'DELETE',
-        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/memberships/',
-        data: { membership_id: args.membershipId }
+        url: this.observationPortalApiUrl + '/api/memberships/' + args.membershipId + '/'
       })
         .done(function() {
           that.$store.commit('addMessage', { text: 'Membership deleted', variant: 'success' });
