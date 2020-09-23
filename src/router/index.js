@@ -15,6 +15,8 @@ import ObservationDetail from '../views/ObservationDetail.vue';
 import Compose from '../views/Compose.vue';
 import ProposalList from '../views/ProposalList.vue';
 import ProposalDetail from '../views/ProposalDetail.vue';
+import SemesterDetail from '../views/SemesterDetail.vue';
+import SemesterAdminTable from '../views/SemesterAdminTable.vue';
 import NotFound from '../components/NotFound.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
@@ -62,8 +64,20 @@ const routes = [
   {
     path: '/proposals/semesteradmin/:id',
     name: 'semesterAdminTable',
-    // TODO: Update component
-    component: NotFound
+    component: SemesterAdminTable,
+    props: true,
+    meta: {
+      isFluidPage: true
+    }
+  },
+  {
+    path: '/proposals/semester/:id',
+    name: 'semesterDetail',
+    component: SemesterDetail,
+    props: true,
+    meta: {
+      title: 'Semester Detail'
+    }
   },
   {
     path: '/requestgroups/:id',
