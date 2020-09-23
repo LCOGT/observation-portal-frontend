@@ -16,6 +16,7 @@ import Compose from '../views/Compose.vue';
 import ProposalList from '../views/ProposalList.vue';
 import ProposalDetail from '../views/ProposalDetail.vue';
 import SemesterDetail from '../views/SemesterDetail.vue';
+import SemesterDetailCurrent from '../views/SemesterDetailCurrent.vue';
 import SemesterAdminTable from '../views/SemesterAdminTable.vue';
 import NotFound from '../components/NotFound.vue';
 import store from '../store/index.js';
@@ -68,6 +69,14 @@ const routes = [
     props: true,
     meta: {
       isFluidPage: true
+    }
+  },
+  {
+    path: '/proposals/semester/current',
+    name: 'semesterDetailCurrent',
+    component: SemesterDetailCurrent,
+    meta: {
+      title: 'Semester Detail'
     }
   },
   {
