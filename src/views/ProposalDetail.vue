@@ -189,7 +189,7 @@
                 <tr :key="semester + '-ipp-' + idx">
                   <td colspan="2"></td>
                   <td>IPP</td>
-                  <td>Available: {{ timeallocation.ipp_time_available | formatFloat(1) }} Limit: {{ timeallocation.ipp_limit | formatFloat(1) }}</td>
+                  <td>Available: {{ timeallocation.ipp_time_available | formatFloat(1) }} Limit: {{ timeallocation.ipp_limit }}</td>
                 </tr>
               </template>
             </template>

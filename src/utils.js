@@ -248,8 +248,10 @@ function formatValue(value) {
 
 function formatFloat(value, precision) {
   let valueAsNumber = Number(value);
+  precision = precision || 0;
   if (valueAsNumber === 0 || valueAsNumber) {
-    return valueAsNumber.toFixed(precision);
+    const multiplier = Math.pow(10, precision);
+    return (Math.round(valueAsNumber * multiplier) / multiplier).toFixed(precision);
   } else {
     return value;
   }
