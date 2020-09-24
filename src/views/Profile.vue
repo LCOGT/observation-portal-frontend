@@ -114,7 +114,7 @@
       </p>
       <input class="form-control" :value="apiToken" onclick="this.select()" readonly />
       <p>
-        If you think your API token may have been comprimised (by accidentally checking it in to a public source code repository, emailing it out,
+        If you think your API token may have been compromised (by accidentally checking it in to a public source code repository, emailing it out,
         etc) you may revoke the token to obtain a new one using the button below. WARNING: This will cause any applications that use this token to
         stop working!
       </p>

@@ -117,6 +117,7 @@ const routes = [
     path: '/observations/:id',
     name: 'observationDetail',
     component: ObservationDetail,
+    props: true,
     meta: {
       title: 'Observation Detail'
     }

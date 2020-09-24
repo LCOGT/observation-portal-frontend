@@ -1,73 +1,59 @@
 <template>
-  <b-col>
-    <template v-if="requestgroupLoadError">
-      <p class="text-center my-2">
-        Oops, there was a problem getting your data, please try again
-      </p>
-    </template>
-    <template v-else-if="!dataLoaded">
-      <div class="text-center my-2">
-        <i class="fa fa-spin fa-spinner" />
-      </div>
-    </template>
-    <template v-else-if="dataLoaded && !requestgroup.id">
-      <not-found />
-    </template>
-    <template v-else>
-      <requestgroup-header :requestgroup="requestgroup" />
-      <b-row>
-        <b-col>
-          <b-breadcrumb class="bg-light">
-            <template v-if="requestDetail">
-              <b-breadcrumb-item :to="{ name: 'requestgroupDetail', params: { id: requestgroup.id } }">
-                Sub-requests
-              </b-breadcrumb-item>
-              <b-breadcrumb-item active> #{{ request.id }} </b-breadcrumb-item>
-            </template>
-            <b-breadcrumb-item v-else active>
+  <data-loader :data-loaded="requestgroupLoaded" :data-load-error="requestgroupLoadError" :data-not-found="requestgroupNotFound">
+    <requestgroup-header :requestgroup="requestgroup" />
+    <b-row>
+      <b-col>
+        <b-breadcrumb class="bg-light">
+          <template v-if="requestDetail">
+            <b-breadcrumb-item :to="{ name: 'requestgroupDetail', params: { id: requestgroup.id } }">
               Sub-requests
             </b-breadcrumb-item>
-          </b-breadcrumb>
-        </b-col>
-      </b-row>
-      <template v-if="requestDetail">
-        <request-row :request="request" :instruments="instruments" />
-        <request-detail :request="request" />
-      </template>
-      <template v-else>
-        <b-table
-          id="requests-table"
-          :fields="fields"
-          :items="requestgroup.requests"
-          :per-page="perPage"
-          thead-class="d-none"
-          details-td-class="p-0"
-          :current-page="currentPage"
-          borderless
-          small
-        >
-          <template v-slot:cell(requestRow)="data">
-            <request-row :request="data.item" :instruments="instruments" :link="true" />
+            <b-breadcrumb-item active> #{{ request.id }} </b-breadcrumb-item>
           </template>
-        </b-table>
-        <b-pagination
-          v-if="numberOfRequests > perPage"
-          v-model="currentPage"
-          :total-rows="numberOfRequests"
-          :per-page="perPage"
-          aria-controls="requests-table"
-        />
-      </template>
+          <b-breadcrumb-item v-else active>
+            Sub-requests
+          </b-breadcrumb-item>
+        </b-breadcrumb>
+      </b-col>
+    </b-row>
+    <template v-if="requestDetail">
+      <request-row :request="request" :instruments="instruments" />
+      <request-detail :request="request" />
     </template>
-  </b-col>
+    <template v-else>
+      <b-table
+        id="requests-table"
+        :fields="fields"
+        :items="requestgroup.requests"
+        :per-page="perPage"
+        thead-class="d-none"
+        details-td-class="p-0"
+        :current-page="currentPage"
+        borderless
+        small
+      >
+        <template v-slot:cell(requestRow)="data">
+          <request-row :request="data.item" :instruments="instruments" :link="true" />
+        </template>
+      </b-table>
+      <b-pagination
+        v-if="numberOfRequests > perPage"
+        v-model="currentPage"
+        :total-rows="numberOfRequests"
+        :per-page="perPage"
+        aria-controls="requests-table"
+      />
+    </template>
+  </data-loader>
 </template>
 <script>
 import $ from 'jquery';
+import _ from 'lodash';
 
 import RequestgroupHeader from '@/components/RequestgroupHeader.vue';
 import RequestDetail from '@/components/RequestDetail.vue';
 import RequestRow from '@/components/RequestRow.vue';
-import NotFound from '@/components/NotFound.vue';
+import DataLoader from '@/components/DataLoader.vue';
 
 export default {
   name: 'RequestgroupDetail',
@@ -75,7 +61,7 @@ export default {
     RequestgroupHeader,
     RequestDetail,
     RequestRow,
-    NotFound
+    DataLoader
   },
   data: function() {
     return {
@@ -84,6 +70,7 @@ export default {
       requestgroupLoaded: false,
       archiveTokenLoaded: false,
       requestgroupLoadError: false,
+      requestgroupNotFound: false,
       fields: [{ key: 'requestRow', tdClass: 'p-0' }],
       currentPage: 1,
       perPage: 25
@@ -112,7 +99,7 @@ export default {
     request: function() {
       let requestDict = {};
       if (this.requestDetail) {
-        for (let request of this.requestgroup.requests) {
+        for (let request of _.get(this.requestgroup, 'requests', [])) {
           if (String(request.id) === String(this.id)) {
             requestDict = request;
             break;
@@ -163,7 +150,9 @@ export default {
           }
         })
         .fail(function(response) {
-          if (response.status !== 404) {
+          if (response.status === 404) {
+            that.requestgroupNotFound = true;
+          } else {
             that.requestgroupLoadError = true;
           }
         })
@@ -180,10 +169,16 @@ export default {
         .done(function(response) {
           if (response.results.length > 0) {
             that.requestgroup = response.results[0];
+          } else {
+            that.requestgroupNotFound = true;
           }
         })
-        .fail(function() {
-          that.requestgroupLoadError = true;
+        .fail(function(response) {
+          if (response.status === 404) {
+            that.requestgroupNotFound = true;
+          } else {
+            that.requestgroupLoadError = true;
+          }
         })
         .always(function() {
           that.requestgroupLoaded = true;

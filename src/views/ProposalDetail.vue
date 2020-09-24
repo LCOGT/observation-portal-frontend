@@ -1,27 +1,14 @@
 <template>
   <b-row>
     <b-col md="8">
-      <template v-if="proposalLoadError">
-        <p class="text-center my-2">
-          Oops, there was a problem getting your data, please try again
-        </p>
-      </template>
-      <template v-else-if="!proposalLoaded">
-        <div class="text-center my-2">
-          <i class="fa fa-spin fa-spinner" />
-        </div>
-      </template>
-      <template v-else-if="proposalLoaded && !proposal.id">
-        <not-found />
-      </template>
-      <template v-else>
+      <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
         <h3>
-          {{ proposal.id }} <small>{{ proposal.title }}</small>
+          {{ data.id }} <small>{{ data.title }}</small>
         </h3>
-        <p>{{ proposal.abstract }}</p>
+        <p>{{ data.abstract }}</p>
         <h4>
           Total Observation Requests:
-          <router-link :to="{ name: 'home', query: { proposal: id } }" title="View requests">{{ proposal.requestgroup_count }}</router-link>
+          <router-link :to="{ name: 'home', query: { proposal: id } }" title="View requests">{{ data.requestgroup_count }}</router-link>
         </h4>
         <template v-if="principleInvestigators.length === 1">
           <h4>
@@ -195,7 +182,7 @@
             </template>
           </tbody>
         </table>
-      </template>
+      </data-loader>
     </b-col>
     <b-col md="4">
       <strong>Email Notifications</strong>
@@ -299,8 +286,9 @@ import _ from 'lodash';
 import $ from 'jquery';
 
 import { formatFloat, formatDate } from '@/utils.js';
-import NotFound from '@/components/NotFound.vue';
 import CustomPagination from '@/components/util/CustomPagination.vue';
+import DataLoader from '@/components/DataLoader.vue';
+import { getDataMixin } from '@/components/util/getDataMixins.js';
 
 export default {
   name: 'ProposalDetail',
@@ -313,9 +301,10 @@ export default {
     }
   },
   components: {
-    NotFound,
+    DataLoader,
     CustomPagination
   },
+  mixins: [getDataMixin],
   props: {
     id: {
       type: String,
@@ -324,9 +313,6 @@ export default {
   },
   data: function() {
     return {
-      proposal: {},
-      proposalLoadError: false,
-      proposalLoaded: false,
       invitations: [],
       coInvestigatorTable: {
         perPage: 25,
@@ -396,13 +382,13 @@ export default {
       return this.$store.state.urls.archiveApi + '?PROPID=' + this.id;
     },
     coInvestigators: function() {
-      return _.filter(this.proposal.users, { role: 'CI' });
+      return _.filter(this.data.users, { role: 'CI' });
     },
     paginateCoInvestigatorTable: function() {
       return this.coInvestigators.length > 25;
     },
     principleInvestigators: function() {
-      return _.filter(this.proposal.users, { role: 'PI' });
+      return _.filter(this.data.users, { role: 'PI' });
     },
     userIsPI: function() {
       for (let pi of this.principleInvestigators) {
@@ -413,7 +399,7 @@ export default {
       return false;
     },
     timeallocationsBySemester: function() {
-      return _.groupBy(this.proposal.timeallocation_set, 'semester');
+      return _.groupBy(this.data.timeallocation_set, 'semester');
     },
     pendingInvitations: function() {
       return _.filter(this.invitations, function(invitation) {
@@ -432,7 +418,7 @@ export default {
         }
       }
     },
-    proposal: function(proposal) {
+    data: function(proposal) {
       let fieldDefinition = { key: 'simple_interface' };
       if (proposal.public && !this.fieldAlreadyExists(fieldDefinition.key)) {
         this.coInvestigatorTable.fields.push(fieldDefinition);
@@ -446,13 +432,18 @@ export default {
     }
   },
   created: function() {
-    this.getProposal();
     this.getInvitations();
     if (this.$store.state.profile.proposal_notifications.indexOf(this.id) > -1) {
       this.proposalNotifications.enabled = true;
     }
   },
   methods: {
+    initializeDataEndpoint: function() {
+      return '/api/proposals/' + this.id + '/';
+    },
+    initializeDataType: function() {
+      return 'detail';
+    },
     fieldAlreadyExists: function(key) {
       let fieldAlreadyExists = false;
       for (let field of this.coInvestigatorTable.fields) {
@@ -474,25 +465,6 @@ export default {
         })
         .always(function() {
           that.invitationsList.isBusy = false;
-        });
-    },
-    getProposal: function() {
-      this.proposalLoaded = false;
-      this.proposalLoadError = false;
-      let that = this;
-      $.ajax({
-        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/'
-      })
-        .done(function(response) {
-          that.proposal = response;
-        })
-        .fail(function(response) {
-          if (response.status !== 404) {
-            that.proposalLoadError = true;
-          }
-        })
-        .always(function() {
-          that.proposalLoaded = true;
         });
     },
     clearMessages: function() {
@@ -531,7 +503,7 @@ export default {
       })
         .done(function(response) {
           that.$store.commit('addMessage', { text: response.message, variant: 'success' });
-          that.getProposal();
+          that.getData();
         })
         .fail(function(response) {
           if (response.status === 400) {
@@ -613,7 +585,7 @@ export default {
         .done(function(response) {
           that.$store.commit('addMessage', { text: response.message, variant: 'success' });
           that.getInvitations();
-          that.getProposal();
+          that.getData();
         })
         .fail(function(response) {
           if (response.status === 400) {
@@ -679,7 +651,7 @@ export default {
       })
         .done(function() {
           that.$store.commit('addMessage', { text: 'Membership deleted', variant: 'success' });
-          that.getProposal();
+          that.getData();
         })
         .fail(function(response) {
           if (response.status === 404) {

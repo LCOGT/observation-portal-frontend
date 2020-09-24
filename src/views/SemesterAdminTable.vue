@@ -1,165 +1,152 @@
 <template>
-  <b-row>
-    <b-col>
-      <template v-if="dataLoadError">
-        <p class="text-center my-2">
-          Oops, there was a problem getting your data, please try again
-        </p>
-      </template>
-      <template v-else-if="!dataLoaded">
-        <div class="text-center my-2">
-          <i class="fa fa-spin fa-spinner" />
-        </div>
-      </template>
-      <template v-else-if="dataLoaded && dataNotFound">
-        <not-found />
-      </template>
-      <template v-else>
-        <b-row>
-          <b-col md="8">
-            <b-form inline>
-              <b-form-group id="input-group-semester" label="Semester" label-for="input-semester" class="mx-1">
-                <b-form-select
-                  id="input-semester"
-                  v-model="selectedSemester"
-                  class="mx-1"
-                  :options="semesterOptions"
-                  @input="updateSemester"
-                ></b-form-select>
-              </b-form-group>
-              <b-form-group id="input-group-completed" class="mx-1" label="Completed" label-for="input-completed" label-sr-only>
-                <b-form-checkbox-group
-                  id="input-completed"
-                  v-model="completedCheckbox.selected"
-                  class="mx-1"
-                  :options="completedCheckbox.options"
-                  @input="filterCompleted"
-                ></b-form-checkbox-group>
-              </b-form-group>
-            </b-form>
-          </b-col>
-          <b-col md="4">
-            <b-form>
-              <b-form-group label="Filter" label-sr-only>
-                <b-input-group>
-                  <b-form-input v-model="filter" type="search" placeholder="Search"></b-form-input>
-                  <b-input-group-append>
-                    <b-dropdown id="dropdown-export-table">
-                      <template v-slot:button-content>
-                        <i class="fa fa-fw fa-download" />
-                      </template>
-                      <b-dropdown-item @click="exportTable('json')">JSON</b-dropdown-item>
-                      <b-dropdown-item @click="exportTable('xml')">XML</b-dropdown-item>
-                      <b-dropdown-item @click="exportTable('csv')">CSV</b-dropdown-item>
-                      <b-dropdown-item @click="exportTable('txt')">TXT</b-dropdown-item>
-                      <b-dropdown-item @click="exportTable('sql')">SQL</b-dropdown-item>
-                      <b-dropdown-item @click="exportTable('excel')">MS-Excel</b-dropdown-item>
-                    </b-dropdown>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
-            </b-form>
-          </b-col>
-        </b-row>
-        <b-table
-          id="semester-admin-table"
-          :items="timeallocations"
-          :fields="fields"
-          :filter="filter"
-          striped
-          show-empty
-          responsive
-          foot-clone
-          no-footer-sorting
-          @filtered="onFiltered"
-        >
-          <template v-slot:cell(proposal)="data">
-            <router-link :to="{ name: 'proposalDetail', params: { id: data.item.proposal.id } }">
-              {{ data.item.proposal.id }}
-            </router-link>
-          </template>
-          <template v-slot:foot(proposal)>
-            <span class="font-weight-bold">Total: {{ filteredTimeallocations.length }}</span>
-          </template>
-          <template v-slot:cell(pi)="data">
-            <div v-for="(pi, idx) in data.item.proposal.pis" :key="pi.first_name + pi.last_name + idx">{{ pi.first_name }} {{ pi.last_name }}</div>
-          </template>
-          <template v-slot:cell(std_allocation)="data">
-            {{ data.item.std_allocation | formatFloat(1) }}
-          </template>
-          <template v-slot:foot(std_allocation)>
-            <span class="font-weight-bold">{{ sumFormatter('std_allocation') }}</span>
-          </template>
-          <template v-slot:cell(std_time_used)="data">
-            {{ data.item.std_time_used | formatFloat(1) }}
-          </template>
-          <template v-slot:foot(std_time_used)>
-            <span class="font-weight-bold">{{ sumFormatter('std_time_used') }}</span>
-          </template>
-          <template v-slot:cell(rr_allocation)="data">
-            {{ data.item.rr_allocation | formatFloat(1) }}
-          </template>
-          <template v-slot:foot(rr_allocation)>
-            <span class="font-weight-bold">{{ sumFormatter('rr_allocation') }}</span>
-          </template>
-          <template v-slot:cell(rr_time_used)="data">
-            {{ data.item.rr_time_used | formatFloat(1) }}
-          </template>
-          <template v-slot:foot(rr_time_used)>
-            <span class="font-weight-bold">{{ sumFormatter('rr_time_used') }}</span>
-          </template>
-          <template v-slot:cell(tc_allocation)="data">
-            {{ data.item.tc_allocation | formatFloat(1) }}
-          </template>
-          <template v-slot:foot(tc_allocation)>
-            <span class="font-weight-bold">{{ sumFormatter('tc_allocation') }}</span>
-          </template>
-          <template v-slot:cell(tc_time_used)="data">
-            {{ data.item.tc_time_used | formatFloat(1) }}
-          </template>
-          <template v-slot:foot(tc_time_used)>
-            <span class="font-weight-bold">{{ sumFormatter('tc_time_used') }}</span>
-          </template>
-          <template v-slot:cell(ipp_limit)="data">
-            {{ data.item.ipp_limit | formatFloat(1) }}
-          </template>
-          <template v-slot:foot(ipp_limit)>
-            <span class="font-weight-bold">{{ sumFormatter('ipp_limit') }}</span>
-          </template>
-          <template v-slot:cell(ipp_time_available)="data">
-            {{ data.item.ipp_time_available | formatFloat(1) }}
-          </template>
-          <template v-slot:foot(ipp_time_available)>
-            <span class="font-weight-bold">{{ sumFormatter('ipp_time_available') }}</span>
-          </template>
-          <template v-slot:foot()>
-            <br />
-          </template>
-        </b-table>
-      </template>
-      <!-- These are included for downloading the table data-->
-      <script src="https://cdn.lco.global/script/tableExport.min.js" type="application/javascript"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js" type="application/javascript"></script>
-    </b-col>
-  </b-row>
+  <div>
+    <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+      <b-row>
+        <b-col md="8">
+          <b-form inline>
+            <b-form-group id="input-group-semester" label="Semester" label-for="input-semester" class="mx-1">
+              <b-form-select
+                id="input-semester"
+                v-model="selectedSemester"
+                class="mx-1"
+                :options="semesterOptions"
+                @input="updateSemester"
+              ></b-form-select>
+            </b-form-group>
+            <b-form-group id="input-group-completed" class="mx-1" label="Completed" label-for="input-completed" label-sr-only>
+              <b-form-checkbox-group
+                id="input-completed"
+                v-model="completedCheckbox.selected"
+                class="mx-1"
+                :options="completedCheckbox.options"
+                @input="filterCompleted"
+              ></b-form-checkbox-group>
+            </b-form-group>
+          </b-form>
+        </b-col>
+        <b-col md="4">
+          <b-form>
+            <b-form-group label="Filter" label-sr-only>
+              <b-input-group>
+                <b-form-input v-model="filter" type="search" placeholder="Search"></b-form-input>
+                <b-input-group-append>
+                  <b-dropdown id="dropdown-export-table">
+                    <template v-slot:button-content>
+                      <i class="fa fa-fw fa-download" />
+                    </template>
+                    <b-dropdown-item @click="exportTable('json')">JSON</b-dropdown-item>
+                    <b-dropdown-item @click="exportTable('xml')">XML</b-dropdown-item>
+                    <b-dropdown-item @click="exportTable('csv')">CSV</b-dropdown-item>
+                    <b-dropdown-item @click="exportTable('txt')">TXT</b-dropdown-item>
+                    <b-dropdown-item @click="exportTable('sql')">SQL</b-dropdown-item>
+                    <b-dropdown-item @click="exportTable('excel')">MS-Excel</b-dropdown-item>
+                  </b-dropdown>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
+          </b-form>
+        </b-col>
+      </b-row>
+      <b-table
+        id="semester-admin-table"
+        :items="data"
+        :fields="fields"
+        :filter="filter"
+        striped
+        show-empty
+        responsive
+        foot-clone
+        no-footer-sorting
+        @filtered="onFiltered"
+      >
+        <template v-slot:cell(proposal)="data">
+          <router-link :to="{ name: 'proposalDetail', params: { id: data.item.proposal.id } }">
+            {{ data.item.proposal.id }}
+          </router-link>
+        </template>
+        <template v-slot:foot(proposal)>
+          <span class="font-weight-bold">Total: {{ filteredTimeallocations.length }}</span>
+        </template>
+        <template v-slot:cell(pi)="data">
+          <div v-for="(pi, idx) in data.item.proposal.pis" :key="pi.first_name + pi.last_name + idx">{{ pi.first_name }} {{ pi.last_name }}</div>
+        </template>
+        <template v-slot:cell(std_allocation)="data">
+          {{ data.item.std_allocation | formatFloat(1) }}
+        </template>
+        <template v-slot:foot(std_allocation)>
+          <span class="font-weight-bold">{{ sumFormatter('std_allocation') }}</span>
+        </template>
+        <template v-slot:cell(std_time_used)="data">
+          {{ data.item.std_time_used | formatFloat(1) }}
+        </template>
+        <template v-slot:foot(std_time_used)>
+          <span class="font-weight-bold">{{ sumFormatter('std_time_used') }}</span>
+        </template>
+        <template v-slot:cell(rr_allocation)="data">
+          {{ data.item.rr_allocation | formatFloat(1) }}
+        </template>
+        <template v-slot:foot(rr_allocation)>
+          <span class="font-weight-bold">{{ sumFormatter('rr_allocation') }}</span>
+        </template>
+        <template v-slot:cell(rr_time_used)="data">
+          {{ data.item.rr_time_used | formatFloat(1) }}
+        </template>
+        <template v-slot:foot(rr_time_used)>
+          <span class="font-weight-bold">{{ sumFormatter('rr_time_used') }}</span>
+        </template>
+        <template v-slot:cell(tc_allocation)="data">
+          {{ data.item.tc_allocation | formatFloat(1) }}
+        </template>
+        <template v-slot:foot(tc_allocation)>
+          <span class="font-weight-bold">{{ sumFormatter('tc_allocation') }}</span>
+        </template>
+        <template v-slot:cell(tc_time_used)="data">
+          {{ data.item.tc_time_used | formatFloat(1) }}
+        </template>
+        <template v-slot:foot(tc_time_used)>
+          <span class="font-weight-bold">{{ sumFormatter('tc_time_used') }}</span>
+        </template>
+        <template v-slot:cell(ipp_limit)="data">
+          {{ data.item.ipp_limit | formatFloat(1) }}
+        </template>
+        <template v-slot:foot(ipp_limit)>
+          <span class="font-weight-bold">{{ sumFormatter('ipp_limit') }}</span>
+        </template>
+        <template v-slot:cell(ipp_time_available)="data">
+          {{ data.item.ipp_time_available | formatFloat(1) }}
+        </template>
+        <template v-slot:foot(ipp_time_available)>
+          <span class="font-weight-bold">{{ sumFormatter('ipp_time_available') }}</span>
+        </template>
+        <template v-slot:foot()>
+          <br />
+        </template>
+      </b-table>
+    </data-loader>
+    <!-- These are included for downloading the table data-->
+    <script src="https://cdn.lco.global/script/tableExport.min.js" type="application/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js" type="application/javascript"></script>
+  </div>
 </template>
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
 
 import { formatFloat } from '@/utils.js';
-import NotFound from '@/components/NotFound.vue';
+import DataLoader from '@/components/DataLoader.vue';
+import { getDataListMixin } from '@/components/util/getDataMixins.js';
 
 export default {
   name: 'SemesterAdminTable',
   components: {
-    NotFound
+    DataLoader
   },
   filters: {
     formatFloat: function(value, precision) {
       return formatFloat(value, precision);
     }
   },
+  mixins: [getDataListMixin],
   props: {
     id: {
       type: String,
@@ -169,10 +156,6 @@ export default {
   data: function() {
     let that = this;
     return {
-      timeallocations: [],
-      dataLoadError: false,
-      dataLoaded: false,
-      dataNotFound: false,
       semesters: { count: 0, results: [] },
       selectedSemester: this.id,
       completedCheckbox: {
@@ -315,19 +298,26 @@ export default {
   },
   watch: {
     $route: function() {
-      this.getTimeAllocations();
+      this.setDataEndpoint(this.generateDataEndpoint());
+      this.getData();
       this.selectedSemester = this.id;
     },
-    timeallocations: function(newTimeallocations) {
+    data: function(newTimeallocations) {
       this.filter = '';
+      this.completedCheckbox.selected = [];
       this.filteredTimeallocations = newTimeallocations;
     }
   },
   created: function() {
-    this.getTimeAllocations();
     this.getSemesters();
   },
   methods: {
+    initializeDataEndpoint: function() {
+      return this.generateDataEndpoint();
+    },
+    generateDataEndpoint: function() {
+      return '/api/semesters/' + this.id + '/timeallocations/';
+    },
     sumFormatter: function(field) {
       let data = _.map(this.filteredTimeallocations, field);
       return formatFloat(_.sum(data), 3);
@@ -342,28 +332,6 @@ export default {
       }).done(function(response) {
         that.semesters = response;
       });
-    },
-    getTimeAllocations: function() {
-      this.dataLoaded = false;
-      this.dataLoadError = false;
-      this.dataNotFound = false;
-      let that = this;
-      $.ajax({
-        url: this.observationPortalApiUrl + '/api/semesters/' + this.id + '/timeallocations/'
-      })
-        .done(function(response) {
-          that.timeallocations = response;
-        })
-        .fail(function(response) {
-          if (response.status === 404) {
-            that.dataNotFound = true;
-          } else {
-            that.dataLoadError = true;
-          }
-        })
-        .always(function() {
-          that.dataLoaded = true;
-        });
     },
     updateSemester: function(value) {
       this.$router.push({ name: 'semesterAdminTable', params: { id: value } });
