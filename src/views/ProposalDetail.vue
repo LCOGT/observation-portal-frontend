@@ -37,86 +37,8 @@
             </small>
           </h4>
           <b-collapse id="collapse-cois" visible>
-            <div id="cilist">
-              <br />
-              <b-form-group v-if="paginateCoInvestigatorTable" label="Filter" label-for="CoIfilterInput" label-sr-only>
-                <b-input-group>
-                  <b-form-input id="CoIfilterInput" v-model="coInvestigatorTable.filter" type="search" placeholder="Type to Search"></b-form-input>
-                  <b-input-group-append>
-                    <b-button :disabled="!coInvestigatorTable.filter" @click="coInvestigatorTable.filter = ''">Clear</b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
-              <b-table
-                id="coinvestigator-table"
-                :items="coInvestigators"
-                :fields="coInvestigatorTable.fields"
-                :per-page="coInvestigatorTable.perPage"
-                :current-page="coInvestigatorTable.currentPage"
-                :filter-included-fields="coInvestigatorTable.filterOn"
-                :filter="coInvestigatorTable.filter"
-                responsive
-                @filtered="onFiltered"
-              >
-                <template v-slot:cell(remove_member)="data">
-                  <b-link
-                    href="#"
-                    :disabled="deleteMembership.isBusy"
-                    @click="
-                      confirm(getMembershipDeleteConfirmationMessage(data.item.email), deleteCoInvestigatorMembership, { membershipId: data.item.id })
-                    "
-                  >
-                    <i class="fa fa-trash"></i>
-                  </b-link>
-                </template>
-                <template v-slot:cell(simple_interface)="data">
-                  <i v-if="data.item.simple_interface" class="fa fa-check"></i>
-                </template>
-                <template v-slot:cell(email)="data">
-                  <a :href="'mailto:' + data.item.email">{{ data.item.email }}</a>
-                </template>
-                <template v-slot:cell(time_limit)="data">
-                  <span v-if="data.item.time_limit < 0">No Limit</span>
-                  <span v-else>{{ (data.item.time_limit / 3600) | formatFloat(3) }}</span>
-                  <template v-if="userIsPI">
-                    <b-link v-b-toggle="'collapse-' + data.item.username" href="#"><i class="fas fa-edit"></i></b-link>
-                    <b-collapse :id="'collapse-' + data.item.username">
-                      <b-form>
-                        <b-form-group>
-                          <b-form-input
-                            :id="'dropdown-form-user-limit-' + data.item.username"
-                            v-model="limit.timeLimitPerUser[data.item.id]"
-                            type="number"
-                            size="sm"
-                            min="0"
-                            step="0.01"
-                            placeholder="Hours"
-                          ></b-form-input>
-                        </b-form-group>
-                        <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="resetUserLimit(data.item.id)">
-                          Remove Limit
-                        </b-button>
-                        <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="setUserLimit(data.item.id)">
-                          Set Limit
-                        </b-button>
-                      </b-form>
-                    </b-collapse>
-                  </template>
-                </template>
-                <template v-slot:cell(time_used_by_user)="data">
-                  {{ data.item.time_used_by_user | formatFloat(3) }}
-                </template>
-              </b-table>
-              <custom-pagination
-                v-if="paginateCoInvestigatorTable"
-                table-id="coinvestigator-table"
-                :total-rows="coInvestigatorTable.totalRows"
-                :per-page="coInvestigatorTable.perPage"
-                :current-page="coInvestigatorTable.currentPage"
-                @pageChange="onPageChange"
-              ></custom-pagination>
-              <br />
-            </div>
+            <co-investigator-table :key="coInvestigatorTableKey" :user-is-p-i="userIsPI" :proposal-id="id" :proposal-is-public="data.public">
+            </co-investigator-table>
           </b-collapse>
         </template>
         <h4>Time Allocation</h4>
@@ -191,11 +113,11 @@
       </div>
       <b-form @submit="updateProposalNotification">
         <b-form-group id="checkbox-group-proposal-notification" label-for="checkbox-proposal-notification">
-          <b-form-checkbox id="checkbox-proposal-notification" v-model="proposalNotifications.enabled">
+          <b-form-checkbox id="checkbox-proposal-notification" v-model="proposalNotification.enabled">
             Notifications enabled
           </b-form-checkbox>
         </b-form-group>
-        <b-button type="submit" variant="primary" :disabled="proposalNotifications.isBusy">
+        <b-button type="submit" variant="primary" :disabled="proposalNotification.isBusy">
           Save
         </b-button>
       </b-form>
@@ -214,7 +136,7 @@
           <b-form-group id="input-group-global-time-limit" label-for="input-global-time-limit" label="Global Limit (Hours)" label-sr-only>
             <b-form-input
               id="input-global-time-limit"
-              v-model="limit.globalTimeLimit"
+              v-model="globallimit.timeLimit"
               type="number"
               min="0"
               step="0.01"
@@ -222,60 +144,25 @@
               required
             />
           </b-form-group>
-          <b-button type="reset" variant="outline-secondary" :disabled="limit.isBusy">
+          <b-button type="reset" variant="outline-secondary" :disabled="globallimit.isBusy">
             Remove Limit
           </b-button>
-          <b-button type="submit" variant="outline-secondary" :disabled="limit.isBusy">
+          <b-button type="submit" variant="outline-secondary" :disabled="globallimit.isBusy">
             Set Global Limit
           </b-button>
         </b-form>
         <br />
         <strong>Invite Co-Investigators</strong>
-        <div class="help-block">
-          <!-- TODO: translate -->
-          Invite co-investigators by entering their email address below and pressing "add". If you would like to add multiple address at once, enter
-          them below, comma separated. If the user is already registered with LCO, they will be added to this proposal. If not, they will be invited.
-        </div>
-        <b-form @submit="inviteCoInvestigators">
-          <b-form-group
-            id="input-group-invite-co-investigator"
-            label-for="input-invite-co-investigator"
-            label="Invite a Co-Investigator"
-            label-sr-only
-          >
-            <b-form-input id="input-invite-co-investigator" v-model="invite.emailAddresses" placeholder="Email Address(s)" required />
-          </b-form-group>
-          <b-button type="submit" variant="outline-secondary" :disabled="invite.isBusy">
-            Add
-          </b-button>
-        </b-form>
+        <invite-co-investigators-form
+          :proposal-id="id"
+          :user-is-p-i="userIsPI"
+          @coInvestigatorsInvited="onCoInvestigatorsInvited"
+        ></invite-co-investigators-form>
         <br />
         <dl>
           <!-- TODO: Translate this -->
           <dt>Pending Invitations</dt>
-          <template v-if="invitationsList.isBusy">
-            <div class="text-center my-2">
-              <i class="fa fa-spin fa-spinner" />
-            </div>
-          </template>
-          <template v-else-if="pendingInvitations.length > 0">
-            <dd v-for="invitation in pendingInvitations" :key="invitation.id">
-              <div>
-                <a :href="'mailto:' + invitation.email">{{ invitation.email }}</a>
-              </div>
-              <div>Invited: {{ invitation.sent | formatDate }}</div>
-              <b-link
-                :disabled="deleteInvite.isBusy"
-                @click="confirm(getDeleteInvitationConfirmationMessage(invitation.email), deleteInvitation, { invitationId: invitation.id })"
-              >
-                Delete Invitation
-              </b-link>
-            </dd>
-            <br />
-          </template>
-          <template v-else>
-            <p>No pending invitations.</p>
-          </template>
+          <proposal-invitations :key="proposalInvitationsListKey" :user-is-p-i="userIsPI" :proposal-id="id"></proposal-invitations>
         </dl>
       </template>
     </b-col>
@@ -285,26 +172,28 @@
 import _ from 'lodash';
 import $ from 'jquery';
 
-import { formatFloat, formatDate } from '@/utils.js';
-import CustomPagination from '@/components/util/CustomPagination.vue';
+import { formatFloat } from '@/utils.js';
 import DataLoader from '@/components/DataLoader.vue';
+import CoInvestigatorTable from '@/components/CoInvestigatorTable.vue';
+import ProposalInvitations from '@/components/ProposalInvitations.vue';
+import InviteCoInvestigatorsForm from '@/components/InviteCoInvestigatorsForm.vue';
 import { getDataMixin } from '@/components/util/getDataMixins.js';
+import { confirmMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'ProposalDetail',
   filters: {
     formatFloat: function(value, precision) {
       return formatFloat(value, precision);
-    },
-    formatDate: function(date) {
-      return formatDate(date);
     }
   },
   components: {
     DataLoader,
-    CustomPagination
+    CoInvestigatorTable,
+    ProposalInvitations,
+    InviteCoInvestigatorsForm
   },
-  mixins: [getDataMixin],
+  mixins: [getDataMixin, confirmMixin],
   props: {
     id: {
       type: String,
@@ -313,63 +202,19 @@ export default {
   },
   data: function() {
     return {
-      invitations: [],
-      coInvestigatorTable: {
-        perPage: 25,
-        currentPage: 1,
-        totalRows: 0,
-        filterOn: ['first_name', 'last_name', 'username', 'email'],
-        filter: null,
-        fields: [
-          {
-            key: 'first_name',
-            sortable: true
-          },
-          {
-            key: 'last_name',
-            sortable: true
-          },
-          {
-            key: 'username',
-            label: 'UserId',
-            sortable: true
-          },
-          {
-            key: 'email',
-            sortable: true
-          },
-          {
-            key: 'time_limit',
-            label: 'Hour Limit',
-            sortable: true
-          },
-          {
-            key: 'time_used_by_user',
-            label: 'Hours Requested',
-            sortable: true
-          }
-        ]
-      },
-      proposalNotifications: {
+      // Changing this key forces a reload of the CoInvestigator table
+      coInvestigatorTableKey: 0,
+      // Changing this key forces a reload of the pending invitations list
+      proposalInvitationsListKey: 0,
+      proposalNotification: {
         enabled: false,
         isBusy: false
       },
-      limit: {
-        timeLimitPerUser: {}, // Keys are membership IDs, values are time limit
-        globalTimeLimit: null,
-        isBusy: false
-      },
-      invite: {
-        emailAddresses: '',
-        isBusy: false
-      },
-      deleteInvite: {
+      globallimit: {
+        timeLimit: null,
         isBusy: false
       },
       deleteMembership: {
-        isBusy: false
-      },
-      invitationsList: {
         isBusy: false
       }
     };
@@ -381,14 +226,8 @@ export default {
     archiveLink: function() {
       return this.$store.state.urls.archiveApi + '?PROPID=' + this.id;
     },
-    coInvestigators: function() {
-      return _.filter(this.data.users, { role: 'CI' });
-    },
-    paginateCoInvestigatorTable: function() {
-      return this.coInvestigators.length > 25;
-    },
     principleInvestigators: function() {
-      return _.filter(this.data.users, { role: 'PI' });
+      return _.get(this.data, 'pis', []);
     },
     userIsPI: function() {
       for (let pi of this.principleInvestigators) {
@@ -400,72 +239,16 @@ export default {
     },
     timeallocationsBySemester: function() {
       return _.groupBy(this.data.timeallocation_set, 'semester');
-    },
-    pendingInvitations: function() {
-      return _.filter(this.invitations, function(invitation) {
-        return !invitation.used ? true : false;
-      });
-    }
-  },
-  watch: {
-    coInvestigators: function(newCois) {
-      this.coInvestigatorTable.totalRows = newCois.length;
-      for (let coi of newCois) {
-        if (coi.time_limit >= 0) {
-          this.limit.timeLimitPerUser[coi.id] = coi.time_limit / 3600;
-        } else {
-          this.limit.timeLimitPerUser[coi.id] = null;
-        }
-      }
-    },
-    data: function(proposal) {
-      let fieldDefinition = { key: 'simple_interface' };
-      if (proposal.public && !this.fieldAlreadyExists(fieldDefinition.key)) {
-        this.coInvestigatorTable.fields.push(fieldDefinition);
-      }
-    },
-    userIsPI: function(userIsPI) {
-      let fieldDefinition = { key: 'remove_member', label: 'Remove' };
-      if (userIsPI && !this.fieldAlreadyExists(fieldDefinition.key)) {
-        this.coInvestigatorTable.fields.push(fieldDefinition);
-      }
     }
   },
   created: function() {
-    this.getInvitations();
     if (this.$store.state.profile.proposal_notifications.indexOf(this.id) > -1) {
-      this.proposalNotifications.enabled = true;
+      this.proposalNotification.enabled = true;
     }
   },
   methods: {
     initializeDataEndpoint: function() {
       return '/api/proposals/' + this.id + '/';
-    },
-    initializeDataType: function() {
-      return 'detail';
-    },
-    fieldAlreadyExists: function(key) {
-      let fieldAlreadyExists = false;
-      for (let field of this.coInvestigatorTable.fields) {
-        if (field.key === key) {
-          fieldAlreadyExists = true;
-          break;
-        }
-      }
-      return fieldAlreadyExists;
-    },
-    getInvitations: function() {
-      this.invitationsList.isBusy = true;
-      let that = this;
-      $.ajax({
-        url: this.observationPortalApiUrl + '/api/invitations/?proposal=' + this.id
-      })
-        .done(function(response) {
-          that.invitations = response.results;
-        })
-        .always(function() {
-          that.invitationsList.isBusy = false;
-        });
     },
     clearMessages: function() {
       this.$store.commit('clearAllMessages');
@@ -473,12 +256,12 @@ export default {
     updateProposalNotification: function(evt) {
       evt.preventDefault();
       this.clearMessages();
-      this.proposalNotifications.isBusy = true;
+      this.proposalNotification.isBusy = true;
       let that = this;
       $.ajax({
         method: 'POST',
         url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/notification/',
-        data: { enabled: this.proposalNotifications.enabled }
+        data: { enabled: this.proposalNotification.enabled }
       })
         .done(function(response) {
           that.$store.dispatch('getProfileData');
@@ -488,22 +271,21 @@ export default {
           that.$store.commit('addMessage', { text: 'There was a problem updating your proposal notification, please try again', variant: 'danger' });
         })
         .always(function() {
-          that.proposalNotifications.isBusy = false;
+          that.proposalNotification.isBusy = false;
         });
     },
-    setMembershipLimit: function(membershipLimitPostData) {
+    setGlobalMembershipLimit: function(timeLimitHours) {
       this.clearMessages();
-      this.limit.isBusy = true;
+      this.globallimit.isBusy = true;
       let that = this;
       $.ajax({
         method: 'POST',
-        url: this.observationPortalApiUrl + '/api/memberships/limit/',
-        contentType: 'application/json',
-        data: JSON.stringify(membershipLimitPostData)
+        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/globallimit/',
+        data: { time_limit_hours: timeLimitHours }
       })
         .done(function(response) {
           that.$store.commit('addMessage', { text: response.message, variant: 'success' });
-          that.getData();
+          that.reloadCoInvestigatorTable();
         })
         .fail(function(response) {
           if (response.status === 400) {
@@ -516,164 +298,29 @@ export default {
           }
         })
         .always(function() {
-          that.limit.isBusy = false;
+          that.globallimit.isBusy = false;
         });
     },
-    setGlobalLimit: function(evt, globalTimeLimit) {
+    reloadCoInvestigatorTable: function() {
+      this.coInvestigatorTableKey += 1;
+    },
+    reloadProposalInvitationsList: function() {
+      this.proposalInvitationsListKey += 1;
+    },
+    onCoInvestigatorsInvited: function() {
+      this.reloadCoInvestigatorTable();
+      this.reloadProposalInvitationsList();
+    },
+    setGlobalLimit: function(evt) {
       evt.preventDefault();
-      this.setMembershipLimit({
-        time_limit_hours: globalTimeLimit || this.limit.globalTimeLimit,
-        membership_ids: _.map(this.coInvestigators, 'id')
-      });
-      this.limit.globalTimeLimit = null;
+      this.setGlobalMembershipLimit(this.globallimit.timeLimit);
+      this.globallimit.timeLimit = null;
     },
     resetGlobalLimit: function(evt) {
-      // A negative number means no limit
-      this.setGlobalLimit(evt, -1);
-    },
-    setUserLimit: function(membershipId, timeLimit) {
-      this.setMembershipLimit({
-        time_limit_hours: timeLimit || this.limit.timeLimitPerUser[membershipId],
-        membership_ids: [membershipId]
-      });
-    },
-    resetUserLimit: function(membershipId) {
-      // A negative number means no limit
-      this.setUserLimit(membershipId, -1);
-    },
-    parseInviteBadRequestErrors: function(emails, errors) {
-      // Put the errors returned from a bad request to send out invitations into a list of
-      // strings that are useful to the user.
-      let errorMessages = [];
-      for (let error in errors) {
-        if (error === 'emails') {
-          for (let invalidEmailIndex in errors[error]) {
-            let message;
-            if (errors[error] instanceof Array) {
-              message = errors[error].join(',');
-            } else {
-              message = errors[error][invalidEmailIndex];
-            }
-            errorMessages.push(emails[invalidEmailIndex] + ': ' + message);
-          }
-        } else {
-          errorMessages.push(errors[error]);
-        }
-      }
-      return errorMessages;
-    },
-    getArrayOfEmailsToInvite: function() {
-      // Remove whitespace from the comma-separated emails that the user entered, and
-      // turn it into an array of email addresses
-      let emails = _.replace(this.invite.emailAddresses, /\s/g, '');
-      emails = _.trim(emails, ',');
-      emails = _.split(emails, ',');
-      return emails;
-    },
-    inviteCoInvestigators: function(evt) {
       evt.preventDefault();
-      this.clearMessages();
-      this.invite.isBusy = true;
-      let emails = this.getArrayOfEmailsToInvite();
-      let that = this;
-      $.ajax({
-        method: 'POST',
-        url: this.observationPortalApiUrl + '/api/proposals/' + this.id + '/invite/',
-        data: JSON.stringify({ emails: emails }),
-        contentType: 'application/json'
-      })
-        .done(function(response) {
-          that.$store.commit('addMessage', { text: response.message, variant: 'success' });
-          that.getInvitations();
-          that.getData();
-        })
-        .fail(function(response) {
-          if (response.status === 400) {
-            for (let errorMessage of that.parseInviteBadRequestErrors(emails, response.responseJSON)) {
-              that.$store.commit('addMessage', { text: errorMessage, variant: 'danger' });
-            }
-          } else {
-            that.$store.commit('addMessage', { text: 'There was a problem adding co-investigators, please try again', variant: 'danger' });
-          }
-        })
-        .always(function() {
-          that.invite.isBusy = false;
-        });
-    },
-    confirm: function(confirmationMessage, callback, args) {
-      // Display a modal where the user can either proceed or cancel running the callback
-      this.$bvModal.msgBoxConfirm(confirmationMessage).then(proceed => {
-        if (proceed) {
-          callback(args);
-        }
-      });
-    },
-    getDeleteInvitationConfirmationMessage: function(email) {
-      return 'Are you sure you want to delete the invitation for ' + email + ' for this proposal?';
-    },
-    deleteInvitation: function(args) {
-      this.clearMessages();
-      this.deleteInvite.isBusy = true;
-      let that = this;
-      $.ajax({
-        method: 'DELETE',
-        url: this.observationPortalApiUrl + '/api/invitations/' + args.invitationId + '/'
-      })
-        .done(function() {
-          that.$store.commit('addMessage', { text: 'Invitation deleted', variant: 'success' });
-          that.getInvitations();
-        })
-        .fail(function(response) {
-          if (response.status === 404) {
-            // The proposal invitation does not exist, maybe it was deleted while this page was open.
-            that.$store.commit('addMessage', {
-              text: 'The invitation that you tried to delete does not exist, please try refreshing your page to get an updated list',
-              variant: 'danger'
-            });
-          } else {
-            that.$store.commit('addMessage', { text: 'There was a problem deleting the invitation, please try again', variant: 'danger' });
-          }
-        })
-        .always(function() {
-          that.deleteInvite.isBusy = false;
-        });
-    },
-    getMembershipDeleteConfirmationMessage: function(email) {
-      return 'Are you sure you want to remove ' + email + ' from this proposal?';
-    },
-    deleteCoInvestigatorMembership: function(args) {
-      this.clearMessages();
-      this.deleteMembership.isBusy = true;
-      let that = this;
-      $.ajax({
-        method: 'DELETE',
-        url: this.observationPortalApiUrl + '/api/memberships/' + args.membershipId + '/'
-      })
-        .done(function() {
-          that.$store.commit('addMessage', { text: 'Membership deleted', variant: 'success' });
-          that.getData();
-        })
-        .fail(function(response) {
-          if (response.status === 404) {
-            that.$store.commit('addMessage', {
-              text: 'The membership that you tried to delete does not exist, please try refreshing your page to get an updated list',
-              variant: 'danger'
-            });
-          } else {
-            that.$store.commit('addMessage', { text: 'There was a problem deleting the membership, please try again', variant: 'danger' });
-          }
-        })
-        .always(function() {
-          that.deleteMembership.isBusy = false;
-        });
-    },
-    onFiltered: function(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
-      this.coInvestigatorTable.totalRows = filteredItems.length;
-      this.coInvestigatorTable.currentPage = 1;
-    },
-    onPageChange: function(newPage) {
-      this.coInvestigatorTable.currentPage = newPage;
+      // A negative number means no limit
+      this.setGlobalMembershipLimit(-1);
+      this.globallimit.timeLimit = null;
     }
   }
 };

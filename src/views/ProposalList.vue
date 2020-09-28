@@ -52,7 +52,7 @@
           </template>
           <template v-slot:cell(pi)="data">
             <div v-for="pi in getPrincipleInvestigators(data.item)" :key="pi">
-              {{ pi }}
+              {{ pi.username }}
             </div>
           </template>
           <template v-slot:cell(coi)="data">
@@ -164,22 +164,10 @@ export default {
       });
     },
     getPrincipleInvestigators: function(proposal) {
-      let pis = [];
-      for (let member in proposal.users) {
-        if (proposal.users[member].role === 'PI') {
-          pis.push(member);
-        }
-      }
-      return pis;
+      return _.get(proposal, 'pis', []);
     },
     getNumberOfCoInvestigators: function(proposal) {
-      let nCois = 0;
-      for (let member in proposal.users) {
-        if (proposal.users[member].role === 'CI') {
-          nCois++;
-        }
-      }
-      return nCois;
+      return _.get(proposal, 'coi_count', 0);
     }
   }
 };

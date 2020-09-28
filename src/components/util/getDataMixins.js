@@ -92,7 +92,7 @@ export var getDataListMixin = {
     },
     initializeSetNotFoundOnEmptyList: function() {
       // Override this to return true if the desired behavior is to set that data is not found
-      // when an empty list is returned. 
+      // when an empty list is returned.
       return false;
     },
     successCallback(response) {
