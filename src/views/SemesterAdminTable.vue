@@ -1,6 +1,6 @@
 <template>
   <div>
-    <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound" :load-error-message="loadErrorMessage">
       <b-row>
         <b-col md="8">
           <b-form inline>
@@ -30,7 +30,7 @@
               <b-input-group>
                 <b-form-input v-model="filter" type="search" placeholder="Search"></b-form-input>
                 <b-input-group-append>
-                  <b-dropdown id="dropdown-export-table">
+                  <b-dropdown id="dropdown-export-table" right>
                     <template v-slot:button-content>
                       <i class="fa fa-fw fa-download" />
                     </template>
@@ -158,6 +158,7 @@ export default {
     return {
       semesters: { count: 0, results: [] },
       selectedSemester: this.id,
+      loadErrorMessage: 'Oops, there was a problem getting your data. Please try again.',
       completedCheckbox: {
         options: [{ text: 'Completed', value: true }],
         selected: []
@@ -317,6 +318,16 @@ export default {
     },
     generateDataEndpoint: function() {
       return '/api/semesters/' + this.id + '/timeallocations/';
+    },
+    failCallback: function(response) {
+      if (response.status === 404) {
+        this.dataNotFound = true;
+      } else if (response.status === 403) {
+        this.dataLoadError = true;
+        this.loadErrorMessage = 'You do not have permission to view this page.';
+      } else {
+        this.dataLoadError = true;
+      }
     },
     sumFormatter: function(field) {
       let data = _.map(this.filteredTimeallocations, field);

@@ -6,6 +6,10 @@
         <p>
           Below is a list of all proposals for which you are either the principal investigator (PI) or a co-investigator.
         </p>
+        <p v-if="isStaff">
+          With staff view enabled, you will see all proposals in the list. This setting can be updated on your
+          <router-link :to="{ name: 'profile' }">profile page</router-link>.
+        </p>
         <p>Click on a Proposal ID to view details and (if you are the PI) manage co-investigators.</p>
         <template v-if="isStaff && semesterAdminTableSemester.id">
           Admin only:
@@ -51,7 +55,7 @@
             <router-link :to="{ name: 'proposalDetail', params: { id: data.item.id } }">{{ data.item.id }}</router-link>
           </template>
           <template v-slot:cell(pi)="data">
-            <div v-for="pi in getPrincipleInvestigators(data.item)" :key="pi">
+            <div v-for="pi in getPrincipleInvestigators(data.item)" :key="pi.username">
               {{ pi.username }}
             </div>
           </template>
@@ -140,7 +144,7 @@ export default {
     },
     initializeDefaultQueryParams: function() {
       const defaultQueryParams = {
-        active: '',
+        active: 'True',
         semester: '',
         limit: 50,
         offset: 0

@@ -68,7 +68,8 @@ const routes = [
     component: SemesterAdminTable,
     props: true,
     meta: {
-      isFluidPage: true
+      isFluidPage: true,
+      requiresAuth: true
     }
   },
   {

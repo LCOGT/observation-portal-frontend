@@ -4,14 +4,14 @@
       <div>
         <br />
         <b-form inline @submit="onSubmit">
-          <b-input-group id="input-group-username" class="col-md p-1" label="Username contains" label-for="input-username" label-sr-only>
-            <b-form-input id="input-username" v-model="queryParams.username" placeholder="Username"></b-form-input>
-          </b-input-group>
           <b-input-group id="input-group-first-name" class="col-md p-1" label="First name contains" label-for="input-first-name" label-sr-only>
             <b-form-input id="input-first-name" v-model="queryParams.first_name" placeholder="First name contains"></b-form-input>
           </b-input-group>
           <b-input-group id="input-group-last-name" class="col-md p-1" label="Last name contains" label-for="input-last-name" label-sr-only>
             <b-form-input id="input-last-name" v-model="queryParams.last_name" placeholder="Last name contains"></b-form-input>
+          </b-input-group>
+          <b-input-group id="input-group-username" class="col-md p-1" label="Username contains" label-for="input-username" label-sr-only>
+            <b-form-input id="input-username" v-model="queryParams.username" placeholder="Username contains"></b-form-input>
           </b-input-group>
           <b-input-group id="input-group-email" class="col-md p-1" label="Email contains" label-for="input-email" label-sr-only>
             <b-form-input id="input-email" v-model="queryParams.email" placeholder="Email contains"></b-form-input>
@@ -134,6 +134,7 @@ export default {
     }
   },
   data: function() {
+    let simpleInterfaceClass = this.proposalIsPublic ? '' : 'd-none';
     let fields = [
       {
         key: 'first_name'
@@ -157,13 +158,15 @@ export default {
         label: 'Hours Requested'
       },
       {
+        key: 'simple_interface',
+        tdClass: simpleInterfaceClass,
+        thClass: simpleInterfaceClass
+      },
+      {
         key: 'remove_member',
         label: 'Remove'
       }
     ];
-    if (this.proposalIsPublic) {
-      fields.push({ key: 'simple_interface' });
-    }
     return {
       deleteMembership: {
         isBusy: false

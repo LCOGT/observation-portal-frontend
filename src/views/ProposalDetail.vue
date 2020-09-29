@@ -66,33 +66,33 @@
                   <td colspan="2"></td>
                   <td>Standard</td>
                   <td>
-                    <div class="progress">
-                      <div class="progress-bar" role="progress-bar">
-                        {{ timeallocation.std_time_used | formatFloat(1) }}/{{ timeallocation.std_allocation | formatFloat(1) }}
-                      </div>
-                    </div>
+                    <b-progress :max="timeallocation.std_allocation">
+                      <b-progress-bar :value="timeallocation.std_time_used" class="progress-style">
+                        <span>{{ timeallocation.std_time_used | formatFloat(1) }}/{{ timeallocation.std_allocation | formatFloat(1) }}</span>
+                      </b-progress-bar>
+                    </b-progress>
                   </td>
                 </tr>
                 <tr :key="semester + '-tc-time-' + idx">
                   <td colspan="2"></td>
                   <td>Time Critical</td>
                   <td>
-                    <div class="progress">
-                      <div class="progress-bar" role="progress-bar">
-                        {{ timeallocation.tc_time_used | formatFloat(1) }}/{{ timeallocation.tc_allocation | formatFloat(1) }}
-                      </div>
-                    </div>
+                    <b-progress class="progress-text" :max="timeallocation.tc_allocation">
+                      <b-progress-bar :value="timeallocation.tc_time_used" class="progress-style">
+                        <span>{{ timeallocation.tc_time_used | formatFloat(1) }}/{{ timeallocation.tc_allocation | formatFloat(1) }}</span>
+                      </b-progress-bar>
+                    </b-progress>
                   </td>
                 </tr>
                 <tr :key="semester + '-rr-time-' + idx">
                   <td colspan="2"></td>
                   <td>Rapid Response</td>
                   <td>
-                    <div class="progress">
-                      <div class="progress-bar" role="progress-bar">
-                        {{ timeallocation.rr_time_used | formatFloat(1) }}/{{ timeallocation.rr_allocation | formatFloat(1) }}
-                      </div>
-                    </div>
+                    <b-progress :max="timeallocation.rr_allocation">
+                      <b-progress-bar :value="timeallocation.rr_time_used" class="progress-style">
+                        <span>{{ timeallocation.rr_time_used | formatFloat(1) }}/{{ timeallocation.rr_allocation | formatFloat(1) }}</span>
+                      </b-progress-bar>
+                    </b-progress>
                   </td>
                 </tr>
                 <tr :key="semester + '-ipp-' + idx">
@@ -224,7 +224,7 @@ export default {
       return this.$store.state.urls.observationPortalApi;
     },
     archiveLink: function() {
-      return this.$store.state.urls.archiveApi + '?PROPID=' + this.id;
+      return this.$store.state.urls.archiveClient + '?PROPID=' + this.id;
     },
     principleInvestigators: function() {
       return _.get(this.data, 'pis', []);
@@ -336,5 +336,8 @@ ul {
 }
 #input-global-time-limit {
   width: 90px;
+}
+.progress-style {
+  min-width: 3em;
 }
 </style>
