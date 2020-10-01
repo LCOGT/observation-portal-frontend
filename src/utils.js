@@ -247,6 +247,7 @@ function formatValue(value) {
 }
 
 function formatFloat(value, precision) {
+  /* Round a number and format it the given precision */
   let valueAsNumber = Number(value);
   precision = precision || 0;
   if (valueAsNumber === 0 || valueAsNumber) {
