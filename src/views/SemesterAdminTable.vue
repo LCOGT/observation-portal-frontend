@@ -1,6 +1,6 @@
 <template>
   <div>
-    <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound" :load-error-message="loadErrorMessage">
+    <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
       <b-row>
         <b-col md="8">
           <b-form inline>
@@ -158,7 +158,6 @@ export default {
     return {
       semesters: { count: 0, results: [] },
       selectedSemester: this.id,
-      loadErrorMessage: 'Oops, there was a problem getting your data. Please try again.',
       completedCheckbox: {
         options: [{ text: 'Completed', value: true }],
         selected: []
@@ -318,16 +317,6 @@ export default {
     },
     generateDataEndpoint: function() {
       return '/api/semesters/' + this.id + '/timeallocations/';
-    },
-    failCallback: function(response) {
-      if (response.status === 404) {
-        this.dataNotFound = true;
-      } else if (response.status === 403) {
-        this.dataLoadError = true;
-        this.loadErrorMessage = 'You do not have permission to view this page.';
-      } else {
-        this.dataLoadError = true;
-      }
     },
     sumFormatter: function(field) {
       let data = _.map(this.filteredTimeallocations, field);

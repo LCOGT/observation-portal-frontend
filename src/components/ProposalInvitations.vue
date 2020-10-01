@@ -1,27 +1,29 @@
 <template>
   <b-container class="p-0">
-    <template v-if="!dataLoaded">
-      <div class="text-center my-2">
-        <i class="fa fa-spin fa-spinner" />
-      </div>
-    </template>
-    <template v-else-if="data.results.length > 0">
-      <dd v-for="invitation in data.results" :key="invitation.id">
-        <div>
-          <a :href="'mailto:' + invitation.email">{{ invitation.email }}</a>
+    <template v-if="userIsPI">
+      <template v-if="!dataLoaded">
+        <div class="text-center my-2">
+          <i class="fa fa-spin fa-spinner" />
         </div>
-        <div>Invited: {{ invitation.sent | formatDate }}</div>
-        <b-link
-          :disabled="deleteInvite.isBusy"
-          @click="confirm(getDeleteInvitationConfirmationMessage(invitation.email), deleteInvitation, { invitationId: invitation.id })"
-        >
-          Delete Invitation
-        </b-link>
-      </dd>
-      <br />
-    </template>
-    <template v-else>
-      <p>No pending invitations.</p>
+      </template>
+      <template v-else-if="data.results.length > 0">
+        <dd v-for="invitation in data.results" :key="invitation.id">
+          <div>
+            <a :href="'mailto:' + invitation.email">{{ invitation.email }}</a>
+          </div>
+          <div>Invited: {{ invitation.sent | formatDate }}</div>
+          <b-link
+            :disabled="deleteInvite.isBusy"
+            @click="confirm(getDeleteInvitationConfirmationMessage(invitation.email), deleteInvitation, { invitationId: invitation.id })"
+          >
+            Delete Invitation
+          </b-link>
+        </dd>
+        <br />
+      </template>
+      <template v-else>
+        <p>No pending invitations.</p>
+      </template>
     </template>
   </b-container>
 </template>
@@ -47,11 +49,7 @@ export default {
     },
     userIsPI: {
       type: Boolean,
-      required: true,
-      validator: function(value) {
-        // The user must be the principle investigator on the proposal
-        return [true].indexOf(value) !== -1;
-      }
+      required: true
     }
   },
   data: function() {

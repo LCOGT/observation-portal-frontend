@@ -126,11 +126,7 @@ export default {
     },
     userIsPI: {
       type: Boolean,
-      required: true,
-      validator: function(value) {
-        // The user must be the principle investigator on the proposal
-        return [true].indexOf(value) !== -1;
-      }
+      required: true
     }
   },
   data: function() {

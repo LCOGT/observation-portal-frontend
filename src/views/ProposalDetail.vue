@@ -1,7 +1,7 @@
 <template>
-  <b-row>
-    <b-col md="8">
-      <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+  <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <b-row>
+      <b-col md="8">
         <h3>
           {{ data.id }} <small>{{ data.title }}</small>
         </h3>
@@ -104,69 +104,69 @@
             </template>
           </tbody>
         </table>
-      </data-loader>
-    </b-col>
-    <b-col md="4">
-      <strong>Email Notifications</strong>
-      <div class="help-block">
-        You will recieve notifications whenever a requested observation on this proposal is completed.
-      </div>
-      <b-form @submit="updateProposalNotification">
-        <b-form-group id="checkbox-group-proposal-notification" label-for="checkbox-proposal-notification">
-          <b-form-checkbox id="checkbox-proposal-notification" v-model="proposalNotification.enabled">
-            Notifications enabled
-          </b-form-checkbox>
-        </b-form-group>
-        <b-button type="submit" variant="primary" :disabled="proposalNotification.isBusy">
-          Save
-        </b-button>
-      </b-form>
-      <br />
-      <dl>
-        <dt>Links</dt>
-        <dd><a :href="archiveLink" target="_blank">View Data on the LCO Science Archive</a></dd>
-      </dl>
-      <template v-if="userIsPI">
-        <strong>Global Hour Limit</strong>
+      </b-col>
+      <b-col md="4">
+        <strong>Email Notifications</strong>
         <div class="help-block">
-          <!-- TODO: Translate this -->
-          Use this form to set an hour limit for every Co-I on the proposal.
+          You will recieve notifications whenever a requested observation on this proposal is completed.
         </div>
-        <b-form inline @submit="setGlobalLimit" @reset="resetGlobalLimit">
-          <b-form-group id="input-group-global-time-limit" label-for="input-global-time-limit" label="Global Limit (Hours)" label-sr-only>
-            <b-form-input
-              id="input-global-time-limit"
-              v-model="globallimit.timeLimit"
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="Hours"
-              required
-            />
+        <b-form @submit="updateProposalNotification">
+          <b-form-group id="checkbox-group-proposal-notification" label-for="checkbox-proposal-notification">
+            <b-form-checkbox id="checkbox-proposal-notification" v-model="proposalNotification.enabled">
+              Notifications enabled
+            </b-form-checkbox>
           </b-form-group>
-          <b-button type="reset" variant="outline-secondary" :disabled="globallimit.isBusy">
-            Remove Limit
-          </b-button>
-          <b-button type="submit" variant="outline-secondary" :disabled="globallimit.isBusy">
-            Set Global Limit
+          <b-button type="submit" variant="primary" :disabled="proposalNotification.isBusy">
+            Save
           </b-button>
         </b-form>
         <br />
-        <strong>Invite Co-Investigators</strong>
-        <invite-co-investigators-form
-          :proposal-id="id"
-          :user-is-p-i="userIsPI"
-          @coInvestigatorsInvited="onCoInvestigatorsInvited"
-        ></invite-co-investigators-form>
-        <br />
         <dl>
-          <!-- TODO: Translate this -->
-          <dt>Pending Invitations</dt>
-          <proposal-invitations :key="proposalInvitationsListKey" :user-is-p-i="userIsPI" :proposal-id="id"></proposal-invitations>
+          <dt>Links</dt>
+          <dd><a :href="archiveLink" target="_blank">View Data on the LCO Science Archive</a></dd>
         </dl>
-      </template>
-    </b-col>
-  </b-row>
+        <template v-if="userIsPI">
+          <strong>Global Hour Limit</strong>
+          <div class="help-block">
+            <!-- TODO: Translate this -->
+            Use this form to set an hour limit for every Co-I on the proposal.
+          </div>
+          <b-form inline @submit="setGlobalLimit" @reset="resetGlobalLimit">
+            <b-form-group id="input-group-global-time-limit" label-for="input-global-time-limit" label="Global Limit (Hours)" label-sr-only>
+              <b-form-input
+                id="input-global-time-limit"
+                v-model="globallimit.timeLimit"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Hours"
+                required
+              />
+            </b-form-group>
+            <b-button type="reset" variant="outline-secondary" :disabled="globallimit.isBusy">
+              Remove Limit
+            </b-button>
+            <b-button type="submit" variant="outline-secondary" :disabled="globallimit.isBusy">
+              Set Global Limit
+            </b-button>
+          </b-form>
+          <br />
+          <strong>Invite Co-Investigators</strong>
+          <invite-co-investigators-form
+            :proposal-id="id"
+            :user-is-p-i="userIsPI"
+            @coInvestigatorsInvited="onCoInvestigatorsInvited"
+          ></invite-co-investigators-form>
+          <br />
+          <dl>
+            <!-- TODO: Translate this -->
+            <dt>Pending Invitations</dt>
+            <proposal-invitations :key="proposalInvitationsListKey" :user-is-p-i="userIsPI" :proposal-id="id"></proposal-invitations>
+          </dl>
+        </template>
+      </b-col>
+    </b-row>
+  </data-loader>
 </template>
 <script>
 import _ from 'lodash';

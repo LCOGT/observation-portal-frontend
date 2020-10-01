@@ -63,8 +63,9 @@
                 endpoint="/accounts/logout/"
                 :as-link="true"
                 link-text="Logout"
-                success-redirect-view-name="home"
+                success-redirect-path="/"
                 link-classes="dropdown-item"
+                error-message="Oops, there was an error logging out, please try again."
               />
             </div>
           </li>

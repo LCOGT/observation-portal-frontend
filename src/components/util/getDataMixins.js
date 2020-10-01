@@ -56,7 +56,7 @@ export var getDataMixin = {
       this.dataNotFound = false;
     },
     failCallback: function(response) {
-      if (response.status === 404) {
+      if (response.status === 404 || response.status === 403) {
         this.dataNotFound = true;
       } else {
         this.dataLoadError = true;

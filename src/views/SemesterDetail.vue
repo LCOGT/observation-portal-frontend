@@ -7,7 +7,7 @@
     <template v-else>
       <div v-for="scaProposals in proposalsBySca" :key="scaProposals.id">
         <h2>{{ getScaName(scaProposals) }}</h2>
-        <table class="table">
+        <table class="table table-responsive">
           <colgroup>
             <col style="width: 15%" />
             <col style="width: 15%" />
