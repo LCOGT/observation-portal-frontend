@@ -1,7 +1,7 @@
 <template>
   <b-row>
     <b-col>
-      <passthrough-form endpoint="/accounts/login/" :success-redirect-view-name="redirectViewName" />
+      <passthrough-form endpoint="/accounts/login/" :success-redirect-path="redirectPath" />
       <br />
       <!-- TODO: Translate this -->
       <p>Forgot your password?<router-link :to="{ name: 'passwordReset' }"> Reset it </router-link>.</p>
@@ -23,8 +23,8 @@ export default {
     PassthroughForm
   },
   computed: {
-    redirectViewName: function() {
-      return this.$route.query.next || 'home';
+    redirectPath: function() {
+      return this.$route.query.next || '/';
     }
   }
 };

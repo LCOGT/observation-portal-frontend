@@ -18,6 +18,10 @@ export default {
       type: String,
       default: ''
     },
+    successRedirectPath: {
+      type: String,
+      default: ''
+    },
     asLink: {
       type: Boolean,
       default: false
@@ -29,6 +33,10 @@ export default {
     linkClasses: {
       type: String,
       default: ''
+    },
+    errorMessage: {
+      type: String,
+      default: 'There was a problem with your request.'
     }
   },
   computed: {
@@ -43,7 +51,14 @@ export default {
     }
   },
   methods: {
+    addMessage: function(text, variant) {
+      this.$store.commit('addMessage', { text: text, variant: variant, namespace: 'passthrough-get' });
+    },
+    clearMessages: function() {
+      this.$store.commit('clearNamespacedMessages', 'passthrough-get');
+    },
     performGet: function() {
+      this.clearMessages();
       let that = this;
       $.ajax({
         method: 'GET',
@@ -53,6 +68,9 @@ export default {
             // Successful submission, and a redirect has been set. Navigate to the specified view name.
             let successPathname = that.$router.resolve({ name: that.successRedirectViewName });
             window.location.pathname = successPathname.href;
+          } else if (that.successRedirectPath) {
+            // Successful submission, and a redirect path has been set. Navigate to the specified path.
+            window.location = that.successRedirectPath;
           } else {
             // Successful submission, and no redirect has been set. Replace the contents with
             // the main content of the response.
@@ -64,7 +82,7 @@ export default {
           if (!that.asLink && response.status === 404) {
             that.$router.replace({ name: 'notFound' });
           }
-          console.log('there was an error');
+          that.addMessage(that.errorMessage, 'danger');
         }
       });
     }

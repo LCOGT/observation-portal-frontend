@@ -17,7 +17,7 @@
         </b-form-group>
       </template>
       <template v-else-if="!displayPerPageDropdown && totalRows > 0">
-        <div>{{ totalRows }} results</div>
+        <div>{{ totalRows }} result{{ totalRows === 1 ? '' : 's' }}</div>
       </template>
     </b-col>
   </b-row>

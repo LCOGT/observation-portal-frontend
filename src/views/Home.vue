@@ -39,9 +39,7 @@
                 <router-link :to="{ name: 'create' }"> <i class="fab fa-wpexplorer fa-2x fa-fw" /> Submit Observation </router-link>
               </li>
               <li>
-                <router-link :to="{ name: 'proposals', query: { active: 'True' } }">
-                  <i class="fa fa-users fa-2x fa-fw" /> Manage Proposals
-                </router-link>
+                <router-link :to="{ name: 'proposals' }"> <i class="fa fa-users fa-2x fa-fw" /> Manage Proposals </router-link>
               </li>
             </ul>
           </b-col>

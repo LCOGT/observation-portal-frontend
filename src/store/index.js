@@ -8,7 +8,8 @@ const EMPTY_PROFILE_DATA = {
   profile: {},
   tokens: {},
   proposals: [],
-  available_instrument_types: []
+  available_instrument_types: [],
+  proposal_notifications: []
 };
 
 export default new Vuex.Store({
@@ -45,6 +46,16 @@ export default new Vuex.Store({
       state.archiveToken = token;
     },
     addMessage(state, newMessage) {
+      /* Add a message.
+
+      A message is a object with the following fields:
+        `text`: The text of the message
+        `variant`: The bootstrap variant used when displaying the message e.g. 'danger', 'success', etc.
+        `namespace`: (Optional) A string that can be used to manage groups of messages. For
+          example, if you want to add and delete messages within a component, without affecting
+          messages that may have been added by another component, specify a namespace when adding
+          a message.
+      */
       let messageAlreadyInList = false;
       for (let message of state.messages) {
         if (message.text === newMessage.text) {
@@ -58,6 +69,12 @@ export default new Vuex.Store({
     },
     clearAllMessages(state) {
       state.messages = [];
+    },
+    clearNamespacedMessages(state, namespace) {
+      /* Delete all messages with the given namespace */
+      state.messages = state.messages.filter(function(value) {
+        return value.namespace !== namespace;
+      });
     },
     deleteMessage(state, messageText) {
       state.messages = state.messages.filter(function(value) {

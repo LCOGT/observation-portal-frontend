@@ -13,6 +13,11 @@ import RequestgroupDetail from '../views/RequestgroupDetail.vue';
 import Observations from '../views/Observations.vue';
 import ObservationDetail from '../views/ObservationDetail.vue';
 import Compose from '../views/Compose.vue';
+import ProposalList from '../views/ProposalList.vue';
+import ProposalDetail from '../views/ProposalDetail.vue';
+import SemesterDetail from '../views/SemesterDetail.vue';
+import SemesterDetailCurrent from '../views/SemesterDetailCurrent.vue';
+import SemesterAdminTable from '../views/SemesterAdminTable.vue';
 import NotFound from '../components/NotFound.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
@@ -42,14 +47,48 @@ const routes = [
   {
     path: '/proposals',
     name: 'proposals',
-    // TODO: Update with proposals component
-    component: NotFound
+    component: ProposalList,
+    meta: {
+      title: 'Proposal List',
+      requiresAuth: true
+    }
   },
   {
     path: '/proposals/:id',
     name: 'proposalDetail',
-    // TODO: Update component
-    component: NotFound
+    component: ProposalDetail,
+    props: true,
+    meta: {
+      title: 'Proposal Detail',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/proposals/semesteradmin/:id',
+    name: 'semesterAdminTable',
+    component: SemesterAdminTable,
+    props: true,
+    meta: {
+      isFluidPage: true,
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/proposals/semester/current',
+    name: 'semesterDetailCurrent',
+    component: SemesterDetailCurrent,
+    meta: {
+      title: 'Semester Detail'
+    }
+  },
+  {
+    path: '/proposals/semester/:id',
+    name: 'semesterDetail',
+    component: SemesterDetail,
+    props: true,
+    meta: {
+      title: 'Semester Detail'
+    }
   },
   {
     path: '/requestgroups/:id',
@@ -80,6 +119,7 @@ const routes = [
     path: '/observations/:id',
     name: 'observationDetail',
     component: ObservationDetail,
+    props: true,
     meta: {
       title: 'Observation Detail'
     }
@@ -231,7 +271,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // Route requires the user to be logged in, check if logged in and if not, redirect to login page.
     if (!store.state.userIsAuthenticated) {
-      next({ name: 'login', query: { next: to.name } });
+      next({ name: 'login', query: { next: to.path } });
     } else {
       next();
     }

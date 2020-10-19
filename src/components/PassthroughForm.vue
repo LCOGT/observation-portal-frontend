@@ -21,6 +21,10 @@ export default {
     successRedirectViewName: {
       type: String,
       default: ''
+    },
+    successRedirectPath: {
+      type: String,
+      default: ''
     }
   },
   data: function() {
@@ -76,6 +80,9 @@ export default {
             // Successful submission, and a redirect has been set. Navigate to the specified view name.
             let successPathname = that.$router.resolve({ name: that.successRedirectViewName });
             window.location = successPathname.href;
+          } else if (that.successRedirectPath) {
+            // Successful submission, and a redirect has been set using a path. Navigate to the path.
+            window.location = that.successRedirectPath;
           } else {
             // Successful submission, and no redirect has been set. Replace the contents with the main content
             // of the response, if there is anything to show.

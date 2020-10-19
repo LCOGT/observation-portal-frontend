@@ -83,7 +83,7 @@
 <script>
 import $ from 'jquery';
 
-import { stateToBsClass, stateToIcon, formatDate } from '@/utils.js';
+import { stateToBsClass, stateToIcon, formatDate, formatFloat } from '@/utils.js';
 
 export default {
   name: 'RequestgroupHeader',
@@ -95,12 +95,7 @@ export default {
       return stateToIcon(state);
     },
     formatIpp: function(ipp) {
-      let ippAsNumber = Number(ipp);
-      if (ippAsNumber === 0 || ippAsNumber) {
-        return ippAsNumber.toFixed(6);
-      } else {
-        return ipp;
-      }
+      return formatFloat(ipp, 6);
     },
     formatDate: function(date) {
       return formatDate(date);

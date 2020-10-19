@@ -246,6 +246,18 @@ function formatValue(value) {
   return value;
 }
 
+function formatFloat(value, precision) {
+  /* Round a number and format it the given precision */
+  let valueAsNumber = Number(value);
+  precision = precision || 0;
+  if (valueAsNumber === 0 || valueAsNumber) {
+    const multiplier = Math.pow(10, precision);
+    return (Math.round(valueAsNumber * multiplier) / multiplier).toFixed(precision);
+  } else {
+    return value;
+  }
+}
+
 function copyObject(source) {
   let copy = {};
   _.assign(copy, source);
@@ -529,5 +541,6 @@ export {
   csrfSafeMethod,
   extractTopLevelErrors,
   stateToBsClass,
-  stateToIcon
+  stateToIcon,
+  formatFloat
 };
