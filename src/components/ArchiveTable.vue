@@ -1,11 +1,11 @@
 <template>
   <div>
     <div id="archive-table-toolbar">
-      <b-button variant="outline-secondary" size="sm" @click="downloadSelected"> <i class="fa fa-check" /> Download Selected </b-button>
-      <b-button variant="outline-secondary" size="sm" @click="downloadAll"> <i class="fa fa-download" /> Download All </b-button>
-      <b-link :href="archiveLink" target="_blank" class="btn btn-sm btn-outline-secondary"> <i class="fa fa-arrow-right" /> View on Archive </b-link>
+      <b-button variant="outline-secondary" class="mr-1" @click="downloadSelected"> <i class="fa fa-check" /> Download Selected </b-button>
+      <b-button variant="outline-secondary" class="mr-1" @click="downloadAll"> <i class="fa fa-download" /> Download All </b-button>
+      <b-link :href="archiveLink" target="_blank" class="btn btn-outline-secondary"> <i class="fa fa-arrow-right" /> View on Archive </b-link>
     </div>
-    <table id="archive-table" class="table-sm" />
+    <table id="archive-table" class="table-sm table-responsive" />
   </div>
 </template>
 <script>
@@ -147,5 +147,8 @@ export default {
 <style scoped>
 #archive-table > tbody > tr {
   cursor: pointer;
+}
+#archive-table-toolbar {
+  padding-bottom: 0.1em;
 }
 </style>

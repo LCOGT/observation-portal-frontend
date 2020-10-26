@@ -1,5 +1,5 @@
 <template>
-  <b-row class="requestgroup" :class="request.state | stateToBsClass('requestgroup')">
+  <b-row class="requestgroup m-0" :class="request.state | stateToBsClass('requestgroup')">
     <b-col md="10">
       <b-row>
         <b-col md="4" class="requestgroup-block border-right">
@@ -36,10 +36,10 @@
           <b-row class="border-right mx-auto">
             <div>
               <div class="btn-group mr-2" role="group" aria-label="button group">
-                <a :href="requestApiUrl" class="btn btn-outline-secondary btn-sm"> <i class="fa fa-fw fa-code" /> View in API </a>
+                <a :href="requestApiUrl" class="btn btn-outline-secondary"> <i class="fa fa-fw fa-code" /> View in API </a>
                 <button
                   v-if="request.state === 'COMPLETED'"
-                  class="btn btn-outline-secondary btn-sm"
+                  class="btn btn-outline-secondary"
                   type="button"
                   :disabled="!archiveDataIsAvailable"
                   @click="downloadAllData"
@@ -215,3 +215,9 @@ export default {
   }
 };
 </script>
+<style scoped>
+.requestgroup-block > p {
+  margin: 0px;
+  padding-bottom: 0px;
+}
+</style>

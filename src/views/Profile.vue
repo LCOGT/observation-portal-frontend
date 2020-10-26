@@ -1,7 +1,7 @@
 <template>
   <b-row>
     <b-col md="8">
-      <h2>Settings</h2>
+      <h3>Settings</h3>
       <b-form @submit="updateProfileData" @reset="clearProfileForm">
         <b-form-group id="input-group-first-name" label="First Name" label-for="input-first-name">
           <b-form-input id="input-first-name" v-model="formData.first_name" :state="getValidState('first_name')" required />
@@ -98,16 +98,17 @@
         <b-button type="submit" variant="primary">
           Save
         </b-button>
-        <b-button type="reset" variant="primary">
+        <b-button type="reset" variant="primary" class="ml-1">
           Cancel
         </b-button>
-        <router-link :to="{ name: 'passwordChange' }" class="btn btn-danger pull-right">
+        <router-link :to="{ name: 'passwordChange' }" class="btn btn-danger pull-right ml-1">
           Change Password
         </router-link>
       </b-form>
+      <br />
     </b-col>
     <b-col md="4">
-      <h2>API Key</h2>
+      <h3>API Key</h3>
       <p>
         The following key may be used to authenticate when using the
         <a :href="observationPortalApiUrl + '/api/'">API</a>. This key should be treated like a password.
@@ -121,7 +122,7 @@
       <b-button variant="danger" @click="performRevokeToken">
         Revoke Token
       </b-button>
-      <h2>API Quota</h2>
+      <h3 class="pt-4">API Quota</h3>
       <p>
         The observations API is rate limited so that it remains available to all users in the event a single user makes too many requests in too rapid
         a succession, causing denial of service to other clients.
@@ -130,7 +131,7 @@
       <p>
         <strong>{{ apiQuota.used }} out of {{ apiQuota.allowed }}</strong>
       </p>
-      <h2>Account Removal</h2>
+      <h3>Account Removal</h3>
       <p>You may request that your account be deleted.</p>
       <router-link :to="{ name: 'accountRemovalRequest' }" title="Request account removal">
         Request account removal

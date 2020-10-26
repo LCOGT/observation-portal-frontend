@@ -8,76 +8,75 @@
         </h2>
       </b-col>
     </b-row>
-    <b-row class="mx-auto">
-      <dl class="col-auto ml-0 px-0">
+    <div class="d-flex flex-wrap">
+      <b-col lg="auto" cols="12" class="p-1 flex-lg-fill">
+        <div class="font-weight-bold">State</div>
+        <div :class="requestgroup.state | stateToBsClass('text')" class="text-truncate" :title="requestgroup.state">
+          <i :class="requestgroup.state | stateToIcon" />{{ requestgroup.state }}
+        </div>
+      </b-col>
+      <b-col lg="auto" cols="12" class="p-1 flex-lg-fill">
         <!-- TODO: Translate this -->
-        <dt>State</dt>
-        <dd :class="requestgroup.state | stateToBsClass('text')">
-          <i :class="requestgroup.state | stateToIcon" />
-          {{ requestgroup.state }}
-        </dd>
-      </dl>
-      <dl class="col-auto mx-auto px-0">
-        <!-- TODO: Translate this -->
-        <dt>Updated</dt>
-        <dd>{{ requestgroup.modified | formatDate }}</dd>
-      </dl>
-      <dl class="col-auto mx-auto px-0">
-        <!-- TODO: Translate this -->
-        <dt>Submitted</dt>
-        <dd>{{ requestgroup.created | formatDate }}</dd>
-      </dl>
-      <dl class="col-auto mx-auto px-0">
-        <!-- TODO: Translate this -->
-        <dt>Proposal</dt>
-        <dd>
+        <div class="font-weight-bold">Updated</div>
+        <div>{{ requestgroup.modified | formatDate }}</div>
+      </b-col>
+      <b-col lg="auto" cols="12" class="p-1 flex-lg-fill">
+        <div class="font-weight-bold">Submitted</div>
+        <div>{{ requestgroup.created | formatDate }}</div>
+      </b-col>
+      <b-col lg="auto" cols="12" class="p-1 flex-lg-fill">
+        <div class="font-weight-bold">Proposal</div>
+        <div>
           <router-link :to="{ name: 'proposalDetail', params: { id: requestgroup.proposal } }">
             {{ requestgroup.proposal }}
           </router-link>
-        </dd>
-      </dl>
-      <dl class="col-auto mx-auto px-0">
-        <!-- TODO: Translate this -->
-        <dt>Submitter</dt>
-        <dd>{{ requestgroup.submitter }}</dd>
-      </dl>
-      <dl class="col-auto mx-auto px-0">
-        <dt>IPP</dt>
-        <dd>{{ requestgroup.ipp_value | formatIpp }}</dd>
-      </dl>
-      <dl class="col-auto mx-auto px-0">
-        <!-- TODO: Translate this -->
-        <dt>Observation Type</dt>
-        <dd>{{ requestgroup.observation_type }}</dd>
-      </dl>
-      <span class="col-auto mr-0 px-0">
-        <div class="dropdown">
-          <button
-            id="rgOptionsButton"
-            type="button"
-            class="btn btn-outline-secondary dropdown-toggle"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            Options
-          </button>
-          <div class="dropdown-menu" aria-labelledby="rgOptionsButton">
-            <router-link class="dropdown-item" title="Copy this request" :to="{ name: 'create', query: { requestgroupid: requestgroup.id } }">
-              <i class="fa fa-copy" /> Copy
-            </router-link>
-            <a
-              v-if="userIsAuthenticated && requestgroup.state == 'PENDING'"
-              class="dropdown-item"
-              title="Cancel this request"
-              @click="cancelRequestGroup"
-            >
-              <i class="fa fa-times" /> Cancel
-            </a>
-          </div>
         </div>
-      </span>
-    </b-row>
+      </b-col>
+      <b-col lg="auto" cols="12" class="p-1 flex-lg-fill">
+        <div class="font-weight-bold text-truncate">Submitter</div>
+        <div>{{ requestgroup.submitter }}</div>
+      </b-col>
+      <b-col lg="auto" cols="12" class="p-1 flex-lg-fill">
+        <div class="font-weight-bold">IPP</div>
+        <div>{{ requestgroup.ipp_value | formatIpp }}</div>
+      </b-col>
+      <b-col lg="auto" cols="12" class="p-1 flex-lg-fill">
+        <!-- TODO: Translate this -->
+        <div class="font-weight-bold" title="Observation Type">Type</div>
+        <div>{{ requestgroup.observation_type }}</div>
+      </b-col>
+      <b-col lg="auto" cols="12" class="p-1 flex-lg-fill">
+        <span class="mr-0 px-0">
+          <div class="dropdown">
+            <button
+              id="rgOptionsButton"
+              type="button"
+              class="btn btn-outline-secondary dropdown-toggle btn-block px-0"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              title="Options"
+              block
+            >
+              <i class="fas fa-cog"></i><span class="d-inline-block d-lg-none">&nbsp;Options</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="rgOptionsButton">
+              <router-link class="dropdown-item" title="Copy this request" :to="{ name: 'create', query: { requestgroupid: requestgroup.id } }">
+                <i class="fa fa-copy" /> Copy
+              </router-link>
+              <a
+                v-if="userIsAuthenticated && requestgroup.state == 'PENDING'"
+                class="dropdown-item"
+                title="Cancel this request"
+                @click="cancelRequestGroup"
+              >
+                <i class="fa fa-times" /> Cancel
+              </a>
+            </div>
+          </div>
+        </span>
+      </b-col>
+    </div>
   </div>
 </template>
 <script>
