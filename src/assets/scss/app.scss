@@ -21,6 +21,7 @@ $dropdown-link-hover-bg: $yellow;
 // Highlight the text of links on a page when hovered
 a:hover {
   background-color: $yellow;
+  color: $black;
 }
 
 // Set the background hover color on the links in the page header to
