@@ -62,7 +62,16 @@
       </b-col>
     </b-row>
     <div>
-      <b-table id="requestgroups-table" :items="data.results" :fields="fields" :tbody-tr-class="requestGroupRowClass" :busy="isBusy" small show-empty>
+      <b-table
+        id="requestgroups-table"
+        class="border-bottom"
+        :items="data.results"
+        :fields="fields"
+        :tbody-tr-class="requestGroupRowClass"
+        :busy="isBusy"
+        small
+        show-empty
+      >
         <template v-slot:head(requestgroupInfo)>
           <b-row>
             <b-col md="4" cols="12">
