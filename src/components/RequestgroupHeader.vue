@@ -2,10 +2,10 @@
   <div>
     <b-row>
       <b-col>
-        <h2>
-          {{ requestgroup.name }}<br />
-          <small>RequestGroup # {{ requestgroup.id }}</small>
+        <h2 class="text-break">
+          {{ requestgroup.name }}
         </h2>
+        <h4>RequestGroup # {{ requestgroup.id }}</h4>
       </b-col>
     </b-row>
     <div class="d-flex flex-wrap">
