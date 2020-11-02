@@ -1,14 +1,14 @@
 <template>
   <b-container class="p-0">
     <b-row>
-      <b-col md="9" cols="12">
-        <p class="title">
+      <b-col md="8" cols="12">
+        <h3>
           Submitted Observation Requests
-        </p>
+        </h3>
       </b-col>
-      <b-col md="3" cols="12">
-        <b-dropdown id="dropdown-rg-query-params" variant="outline-secondary" block>
-          <template v-slot:button-content> <i class="fa fa-filter" /> Filter List </template>
+      <b-col md="4" cols="12">
+        <b-dropdown id="dropdown-rg-query-params" variant="outline-secondary" block right>
+          <template v-slot:button-content><i class="fa fa-filter" /> Filter List</template>
           <b-dropdown-form>
             <b-form @submit="onSubmit" @reset="onReset">
               <b-form-group id="input-group-order" label-for="input-order" label-class="m-0" class="my-2">
@@ -49,7 +49,7 @@
               </div>
               <b-dropdown-divider />
               <b-button-group class="mx-4">
-                <b-button type="submit" variant="outline-info" :disabled="isBusy">
+                <b-button type="submit" variant="outline-primary" :disabled="isBusy">
                   <span class="text-nowrap">Filter Results</span>
                 </b-button>
                 <b-button type="reset" variant="outline-danger" :disabled="isBusy">
@@ -66,13 +66,13 @@
         <template v-slot:head(requestgroupInfo)>
           <b-row>
             <b-col md="4" cols="12">
-              <small>User Info</small>
+              <div class="small">User Info</div>
             </b-col>
             <b-col md="4" cols="12">
-              <small>State Info</small>
+              <div class="small">State Info</div>
             </b-col>
             <b-col md="4" cols="12">
-              <small># Requests / Pending / Failed / Complete</small>
+              <div class="small text-truncate" title="#Requests / Pending / Failed / Complete">#Requests / Pending / Failed / Complete</div>
             </b-col>
           </b-row>
         </template>
@@ -101,7 +101,7 @@
                   Submit a new proposal
                 </router-link>
               </div>
-              <h3>Need help?</h3>
+              <h3 class="mt-4">Need help?</h3>
               <a href="https://lco.global/documentation/">View the documentation</a> or <a href="mailto:scisupport@lco.global">contact support</a>.
             </center>
           </div>
@@ -136,16 +136,16 @@
               </b-row>
             </b-col>
             <b-col md="1" cols="12" class="request-count request-block">
-              <center>{{ data.item.requests.length }}</center>
+              <div class="text-center align-middle">{{ data.item.requests.length }}</div>
             </b-col>
             <b-col md="1" cols="12" class="request-count request-block text-neutral">
-              <center>{{ data.item | requestStateCount('PENDING') }}</center>
+              <div class="text-center align-middle">{{ data.item | requestStateCount('PENDING') }}</div>
             </b-col>
             <b-col md="1" cols="12" class="request-count request-block text-danger">
-              <center>{{ data.item | requestStateCount('WINDOW_EXPIRED') }}</center>
+              <div class="text-center align-middle">{{ data.item | requestStateCount('WINDOW_EXPIRED') }}</div>
             </b-col>
             <b-col md="1" cols="12" class="request-count request-block text-success">
-              <center>{{ data.item | requestStateCount('COMPLETED') }}</center>
+              <div class="text-center align-middle">{{ data.item | requestStateCount('COMPLETED') }}</div>
             </b-col>
           </b-row>
         </template>
@@ -272,7 +272,7 @@ export default {
     },
     requestGroupRowClass: function(item, type) {
       if (type === 'row') {
-        return stateToBsClass(item.state, 'requestgroup');
+        return [stateToBsClass(item.state, 'requestgroup'), 'border-bottom'];
       } else {
         return;
       }
@@ -280,14 +280,26 @@ export default {
   }
 };
 </script>
-<style scoped>
-.title {
-  font-size: 1.8em;
-}
+<style lang="scss" scoped>
+@import '@/assets/scss/custom-colors.scss';
 
 .requestgroup-details div {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+.empty-requests {
+  margin-top: 50px;
+}
+.request-count {
+  font-size: 1.9em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.request-block {
+  border: 1px solid $white;
+  min-height: 75px;
+  background-color: $request-block-background;
 }
 </style>

@@ -7,22 +7,23 @@
         </div>
       </template>
       <template v-else-if="data.results.length > 0">
-        <dd v-for="invitation in data.results" :key="invitation.id">
-          <div>
+        <b-list-group>
+          <b-list-group-item v-for="invitation in data.results" :key="invitation.id" class="px-2 py-1">
             <a :href="'mailto:' + invitation.email">{{ invitation.email }}</a>
-          </div>
-          <div>Invited: {{ invitation.sent | formatDate }}</div>
-          <b-link
-            :disabled="deleteInvite.isBusy"
-            @click="confirm(getDeleteInvitationConfirmationMessage(invitation.email), deleteInvitation, { invitationId: invitation.id })"
-          >
-            Delete Invitation
-          </b-link>
-        </dd>
-        <br />
+            <b-link
+              href="#"
+              class="float-right"
+              :disabled="deleteInvite.isBusy"
+              @click="confirm(getDeleteInvitationConfirmationMessage(invitation.email), deleteInvitation, { invitationId: invitation.id })"
+            >
+              <span class="text-danger"><i class="far fa-trash-alt"></i></span>
+            </b-link>
+            <div class="small text-muted">Invited at {{ invitation.sent | formatDate }}</div>
+          </b-list-group-item>
+        </b-list-group>
       </template>
       <template v-else>
-        <p>No pending invitations.</p>
+        <p class="text-muted py-1">No pending invitations.</p>
       </template>
     </template>
   </b-container>

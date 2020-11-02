@@ -1,0 +1,123 @@
+@import '@/assets/scss/custom-colors.scss';
+
+// Override boostrap sass variables
+
+$font-family-sans-serif: 'Libre Franklin', sans-serif !default;
+$link-hover-decoration: none;
+
+$theme-colors: (
+  'lco-dark-blue': $lco-dark-blue,
+  'neutral': $neutral
+);
+
+$pagination-hover-bg: $yellow;
+$navbar-dark-color: $white;
+$navbar-dark-hover-color: $white;
+$dropdown-link-hover-bg: $yellow;
+
+@import '~bootstrap';
+@import '~bootstrap-vue';
+
+// Highlight the text of links on a page when hovered
+a:hover {
+  background-color: $yellow;
+  color: $black;
+}
+
+// Set the background hover color on the links in the page header to
+// be a more muted yellow
+a.nav-link:hover {
+  background-color: rgba($yellow, 0.2);
+}
+
+// Turn off hover-over coloring on the image in the header
+a.navbar-brand:hover {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+// For tabs on the compose page and the request detail page
+.nav > li > a:not(.active):hover, .nav > li > a:not(.active):focus {
+  background-color: rgba($yellow, 0.5);
+  border-color: darken($yellow, 20);
+}
+
+// Custom button styling
+
+.btn-outline-warning {
+  color: darken($yellow, 25);
+}
+
+.btn-outline-primary {
+  color: darken($primary, 15);
+}
+
+.btn-outline-danger {
+  color: darken($danger, 25);
+}
+
+.btn-outline-secondary {
+  color: darken($secondary, 40);
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+  background-color: rgba($yellow, 0.5);
+  border-color: darken($yellow, 20);
+  color: $black;
+}
+
+// Requestgroup styling
+
+.requestgroup-success {
+  background: linear-gradient(to right, darken($success, 10) 0, darken($success, 10) 10px, $white 10px, $white 100%) no-repeat;
+}
+
+.requestgroup-neutral {
+  background: linear-gradient(to right, $neutral 0, $neutral 10px, $white 10px, $white 100%) no-repeat;
+}
+
+.requestgroup-danger {
+  background: linear-gradient(to right, darken($danger, 12) 0, darken($danger, 12) 10px, #fff 10px, #fff 100%) no-repeat;
+}
+
+.requestgroup-info {
+  background: linear-gradient(to right, $info 0, $info 10px, #fff 10px, #fff 100%) no-repeat;
+}
+
+.requestgroup {
+  border: 1px solid $gray-200;
+  min-height: 75px;
+  margin: 0;
+}
+
+.requestgroup-title {
+  font-size: 1em;
+  margin-left: 4px;
+  font-weight: 600;
+}
+
+// General styling
+
+html {
+  position: relative;
+  background-color: $white;
+}
+
+p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding: 0em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0.1em 0;
+}
+
+.small {
+  font-size: 70%;
+}

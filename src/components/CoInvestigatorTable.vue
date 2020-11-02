@@ -2,27 +2,44 @@
   <b-container class="p-0">
     <template v-if="userIsPI">
       <div>
-        <br />
-        <b-form inline @submit="onSubmit">
-          <b-input-group id="input-group-first-name" class="col-md p-1" label="First name contains" label-for="input-first-name" label-sr-only>
+        View Co-Investigators
+        <b-form inline @submit="onSubmit" @reset="onReset">
+          <b-input-group
+            id="input-group-first-name"
+            class="col-md-2 col-sm-12 p-1"
+            label="First name contains"
+            label-for="input-first-name"
+            label-sr-only
+          >
             <b-form-input id="input-first-name" v-model="queryParams.first_name" placeholder="First name contains"></b-form-input>
           </b-input-group>
-          <b-input-group id="input-group-last-name" class="col-md p-1" label="Last name contains" label-for="input-last-name" label-sr-only>
+          <b-input-group
+            id="input-group-last-name"
+            class="col-md-2 col-sm-12 p-1"
+            label="Last name contains"
+            label-for="input-last-name"
+            label-sr-only
+          >
             <b-form-input id="input-last-name" v-model="queryParams.last_name" placeholder="Last name contains"></b-form-input>
           </b-input-group>
-          <b-input-group id="input-group-username" class="col-md p-1" label="Username contains" label-for="input-username" label-sr-only>
+          <b-input-group id="input-group-username" class="col-md-2 col-sm-12 p-1" label="Username contains" label-for="input-username" label-sr-only>
             <b-form-input id="input-username" v-model="queryParams.username" placeholder="Username contains"></b-form-input>
           </b-input-group>
-          <b-input-group id="input-group-email" class="col-md p-1" label="Email contains" label-for="input-email" label-sr-only>
+          <b-input-group id="input-group-email" class="col-md-2 col-sm-12 p-1" label="Email contains" label-for="input-email" label-sr-only>
             <b-form-input id="input-email" v-model="queryParams.email" placeholder="Email contains"></b-form-input>
           </b-input-group>
-          <b-input-group class="col-md-1 p-1">
-            <b-button type="submit" variant="outline-info" :disabled="isBusy">
+          <b-input-group class="col-md-2 col-sm-12 p-1">
+            <b-button type="submit" variant="outline-primary" :disabled="isBusy" block>
               <span>Filter</span>
             </b-button>
           </b-input-group>
+          <b-input-group class="col-md-2 col-sm-12 p-1">
+            <b-button type="reset" variant="outline-warning" :disabled="isBusy" block>
+              <span>Reset</span>
+            </b-button>
+          </b-input-group>
         </b-form>
-        <b-table id="coinvestigator-table" :items="data.results" :fields="fields" responsive :busy="isBusy" small show-empty>
+        <b-table id="coinvestigator-table" :items="data.results" :fields="fields" responsive :busy="isBusy" show-empty>
           <template v-slot:table-busy>
             <br />
             <div class="text-center my-2"><i class="fa fa-spin fa-spinner" /> Loading co-investigators...</div>
@@ -44,7 +61,7 @@
                 confirm(getMembershipDeleteConfirmationMessage(data.item.email), deleteCoInvestigatorMembership, { membershipId: data.item.id })
               "
             >
-              <i class="fa fa-trash"></i>
+              <span class="text-danger mx-auto"><i class="far fa-trash-alt"></i></span>
             </b-link>
           </template>
           <template v-slot:cell(simple_interface)="data">
@@ -56,7 +73,7 @@
           <template v-slot:cell(time_limit)="data">
             <span v-if="data.item.time_limit < 0">No Limit</span>
             <span v-else>{{ (data.item.time_limit / 3600) | formatFloat(3) }}</span>
-            <b-link v-b-toggle="'collapse-' + data.item.username" href="#"><i class="fas fa-edit"></i></b-link>
+            <b-link v-b-toggle="'collapse-' + data.item.username" href="#"><i class="fas fa-edit ml-1"></i></b-link>
             <b-collapse :id="'collapse-' + data.item.username">
               <b-form>
                 <b-form-group>
@@ -70,11 +87,11 @@
                     placeholder="Hours"
                   ></b-form-input>
                 </b-form-group>
-                <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="resetUserLimit(data.item.id)">
-                  Remove Limit
-                </b-button>
-                <b-button variant="outline-secondary" size="sm" block :disabled="limit.isBusy" @click="setUserLimit(data.item.id)">
+                <b-button variant="outline-primary" size="sm" block :disabled="limit.isBusy" @click="setUserLimit(data.item.id)">
                   Set Limit
+                </b-button>
+                <b-button variant="outline-warning" size="sm" block :disabled="limit.isBusy" @click="resetUserLimit(data.item.id)">
+                  Remove Limit
                 </b-button>
               </b-form>
             </b-collapse>
@@ -140,7 +157,7 @@ export default {
       },
       {
         key: 'username',
-        label: 'UserId'
+        label: 'Username'
       },
       {
         key: 'email'

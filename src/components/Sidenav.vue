@@ -16,7 +16,7 @@
             </span>
           </template>
         </b-button>
-        <b-dropdown v-if="draftExists" dropleft variant="info" size="sm" class="compose-form-dropdown" @click="saveDraft(draftId)">
+        <b-dropdown v-if="draftExists" dropleft variant="primary" size="sm" class="compose-form-dropdown" @click="saveDraft(draftId)">
           <template v-if="navigationIsExpanded" slot="button-content">
             <span class="float-right">Save Draft # {{ draftId }} <i class="fa fa-save mx-2"/></span>
           </template>
@@ -28,7 +28,7 @@
             Save as new draft
           </b-dropdown-item-button>
         </b-dropdown>
-        <b-button v-else block variant="info" @click="saveDraft(true)">
+        <b-button v-else block variant="primary" @click="saveDraft(true)">
           <template v-if="navigationIsExpanded">
             <span>
               <span class="float-right"><i class="fa fa-save mx-2"/></span>
@@ -54,7 +54,7 @@
             </span>
           </template>
         </b-button>
-        <b-button v-b-toggle:sidenav-collapse>
+        <b-button v-b-toggle:sidenav-collapse variant="secondary">
           <span class="when-open">
             <span class="float-right"><i class="fas fa-angle-double-right mx-2"/></span>
             <span class="float-right">Toggle Navigation</span>
@@ -214,7 +214,9 @@ export default {
   color: #404040;
 }
 </style>
-<style scoped>
+<style lang="scss" scoped>
+@import '@/assets/scss/custom-colors.scss';
+
 .form-inline {
   width: 100%;
 }
@@ -245,14 +247,19 @@ nav {
   color: #999;
   border-left: 2px solid transparent;
 }
+/* non active and hover links */
+.nav-link:hover,
+.nav-link:focus {
+  background-color: $yellow;
+}
 /* active & hover links */
 .active,
 .active:hover,
 .active:focus {
-  color: #009ec3;
+  color: $blue;
   text-decoration: none;
   background-color: transparent;
-  border-left-color: #31b0d5;
+  border-left-color: $blue;
 }
 /* Move nested nav items in */
 .nested-once {

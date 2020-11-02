@@ -51,7 +51,7 @@
               <h4>Configurations</h4>
               <div role="tablist">
                 <b-card v-for="(configuration, index) in request.configurations" :key="configuration.id" no-body class="mb-1">
-                  <b-card-header header-tag="header" class="p-1 button-header" role="tab">
+                  <b-card-header header-tag="header" class="p-0" role="tab">
                     <b-button v-b-toggle="'accordion-' + index" block href="#" variant="light">
                       <b-row>
                         <b-col md="4"> Type: {{ configuration.type }} </b-col>
@@ -90,7 +90,7 @@
                           </ul>
                           <br />
                           <h4>Instrument Configs</h4>
-                          <table class="table table-sm">
+                          <table class="table table-sm table-responsive">
                             <thead class="no-top-border">
                               <tr>
                                 <td><strong>Mode</strong></td>
@@ -467,21 +467,7 @@ export default {
   }
 };
 </script>
-<style>
-.nobreak {
-  display: inline-block;
-}
-dl.twocol {
-  -moz-column-count: 2;
-  -webkit-column-count: 2;
-  column-count: 2;
-}
-dl.twocol dt {
-  width: inherit;
-}
-dl.twocol dd {
-  margin-left: 160px;
-}
+<style scoped>
 .request-details {
   margin-top: 5px;
 }
@@ -489,7 +475,10 @@ dl.twocol dd {
   font-style: italic;
   font-size: 0.8em;
 }
-.tab-pane {
-  padding-top: 5px;
+.no-top-border > tr > td {
+  border-top: none;
+}
+.card-column-two {
+  column-count: 2;
 }
 </style>

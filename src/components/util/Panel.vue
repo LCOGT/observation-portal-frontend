@@ -31,17 +31,17 @@
                   <b-button
                     v-b-toggle.collapse-1
                     v-b-tooltip="tooltipConfig"
-                    size="xs"
-                    variant="info"
+                    size="sm"
+                    variant="primary"
                     :title="show ? 'Minimize' : 'Maximize'"
                     @click="clickShow"
                   >
                     <i class="far" :class="show ? 'fa-window-minimize' : 'fa-window-maximize'" />
                   </b-button>
-                  <b-button v-show="cancopy" v-b-tooltip="tooltipConfig" size="xs" class="mx-1" variant="success" title="Copy" @click="copy">
+                  <b-button v-show="cancopy" v-b-tooltip="tooltipConfig" size="sm" class="mx-1" variant="success" title="Copy" @click="copy">
                     <i class="fa fa-copy fa-fw" />
                   </b-button>
-                  <b-button v-show="canremove" v-b-tooltip="tooltipConfig" variant="danger" title="Remove" size="xs" @click="remove">
+                  <b-button v-show="canremove" v-b-tooltip="tooltipConfig" variant="danger" title="Remove" size="sm" @click="remove">
                     <i class="fa fa-trash fa-fw" />
                   </b-button>
                 </b-col>

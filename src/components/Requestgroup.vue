@@ -27,7 +27,7 @@
             Duration of Observation Request:
             <sup
               v-b-tooltip="tooltipConfig"
-              class="text-info"
+              class="text-primary"
               title="The time that will be deducted from your proposal when this request completes.
               Includes exposure times, slew times, and instrument overheads."
             >

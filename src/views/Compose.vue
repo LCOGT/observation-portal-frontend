@@ -13,7 +13,9 @@
     </b-form-row>
     <b-tabs id="tabs" fill>
       <b-tab :active="tab == 1" @click="tab = 1">
-        <template slot="title"> <i class="far fa-edit" /> Form </template>
+        <template slot="title"
+          ><span><i class="far fa-edit" /> Form</span></template
+        >
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col class="m-0 p-0">
@@ -33,12 +35,14 @@
         </b-container>
       </b-tab>
       <b-tab :active="tab == 2" @click="tab = 2">
-        <template slot="title"> <i class="fas fa-code" /> API View </template>
+        <template slot="title"
+          ><span><i class="fas fa-code" /> API View</span></template
+        >
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col class="bg-light rounded">
               <b-container class="p-4">
-                <b-button :href="dataAsEncodedStr" download="apiview.json" variant="info" class="float-right">
+                <b-button :href="dataAsEncodedStr" download="apiview.json" variant="primary" class="float-right">
                   <i class="fa fa-download" /> Download as JSON
                 </b-button>
                 <pre>{{ JSON.stringify(requestgroup, null, 4) }}</pre>
@@ -48,7 +52,9 @@
         </b-container>
       </b-tab>
       <b-tab :active="tab == 3" @click="tab = 3">
-        <template slot="title"> <i class="far fa-file-alt" /> Drafts </template>
+        <template slot="title"
+          ><span><i class="far fa-file-alt" /> Drafts</span></template
+        >
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col>
@@ -58,7 +64,9 @@
         </b-container>
       </b-tab>
       <b-tab :active="tab == 4" @click="tab = 4">
-        <template slot="title"> <i class="fas fa-question" /> How to use this page </template>
+        <template slot="title"
+          ><span><i class="fas fa-question" /> How to use this page</span></template
+        >
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col class="my-3">
@@ -73,8 +81,8 @@
                 that field.
               </p>
               <p>
-                Each section may be collapsed for a more compact view. Use the <i class="fa fa-window-minimize text-info" /> and
-                <i class="fa fa-window-maximize text-info" /> buttons to control the state of the window.
+                Each section may be collapsed for a more compact view. Use the <i class="fa fa-window-minimize text-primary" /> and
+                <i class="fa fa-window-maximize text-primary" /> buttons to control the state of the window.
               </p>
               <p>
                 Some sections may be copied using the <i class="fa fa-copy text-success" /> button. This will duplicate the section and add it to your
@@ -95,7 +103,7 @@
               </p>
               <h2>Loading and saving drafts</h2>
               <p>
-                Use the <i class="fa fa-save text-info" /> button at any time to save an observation request as a draft. Saved drafts can be loaded
+                Use the <i class="fa fa-save text-primary" /> button at any time to save an observation request as a draft. Saved drafts can be loaded
                 and managed from the Drafts tab. You will see drafts saved by other members of your proposal as well as your own.
               </p>
             </b-col>

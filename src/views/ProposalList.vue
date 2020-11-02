@@ -12,14 +12,14 @@
         </p>
         <p>Click on a Proposal ID to view details and (if you are the PI) manage co-investigators.</p>
         <template v-if="isStaff && semesterAdminTableSemester.id">
-          Admin only:
-          <router-link :to="{ name: 'semesterAdminTable', params: { id: semesterAdminTableSemester.id } }">View All Proposals</router-link>
+          <p>
+            Admin only:
+            <router-link :to="{ name: 'semesterAdminTable', params: { id: semesterAdminTableSemester.id } }">View All Proposals</router-link>
+          </p>
         </template>
       </b-col>
       <b-col md="3">
-        <h4>
-          <router-link :to="{ name: 'apply' }"><i class="fa fa-edit fa-fw"></i> Submit Proposal</router-link>
-        </h4>
+        <router-link :to="{ name: 'apply' }" class="btn btn-outline-primary btn-block"><i class="fa fa-edit fa-fw"></i> Submit Proposal</router-link>
         <p>
           There {{ calls.count | pluralize('is', 'are') }} currently <router-link :to="{ name: 'apply' }">{{ calls.count }}</router-link> open call{{
             calls.count | pluralize('', 's')
@@ -31,15 +31,13 @@
     <b-row>
       <b-col>
         <b-form inline @submit="onSubmit">
-          <b-form-group id="input-proposal-active" label-for="input-proposal-active" label="Active" class="mr-md-3">
-            <b-form-select id="input-proposal-active" v-model="queryParams.active" :options="proposalActiveOptions" />
-          </b-form-group>
-          <b-form-group id="input-proposal-semester" label-for="input-proposal-semester" label="Semester" class="mr-md-3">
-            <b-form-select id="input-proposal-semester" v-model="queryParams.semester" :options="semesterOptions"></b-form-select>
-          </b-form-group>
-          <b-button type="submit" variant="outline-secondary" :disabled="isBusy">Filter</b-button>
+          <label class="mr-sm-2" for="input-proposal-active">Proposal is active:</label>
+          <b-form-select id="input-proposal-active" v-model="queryParams.active" :options="proposalActiveOptions" />
+          <label class="m-sm-2" for="input-proposal-semester">Semester:</label>
+          <b-form-select id="input-proposal-semester" v-model="queryParams.semester" :options="semesterOptions"></b-form-select>
+          <b-button type="submit" class="m-sm-1" variant="outline-primary" :disabled="isBusy">Filter</b-button>
         </b-form>
-        <b-table id="proposals-table" :items="data.results" :fields="fields" :busy="isBusy" show-empty striped>
+        <b-table id="proposals-table" :items="data.results" :fields="fields" :busy="isBusy" show-empty striped responsive>
           <template v-slot:table-busy>
             <div class="text-center my-2"><i class="fa fa-spin fa-spinner" /> Loading...</div>
           </template>
@@ -98,8 +96,8 @@ export default {
       semesters: { results: [], count: 0 },
       proposalActiveOptions: [
         { value: '', text: 'All' },
-        { value: 'False', text: 'Inactive' },
-        { value: 'True', text: 'Active' }
+        { value: 'False', text: 'False' },
+        { value: 'True', text: 'True' }
       ],
       proposalsFilters: {
         active: '',

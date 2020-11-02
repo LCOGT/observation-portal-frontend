@@ -1,17 +1,12 @@
 <template>
   <b-container class="p-0">
     <template v-if="userIsPI">
-      <div class="help-block">
-        <!-- TODO: translate -->
-        Invite co-investigators by entering their email address below and pressing "add". If you would like to add multiple address at once, enter
-        them below, comma separated. If the user is already registered with LCO, they will be added to this proposal. If not, they will be invited.
-      </div>
       <b-form @submit="inviteCoInvestigators">
         <b-form-group id="input-group-invite-co-investigator" label-for="input-invite-co-investigator" label="Invite a Co-Investigator" label-sr-only>
           <b-form-input id="input-invite-co-investigator" v-model="invite.emailAddresses" placeholder="Email Address(s)" required />
         </b-form-group>
-        <b-button type="submit" variant="outline-secondary" :disabled="invite.isBusy">
-          Add
+        <b-button type="submit" variant="outline-primary" :disabled="invite.isBusy">
+          Invite
         </b-button>
       </b-form>
     </template>

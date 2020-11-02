@@ -1,7 +1,7 @@
 <template>
   <b-container class="p-0">
     <b-row>
-      <b-col md="8" cols="12">
+      <b-col lg="8" cols="12">
         <!-- TODO: Should this section only be displayed if the table is one the first page of results? -->
         <div v-if="!userIsAuthenticated" class="jumbotron noauth">
           <h1>Observation Portal</h1>
@@ -23,46 +23,42 @@
           <router-link class="btn btn-lg btn-success col-md-5" :to="{ name: 'register' }">
             Register an Account
           </router-link>
-          <router-link :to="{ name: 'login' }" class="btn btn-lg btn-info float-right col-md-5 col-md-offset-2">
+          <router-link :to="{ name: 'login' }" class="btn btn-lg btn-primary float-right col-md-5 col-md-offset-2">
             Login
           </router-link>
           <br />
         </div>
         <requestgroups-list />
       </b-col>
-      <b-col md="4" cols="12">
+      <b-col lg="4" cols="12">
         <b-row>
           <b-col>
             <h3>Quick Navigation</h3>
             <ul class="list-unstyled sidebar-nav">
               <li>
-                <router-link :to="{ name: 'create' }"> <i class="fab fa-wpexplorer fa-2x fa-fw" /> Submit Observation </router-link>
+                <router-link :to="{ name: 'create' }" class="pt-1"> <i class="fab fa-wpexplorer fa-lg fa-fw" /> Submit Observation </router-link>
               </li>
               <li>
-                <router-link :to="{ name: 'proposals' }"> <i class="fa fa-users fa-2x fa-fw" /> Manage Proposals </router-link>
+                <router-link :to="{ name: 'proposals' }" class="pt-1"> <i class="fa fa-users fa-lg fa-fw" /> Manage Proposals </router-link>
+              </li>
+              <li>
+                <router-link :to="{ name: 'help' }" class="pt-1"> <i class="fas fa-info-circle fa-lg"></i> Help </router-link>
               </li>
             </ul>
           </b-col>
         </b-row>
         <b-row>
-          <div class="col-md-12">
-            <h3>Need more information?</h3>
-            Check out the
-            <router-link :to="{ name: 'help' }">
-              help page.
-            </router-link>
-          </div>
+          <b-col>
+            <h3 class="mt-4">
+              Telescope availability history<sup v-b-tooltip="tooltipConfig" class="text-primary" :title="telescopeAvailabilityChartHelpText">?</sup>
+            </h3>
+            <telescope-availability-chart />
+            <a href="https://lco.global/observatory/status/">Detailed observatory status</a>
+          </b-col>
         </b-row>
-        <br />
-        <h3>Telescope availability history</h3>
-        <p>
-          This chart shows the percent of operational science time for each telescope over the last 4 days. View the
-          <a href="https://lco.global/observatory/status/">detailed operational status.</a>
-        </p>
-        <telescope-availability-chart />
         <b-row v-if="userIsAuthenticated">
           <b-col>
-            <h3>Active Proposals</h3>
+            <h3 class="mt-4">Active Proposals</h3>
             <div v-for="proposal in currentProposals" :key="proposal.id">
               <p>
                 <router-link :to="{ name: 'proposalDetail', params: { id: proposal.id } }">
@@ -91,12 +87,19 @@
 <script>
 import RequestgroupsList from '@/components/RequestgroupsList.vue';
 import TelescopeAvailabilityChart from '@/components/TelescopeAvailabilityChart.vue';
+import { tooltipConfig } from '@/utils.js';
 
 export default {
   name: 'Home',
   components: {
     RequestgroupsList,
     TelescopeAvailabilityChart
+  },
+  data: function() {
+    return {
+      tooltipConfig: tooltipConfig,
+      telescopeAvailabilityChartHelpText: 'This chart shows the percent of operational science time for each telescope over the last 4 days.'
+    };
   },
   computed: {
     profile: function() {
@@ -119,3 +122,25 @@ export default {
   }
 };
 </script>
+<style scoped>
+.noauth {
+  line-height: 1.4em;
+}
+
+.noauth li {
+  height: 75px;
+}
+
+.noauth span {
+  vertical-align: middle;
+  padding-top: 5px;
+}
+
+.sidebar-nav {
+  font-size: 1.3em;
+}
+
+.sidebar-nav li {
+  height: 40px;
+}
+</style>

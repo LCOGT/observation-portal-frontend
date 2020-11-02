@@ -12,7 +12,7 @@
       empty-text="You have no draft observation requests"
     >
       <template v-slot:cell(load)="data">
-        <b-button variant="info" size="sm" @click="loadDraft(data.value)">
+        <b-button variant="primary" size="sm" @click="loadDraft(data.value)">
           <i class="fa fa-download" />
         </b-button>
       </template>
