@@ -218,7 +218,6 @@ import CoInvestigatorTable from '@/components/CoInvestigatorTable.vue';
 import ProposalInvitations from '@/components/ProposalInvitations.vue';
 import InviteCoInvestigatorsForm from '@/components/InviteCoInvestigatorsForm.vue';
 import { getDataMixin } from '@/components/util/getDataMixins.js';
-import { confirmMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'ProposalDetail',
@@ -233,7 +232,7 @@ export default {
     ProposalInvitations,
     InviteCoInvestigatorsForm
   },
-  mixins: [getDataMixin, confirmMixin],
+  mixins: [getDataMixin],
   props: {
     id: {
       type: String,

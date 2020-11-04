@@ -18,6 +18,7 @@ import ProposalDetail from '../views/ProposalDetail.vue';
 import SemesterDetail from '../views/SemesterDetail.vue';
 import SemesterDetailCurrent from '../views/SemesterDetailCurrent.vue';
 import SemesterAdminTable from '../views/SemesterAdminTable.vue';
+import Apply from '../views/Apply.vue';
 import NotFound from '../components/NotFound.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
@@ -127,7 +128,20 @@ const routes = [
   {
     path: '/apply',
     name: 'apply',
-    // TODO: Update with sciapplications component
+    component: Apply,
+    meta: {
+      title: 'Submit Proposal',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/apply/create/:callId',
+    name: 'createApp',
+    component: NotFound
+  },
+  {
+    path: '/apply/update/:callId',
+    name: 'updateApp',
     component: NotFound
   },
   {
