@@ -3,7 +3,7 @@
     <b-col>
       <h1>Active Calls for Proposals</h1>
       <!-- TODO: Handle case where there was an error loading -->
-      <b-table :items="nonCollabCalls" :fields="nonCollabCallsTable.fields" :busy="!dataLoaded" show-empty>
+      <b-table :items="nonCollabCalls" :fields="nonCollabCallsFields" :busy="!dataLoaded" show-empty>
         <template #empty>
           <h4>No active calls at this time</h4>
         </template>
@@ -31,37 +31,59 @@
         technical aspects of the network is available on the <a href="https://lco.global/observatory/">observatory capabilities</a> pages.
       </p>
       <template v-if="sciencecollaborationallocation">
-        <sci-collab-applications :collab-calls="collabCalls"></sci-collab-applications>
+        <h1>{{ sciencecollaborationallocation.name }} Proposals</h1>
+        <p>
+          You are the admin of the {{ sciencecollaborationallocation.id }} collaboration group. Here you will be able to review, edit and submit
+          proposals to LCO.
+        </p>
+        <b-table :items="collabCalls" :fields="collabCallsFields">
+          <template #head(allocations)>
+            <b-row>
+              <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
+                {{ allocation.raw_telescope_name }}
+              </b-col>
+            </b-row>
+          </template>
+          <template #cell(allocations)="data">
+            <b-row>
+              <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
+                {{ getTimeRequested(data.item.semester, allocation.telescope_name) }}/{{ allocation.allocation }}
+              </b-col>
+            </b-row>
+          </template>
+          <template #cell(addProposal)="data">
+            <router-link :to="{ name: 'createApp', params: { callId: data.item.id } }" class="btn btn-primary">Apply</router-link>
+          </template>
+        </b-table>
+        <sci-applications :is-sci-collab="true"></sci-applications>
       </template>
-      <non-sci-collab-applications></non-sci-collab-applications>
+      <h1>Your Proposals</h1>
+      <sci-applications :is-sci-collab="false"></sci-applications>
     </b-col>
   </b-row>
 </template>
 <script>
 import _ from 'lodash';
 
-import SciCollabApplications from '@/components/SciCollabApplications.vue';
-import NonSciCollabApplications from '@/components/NonSciCollabApplications.vue';
+import SciApplications from '@/components/SciApplications.vue';
 import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 
 export default {
   name: 'Apply',
   components: {
-    SciCollabApplications,
-    NonSciCollabApplications
+    SciApplications
   },
   mixins: [getDataListWithCountMixin],
   data: function() {
     return {
-      nonCollabCallsTable: {
-        fields: [
-          { key: 'proposal_type_display', label: 'Type' },
-          { key: 'semester' },
-          { key: 'eligibility_short', label: 'Eligibility' },
-          { key: 'deadline' },
-          { key: 'applyButton', label: '' }
-        ]
-      }
+      collabCallsFields: [{ key: 'semester' }, { key: 'allocations' }, { key: 'deadline' }, { key: 'addProposal', label: '' }],
+      nonCollabCallsFields: [
+        { key: 'proposal_type_display', label: 'Type' },
+        { key: 'semester' },
+        { key: 'eligibility_short', label: 'Eligibility' },
+        { key: 'deadline' },
+        { key: 'applyButton', label: '' }
+      ]
     };
   },
   computed: {
@@ -77,11 +99,17 @@ export default {
     },
     sciencecollaborationallocation: function() {
       return this.$store.state.profile.sciencecollaborationallocation;
+    },
+    allocations: function() {
+      return _.get(this.sciencecollaborationallocation, 'allocations', []);
     }
   },
   methods: {
     initializeDataEndpoint: function() {
       return '/api/calls/';
+    },
+    getTimeRequested: function(semester, telescopeName) {
+      return _.get(this.sciencecollaborationallocation, ['time_requested_for_open_calls', semester, telescopeName], 0);
     }
   }
 };

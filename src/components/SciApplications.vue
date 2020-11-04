@@ -1,8 +1,7 @@
 <template>
   <div>
-    <h1>Your Proposals</h1>
     <h4>Draft Proposals</h4>
-    <b-table :items="draftApplications" :fields="draftFields" :busy="!dataLoaded" show-empty>
+    <b-table :items="draftApplications" :fields="draftApplicationFields" :busy="!dataLoaded" show-empty>
       <template #table-busy>
         <div class="text-center my-2"><i class="fa fa-spin fa-spinner" /> Loading...</div>
       </template>
@@ -13,9 +12,24 @@
         <router-link :to="{ name: 'updateApp', params: { callId: data.item.id } }">{{ data.item.title }}</router-link>
       </template>
       <template #cell(call)="data"> {{ data.item.call.proposal_type_display }} call for {{ data.item.call.semester }} </template>
+      <template #cell(semester)="data">{{ data.item.call.semester }}</template>
       <template #cell(deadline)="data">
         <span v-if="data.item.call.proposal_type === 'DDT'">N/A</span>
         <span v-else>{{ data.item.call.deadline }}</span>
+      </template>
+      <template #head(allocations)>
+        <b-row>
+          <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
+            {{ allocation.raw_telescope_name }}
+          </b-col>
+        </b-row>
+      </template>
+      <template #cell(allocations)="data">
+        <b-row>
+          <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
+            {{ getTimeRequested(data.item, allocation.telescope_name) }}
+          </b-col>
+        </b-row>
       </template>
       <template #cell(preview)>
         <!-- TODO: Make these icons link to their respective targets -->
@@ -30,6 +44,7 @@
         <b-link
           href="#"
           title="Delete draft"
+          :disabled="deleteDraftIsBusy"
           @click="confirm(getDeleteConfirmationMessage(data.item.title), deleteDraftApplication, { appId: data.item.id })"
         >
           <span class="text-danger mx-auto"><i class="far fa-trash-alt"></i></span>
@@ -37,7 +52,7 @@
       </template>
     </b-table>
     <h4>Submitted Proposals</h4>
-    <b-table :items="submittedApplications" :fields="submittedFields" :busy="!dataLoaded" show-empty>
+    <b-table :items="submittedApplications" :fields="submittedApplicationFields" :busy="!dataLoaded" show-empty>
       <template #table-busy>
         <div class="text-center my-2"><i class="fa fa-spin fa-spinner" /> Loading...</div>
       </template>
@@ -45,9 +60,24 @@
         <div class="text-center text-muted my-2">You have not started any proposals.</div>
       </template>
       <template #cell(call)="data"> {{ data.item.call.proposal_type_display }} call for {{ data.item.call.semester }} </template>
+      <template #cell(semester)="data">{{ data.item.call.semester }}</template>
       <template #cell(deadline)="data">
         <span v-if="data.item.call.proposal_type === 'DDT'">N/A</span>
         <span v-else>{{ data.item.call.deadline }}</span>
+      </template>
+      <template #head(allocations)>
+        <b-row>
+          <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
+            {{ allocation.raw_telescope_name }}
+          </b-col>
+        </b-row>
+      </template>
+      <template #cell(allocations)="data">
+        <b-row>
+          <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
+            {{ getTimeRequested(data.item, allocation.telescope_name) }}
+          </b-col>
+        </b-row>
       </template>
       <template #cell(view)>
         <!-- TODO: Make these icons link to their respective targets -->
@@ -69,21 +99,50 @@ import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 import { confirmMixin } from '@/components/util/utilMixins.js';
 
 export default {
-  name: 'NonSciCollabApplications',
+  name: 'SciApplications',
   mixins: [getDataListWithCountMixin, confirmMixin],
+  props: {
+    isSciCollab: {
+      type: Boolean,
+      required: true
+    }
+  },
   data: function() {
+    let draftApplicationFields;
+    let submittedApplicationFields;
+    if (this.isSciCollab) {
+      draftApplicationFields = [
+        { key: 'title' },
+        { key: 'tac_rank', label: 'Rank' },
+        { key: 'allocations' },
+        { key: 'semester' },
+        { key: 'deadline' },
+        { key: 'status' },
+        { key: 'preview' },
+        { key: 'delete' }
+      ];
+      submittedApplicationFields = [
+        { key: 'title' },
+        { key: 'tac_rank', label: 'Rank' },
+        { key: 'allocations' },
+        { key: 'semester' },
+        { key: 'deadline' },
+        { key: 'status' },
+        { key: 'view' }
+      ];
+    } else {
+      draftApplicationFields = [{ key: 'title' }, { key: 'call' }, { key: 'deadline' }, { key: 'status' }, { key: 'preview' }, { key: 'delete' }];
+      submittedApplicationFields = [{ key: 'title' }, { key: 'call' }, { key: 'deadline' }, { key: 'status' }, { key: 'view' }];
+    }
     return {
-      draftFields: [{ key: 'title' }, { key: 'call' }, { key: 'deadline' }, { key: 'status' }, { key: 'preview' }, { key: 'delete' }],
-      submittedFields: [{ key: 'title' }, { key: 'call' }, { key: 'deadline' }, { key: 'status' }, { key: 'view' }],
+      draftApplicationFields: draftApplicationFields,
+      submittedApplicationFields: submittedApplicationFields,
       deleteDraftIsBusy: false
     };
   },
   computed: {
-    profile: function() {
-      return this.$store.state.profile;
-    },
-    sciencecollaborationallocation: function() {
-      return this.$store.state.profile.sciencecollaborationallocation;
+    allocations: function() {
+      return _.get(this.$store.state.profile.sciencecollaborationallocation, 'allocations', []);
     },
     submittedApplications: function() {
       return _.filter(this.data.results, app => {
@@ -99,16 +158,24 @@ export default {
   methods: {
     initializeDataEndpoint: function() {
       // TODO: Paginate results
-      return '/api/scienceapplications/?exclude_proposal_type=COLAB&only_authored=true&limit=500';
+      let endpoint = '/api/scienceapplications/?only_authored=true&limit=500';
+      if (this.isSciCollab) {
+        return endpoint + '&proposal_type=COLAB';
+      } else {
+        return endpoint + '&exclude_proposal_type=COLAB';
+      }
     },
-    getDeleteConfirmationMessage: function(title) {
-      return 'Are you sure you want to delete "' + title + '"?';
+    getTimeRequested: function(sciApp, telescopeName) {
+      return _.get(sciApp, ['time_requested_by_telescope_name', telescopeName], 0);
     },
     addMessage: function(text, variant) {
       this.$store.commit('addMessage', { text: text, variant: variant, namespace: 'scicollab-applications' });
     },
     clearMessages: function() {
       this.$store.commit('clearNamespacedMessages', 'scicollab-applications');
+    },
+    getDeleteConfirmationMessage: function(title) {
+      return 'Are you sure you want to delete "' + title + '"?';
     },
     deleteDraftApplication: function(args) {
       this.clearMessages();
@@ -125,7 +192,7 @@ export default {
         .fail(function(response) {
           if (response.status === 404) {
             that.addMessage(
-              'The application that you tried to delete does not exist, please try refreshing your page to get an updated list',
+              'The draft application that you tried to delete does not exist, please try refreshing your page to get an updated list',
               'danger'
             );
           } else {
