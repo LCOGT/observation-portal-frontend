@@ -1,11 +1,11 @@
 <template>
   <b-row>
-    <b-col>
+    <b-col class="p-0">
       <h1>Active Calls for Proposals</h1>
-      <!-- TODO: Handle case where there was an error loading -->
       <b-table :items="nonCollabCalls" :fields="nonCollabCallsFields" :busy="!dataLoaded" show-empty>
         <template #empty>
-          <h4>No active calls at this time</h4>
+          <div v-if="dataLoadError" class="text-center text-muted my-2">Oops, there was a problem getting your data. Please try again.</div>
+          <h4 v-else>No active calls at this time</h4>
         </template>
         <template #table-busy>
           <div class="text-center my-2"><i class="fa fa-spin fa-spinner" /> Loading...</div>
@@ -47,7 +47,7 @@
           <template #cell(allocations)="data">
             <b-row>
               <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
-                {{ getTimeRequested(data.item.semester, allocation.telescope_name) }}/{{ allocation.allocation }}
+                {{ getTimeRequested(data.item.id, allocation.telescope_name) }}/{{ allocation.allocation }}
               </b-col>
             </b-row>
           </template>
@@ -55,7 +55,7 @@
             <router-link :to="{ name: 'createApp', params: { callId: data.item.id } }" class="btn btn-primary">Apply</router-link>
           </template>
         </b-table>
-        <sci-applications :is-sci-collab="true"></sci-applications>
+        <sci-applications :is-sci-collab="true" :sci-collab-allocations="allocations"></sci-applications>
       </template>
       <h1>Your Proposals</h1>
       <sci-applications :is-sci-collab="false"></sci-applications>
@@ -98,18 +98,30 @@ export default {
       });
     },
     sciencecollaborationallocation: function() {
-      return this.$store.state.profile.sciencecollaborationallocation;
+      let sca = {};
+      for (let call of this.data.results) {
+        if (call.sca.id) {
+          sca = call.sca;
+          break;
+        }
+      }
+      return sca;
     },
     allocations: function() {
-      return _.get(this.sciencecollaborationallocation, 'allocations', []);
+      return _.get(this.sciencecollaborationallocation, 'collaborationallocation_set', []);
     }
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/calls/';
+      return '/api/calls/?open=true';
     },
-    getTimeRequested: function(semester, telescopeName) {
-      return _.get(this.sciencecollaborationallocation, ['time_requested_for_open_calls', semester, telescopeName], 0);
+    getTimeRequested: function(callId, telescopeName) {
+      for (let call of this.data.results) {
+        if (call.id === callId) {
+          return _.get(call, ['sca', 'time_requested', telescopeName], 0);
+        }
+      }
+      return 0;
     }
   }
 };

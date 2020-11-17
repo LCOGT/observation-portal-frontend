@@ -164,9 +164,10 @@ function zPadFloat(num) {
   return num.toLocaleString(undefined, { minimumIntegerDigits: 2, maximumFractionDigits: 4 });
 }
 
-function formatDate(date) {
+function formatDate(date, formatString) {
+  formatString = formatString || datetimeFormat;
   if (date) {
-    return moment.utc(String(date)).format(datetimeFormat);
+    return moment.utc(String(date)).format(formatString);
   }
 }
 

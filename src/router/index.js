@@ -20,6 +20,7 @@ import SemesterDetailCurrent from '../views/SemesterDetailCurrent.vue';
 import SemesterAdminTable from '../views/SemesterAdminTable.vue';
 import Apply from '../views/Apply.vue';
 import CreateSciApplication from '../views/CreateSciApplication.vue';
+import UpdateSciApplication from '../views/UpdateSciApplication.vue';
 import NotFound from '../components/NotFound.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
@@ -156,9 +157,14 @@ const routes = [
     }
   },
   {
-    path: '/apply/update/:callId',
+    path: '/apply/update/:sciAppId',
     name: 'updateApp',
-    component: NotFound
+    component: UpdateSciApplication,
+    props: true,
+    meta: {
+      title: 'Submit Application',
+      requiresAuth: true
+    }
   },
   {
     path: '/create',

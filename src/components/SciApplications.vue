@@ -6,10 +6,11 @@
         <div class="text-center my-2"><i class="fa fa-spin fa-spinner" /> Loading...</div>
       </template>
       <template #empty>
-        <div class="text-center text-muted my-2">You have not started any proposals.</div>
+        <div v-if="dataLoadError" class="text-center text-muted my-2">Oops, there was a problem getting your data. Please try again.</div>
+        <div v-else class="text-center text-muted my-2">You have not started any proposals.</div>
       </template>
       <template #cell(title)="data">
-        <router-link :to="{ name: 'updateApp', params: { callId: data.item.id } }">{{ data.item.title }}</router-link>
+        <router-link :to="{ name: 'updateApp', params: { sciAppId: data.item.id } }">{{ data.item.title }}</router-link>
       </template>
       <template #cell(call)="data"> {{ data.item.call.proposal_type_display }} call for {{ data.item.call.semester }} </template>
       <template #cell(semester)="data">{{ data.item.call.semester }}</template>
@@ -19,14 +20,14 @@
       </template>
       <template #head(allocations)>
         <b-row>
-          <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
+          <b-col v-for="allocation in sciCollabAllocations" :key="allocation.telescope_name">
             {{ allocation.raw_telescope_name }}
           </b-col>
         </b-row>
       </template>
       <template #cell(allocations)="data">
         <b-row>
-          <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
+          <b-col v-for="allocation in sciCollabAllocations" :key="allocation.telescope_name">
             {{ getTimeRequested(data.item, allocation.telescope_name) }}
           </b-col>
         </b-row>
@@ -57,7 +58,8 @@
         <div class="text-center my-2"><i class="fa fa-spin fa-spinner" /> Loading...</div>
       </template>
       <template #empty>
-        <div class="text-center text-muted my-2">You have not started any proposals.</div>
+        <div v-if="dataLoadError" class="text-center text-muted my-2">Oops, there was a problem getting your data. Please try again.</div>
+        <div v-else class="text-center text-muted my-2">You have not started any proposals.</div>
       </template>
       <template #cell(call)="data"> {{ data.item.call.proposal_type_display }} call for {{ data.item.call.semester }} </template>
       <template #cell(semester)="data">{{ data.item.call.semester }}</template>
@@ -67,14 +69,14 @@
       </template>
       <template #head(allocations)>
         <b-row>
-          <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
+          <b-col v-for="allocation in sciCollabAllocations" :key="allocation.telescope_name">
             {{ allocation.raw_telescope_name }}
           </b-col>
         </b-row>
       </template>
       <template #cell(allocations)="data">
         <b-row>
-          <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
+          <b-col v-for="allocation in sciCollabAllocations" :key="allocation.telescope_name">
             {{ getTimeRequested(data.item, allocation.telescope_name) }}
           </b-col>
         </b-row>
@@ -105,6 +107,13 @@ export default {
     isSciCollab: {
       type: Boolean,
       required: true
+    },
+    sciCollabAllocations: {
+      type: Array,
+      required: false,
+      default: function() {
+        return [];
+      }
     }
   },
   data: function() {
@@ -141,9 +150,6 @@ export default {
     };
   },
   computed: {
-    allocations: function() {
-      return _.get(this.$store.state.profile.sciencecollaborationallocation, 'allocations', []);
-    },
     submittedApplications: function() {
       return _.filter(this.data.results, app => {
         return app.status !== 'DRAFT';
@@ -158,7 +164,7 @@ export default {
   methods: {
     initializeDataEndpoint: function() {
       // TODO: Paginate results
-      let endpoint = '/api/scienceapplications/?only_authored=true&limit=500';
+      let endpoint = '/api/scienceapplications/?only_authored=true&limit=1000&ordering=-call__semester';
       if (this.isSciCollab) {
         return endpoint + '&proposal_type=COLAB';
       } else {
@@ -166,7 +172,15 @@ export default {
       }
     },
     getTimeRequested: function(sciApp, telescopeName) {
-      return _.get(sciApp, ['time_requested_by_telescope_name', telescopeName], 0);
+      let timeRequested = 0;
+      for (let timeRequest of _.get(sciApp, 'timerequest_set', [])) {
+        if (timeRequest.telescope_name === telescopeName) {
+          timeRequested += timeRequest.std_time;
+          timeRequested += timeRequest.rr_time;
+          timeRequested += timeRequest.tc_time;
+        }
+      }
+      return timeRequested;
     },
     addMessage: function(text, variant) {
       this.$store.commit('addMessage', { text: text, variant: variant, namespace: 'scicollab-applications' });
