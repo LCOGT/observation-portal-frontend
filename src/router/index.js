@@ -19,6 +19,8 @@ import SemesterDetail from '../views/SemesterDetail.vue';
 import SemesterDetailCurrent from '../views/SemesterDetailCurrent.vue';
 import SemesterAdminTable from '../views/SemesterAdminTable.vue';
 import Apply from '../views/Apply.vue';
+import SciApplicationDetail from '../views/SciApplicationDetail.vue';
+import SciApplicationCombinedPdf from '../views/SciApplicationCombinedPdf.vue';
 import CreateSciApplication from '../views/CreateSciApplication.vue';
 import UpdateSciApplication from '../views/UpdateSciApplication.vue';
 import NotFound from '../components/NotFound.vue';
@@ -138,12 +140,23 @@ const routes = [
   },
   {
     path: '/apply/:sciAppId',
-    name: 'SciApplicationDetail',
-    component: NotFound,
+    name: 'appDetail',
+    component: SciApplicationDetail,
     props: true,
     meta: {
       title: 'Science Application',
-      requiresAuth: true
+      requiresAuth: true,
+      isPlainPage: true
+    }
+  },
+  {
+    path: '/apply/:sciAppId/combined_pdf',
+    name: 'appCombinedPdf',
+    component: SciApplicationCombinedPdf,
+    props: true,
+    meta: {
+      requiresAuth: true,
+      isPlainPage: true
     }
   },
   {

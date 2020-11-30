@@ -31,6 +31,7 @@
             label="Abstract"
             field="abstract"
             field-type="textarea"
+            rows="8"
           ></basic-custom-field>
           <template v-if="data.proposal_type === 'COLAB'">
             <basic-custom-field
@@ -38,7 +39,8 @@
               :errors="apiValidationErrors.tac_rank"
               label="Rank"
               field="tac-rank"
-              input-type="number"
+              type="number"
+              min="0"
             ></basic-custom-field>
           </template>
           <template>
@@ -60,7 +62,7 @@
                   label="Email"
                   placeholder="Email"
                   field="pi"
-                  input-type="email"
+                  type="email"
                   :label-sr-only="true"
                 ></basic-custom-field>
               </template>
@@ -102,7 +104,7 @@
             Add the details of co-investigators on this proposal. First names will be presented as initials.
           </div>
           <b-alert v-for="error in coInvestigatorsNonFieldErrors" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
-          <b-table-lite :items="sciApp.coinvestigator_set" :fields="userTableFields">
+          <b-table-lite :items="sciApp.coinvestigator_set" :fields="userTableFields" class="mb-0">
             <template #cell(email)="data">
               <basic-custom-field
                 v-model="sciApp.coinvestigator_set[data.index].email"
@@ -110,7 +112,7 @@
                 label="Email"
                 placeholder="Email"
                 :field="'coi-email' + data.index"
-                input-type="email"
+                type="email"
                 :label-sr-only="true"
               ></basic-custom-field>
             </template>
@@ -150,6 +152,7 @@
           </b-table-lite>
           <b-link href="#" @click="addCoInvestigator"><i class="fas fa-plus"></i> Add another</b-link>
           <br />
+          <br />
           <template>
             <h5>Observing Budget</h5>
             <!-- TODO: Translate this block -->
@@ -161,7 +164,7 @@
               requested separately.
             </div>
             <b-alert v-for="error in timeRequestNonFieldErrors" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
-            <b-table-lite :items="sciApp.timerequest_set" :fields="timeRequestFields" class="mb-1">
+            <b-table-lite :items="sciApp.timerequest_set" :fields="timeRequestFields" class="mb-0">
               <template #cell(semester)="data">
                 <basic-custom-field
                   v-model="sciApp.timerequest_set[data.index].semester"
@@ -189,9 +192,10 @@
                   v-model="sciApp.timerequest_set[data.index].std_time"
                   :errors="getApiValidationError(['timerequest_set', data.index, 'std_time'])"
                   label="Standard Time"
-                  input-type="number"
+                  type="number"
                   :field="'timerequest-std-time' + data.index"
                   :label-sr-only="true"
+                  min="0"
                 ></basic-custom-field>
               </template>
               <template #cell(rapidResponse)="data">
@@ -199,9 +203,10 @@
                   v-model="sciApp.timerequest_set[data.index].rr_time"
                   :errors="getApiValidationError(['timerequest_set', data.index, 'rr_time'])"
                   label="Rapid Response Time"
-                  input-type="number"
+                  type="number"
                   :field="'timerequest-rr-time' + data.index"
                   :label-sr-only="true"
+                  min="0"
                 ></basic-custom-field>
               </template>
               <template #cell(timeCritical)="data">
@@ -209,9 +214,10 @@
                   v-model="sciApp.timerequest_set[data.index].tc_time"
                   :errors="getApiValidationError(['timerequest_set', data.index, 'tc_time'])"
                   label="Time Critical Time"
-                  input-type="number"
+                  type="number"
                   :field="'timerequest-tc-time' + data.index"
                   :label-sr-only="true"
+                  min="0"
                 ></basic-custom-field>
                 <b-link class="float-right" href="#" title="Delete time request" @click="removeTimeRequest(data.index)">
                   <span class="text-danger mx-auto"><i class="far fa-trash-alt"></i></span>
@@ -219,6 +225,7 @@
               </template>
             </b-table-lite>
             <b-link href="#" @click="addTimeRequest"><i class="fas fa-plus"></i> Add another</b-link>
+            <br />
             <br />
             <template v-if="data.proposal_type !== 'COLAB'">
               <h5>Upload PDF</h5>
@@ -354,11 +361,11 @@
               </div>
               <template v-if="pdfPath">
                 Currently: <b-link :href="pdfPath">{{ pdfBaseName }}</b-link>
-                <b-form-checkbox v-model="clearPdf">Clear the pdf</b-form-checkbox>
-                Change the pdf:
+                <b-form-checkbox v-model="clearPdf" class="d-inline ml-1">Clear</b-form-checkbox>
+                <div class="pt-2">Change:</div>
               </template>
-              <basic-custom-field v-model="sciApp.pdf" field-type="file" :errors="pdfErrors" label="Upload PDF" label-sr-only></basic-custom-field>
-              <b-link v-if="sciApp.pdf" href="#" @click="sciApp.pdf = null">Reset</b-link>
+              <basic-custom-field v-model="sciApp.pdf" field-type="file" :errors="pdfErrors" label="Upload PDF" accept=".pdf, .PDF" label-sr-only>
+              </basic-custom-field>
             </template>
           </template>
         </b-form>
@@ -374,23 +381,27 @@
         <p>You may save your application and work on it later.</p>
         <p>Once you submit your application, you will no longer be able to edit it.</p>
         <!-- TODO: translate button text -->
-        <b-button variant="primary" :disabled="isBusyPostingApplication" @click="saveApplication">
+        <b-button variant="primary" :disabled="isBusyPostingApplication || pdfIsTooLarge" class="mr-1" @click="saveApplication">
           Save
         </b-button>
-        <b-button variant="success" :disabled="isBusyPostingApplication" @click="confirm(confirmSubmitMessage, submitApplication)">
+        <b-button variant="success" :disabled="isBusyPostingApplication || pdfIsTooLarge" @click="confirm(confirmSubmitMessage, submitApplication)">
           Submit
         </b-button>
         <template v-if="updatingSciApp">
           <p>Previewing your submission will <strong>discard</strong> any pending edits.</p>
           <!-- TODO: translate button text  -->
-          <p><router-link :to="{ name: 'SciApplicationDetail', params: { sciAppId: initialSciApp.id } }">Preview</router-link></p>
+          <p>
+            <router-link :to="{ name: 'appDetail', params: { sciAppId: initialSciApp.id } }">
+              <span class="mx-auto"><i class="fa fa-print"></i></span> Preview
+            </router-link>
+          </p>
           <!-- TODO: translate text  -->
           <p>Deleting a draft is an irreversible action.</p>
           <!-- TODO: translate button text  -->
           <p>
-            <b-button variant="danger" :disabled="isBusyDeletingApplication" @click="confirm(confirmDeleteMessage, deleteApplication)"
-              >Delete</b-button
-            >
+            <b-button variant="danger" :disabled="isBusyDeletingApplication" @click="confirm(confirmDeleteMessage, deleteApplication)">
+              Delete
+            </b-button>
           </p>
         </template>
       </b-col>
@@ -440,52 +451,15 @@ export default {
     }
   },
   data: function() {
-    const emptyCoInvestigator = { email: '', first_name: '', last_name: '', institution: '' };
-    const emptyTimeRequest = { semester: '', instrument: '', std_time: 0, rr_time: 0, tc_time: 0 };
     let sizeLimitAsMegaBytes = 10;
     const pdfSizeLimit = {
       asMegaBytes: sizeLimitAsMegaBytes,
       asBytes: sizeLimitAsMegaBytes * 1000000
     };
-    let sciApp;
-    let pdfPath;
-    if (this.initialSciApp.id) {
-      sciApp = copyObject(this.initialSciApp);
-      pdfPath = sciApp.pdf;
-      sciApp.pdf = null;
-      if (_.get(sciApp, 'timerequest_set', []).length === 0) {
-        sciApp.timerequest_set = [copyObject(emptyTimeRequest)];
-      }
-      if (_.get(sciApp, 'coinvestigator_set', []).length === 0) {
-        sciApp.coinvestigator_set = [copyObject(emptyCoInvestigator)];
-      }
-    } else {
-      sciApp = {
-        call: this.callId,
-        title: '',
-        // The 'UNSAVED' state is not a valid state when submitting to the API, it
-        // is set here as feedback to the user
-        status: 'UNSAVED',
-        abstract: '',
-        tac_rank: 0,
-        pi: '',
-        pi_first_name: '',
-        pi_last_name: '',
-        pi_institution: '',
-        coinvestigator_set: [copyObject(emptyCoInvestigator)],
-        timerequest_set: [copyObject(emptyTimeRequest)],
-        pdf: null
-      };
-      pdfPath = null;
-    }
+    let sciAppData = this.getSciAppData(this.callId, this.initialSciApp);
     return {
-      emptyCoInvestigator: emptyCoInvestigator,
-      emptyTimeRequest: emptyTimeRequest,
-      sciApp: sciApp,
-      pdf: null,
-      // This will either be null for a new application, or for an application to be updated where no pdf has been uploaded yet,
-      // or it will be the path to an uploaded pdf.
-      pdfPath: pdfPath,
+      sciApp: sciAppData.sciApp,
+      pdfPath: sciAppData.pdfPath,
       clearPdf: false,
       userTableFields: ['email', 'firstName', 'lastName', 'institution'],
       timeRequestFields: [{ key: 'semester', class: 'd-none' }, 'instrument', 'standardTime', 'rapidResponse', 'timeCritical'],
@@ -495,7 +469,7 @@ export default {
       isBusyDeletingApplication: false,
       pdfSizeLimit: pdfSizeLimit,
       apiValidationErrors: {},
-      pdfErrors: []
+      pdfIsTooLarge: false
     };
   },
   computed: {
@@ -523,6 +497,13 @@ export default {
       let lastElementofPath = _.last(_.split(this.pdfPath, '/'));
       return lastElementofPath || this.pdfPath;
     },
+    pdfErrors: function() {
+      let errors = this.apiValidationErrors.pdf || [];
+      if (this.pdfIsTooLarge) {
+        errors.push('PDF is too large');
+      }
+      return errors;
+    },
     timeRequestNonFieldErrors: function() {
       return _.get(this.apiValidationErrors, ['timerequest_set', 'non_field_errors'], []);
     },
@@ -532,18 +513,10 @@ export default {
   },
   watch: {
     'sciApp.pdf': function(pdf) {
-      const pdfTooLargeMessage = 'PDF is too large';
-      const pdfTooLarge = _.get(pdf, 'size', 0) > this.pdfSizeLimit.asBytes;
-      const pdfErrorsDoesntIncludeTooLargeMessage =
-        _.filter(this.pdfErrors, function(error) {
-          return error === pdfTooLargeMessage;
-        }).length < 1;
-      if (pdfTooLarge && pdfErrorsDoesntIncludeTooLargeMessage) {
-        this.pdfErrors.push(pdfTooLargeMessage);
-      } else if (!pdfTooLarge) {
-        this.pdfErrors = _.filter(this.pdfErrors, function(error) {
-          return error !== pdfTooLargeMessage;
-        });
+      if (_.get(pdf, 'size', 0) > this.pdfSizeLimit.asBytes) {
+        this.pdfIsTooLarge = true;
+      } else {
+        this.pdfIsTooLarge = false;
       }
     },
     numberOfEligibleSemesters: function(value) {
@@ -571,6 +544,43 @@ export default {
   methods: {
     initializeDataEndpoint: function() {
       return '/api/calls/' + this.callId + '/';
+    },
+    getSciAppData: function(callId, initialSciApp) {
+      // Return sciApp data. If `initialSciApp` is passed in, the sciApp data that
+      // is returned is generated it, otherwise sciApp fields are set to defaults.
+      initialSciApp = initialSciApp || {};
+      let sciApp = {
+        call: callId,
+        title: initialSciApp.title || '',
+        // The 'UNSAVED' state is not a valid state when submitting to the API, it
+        // is set here as feedback to the user
+        status: initialSciApp.status || 'UNSAVED',
+        abstract: initialSciApp.abstract || '',
+        tac_rank: initialSciApp.tac_rank || 0,
+        pi: initialSciApp.pi || '',
+        pi_first_name: initialSciApp.pi_first_name || '',
+        pi_last_name: initialSciApp.pi_last_name || '',
+        pi_institution: initialSciApp.pi_institution || '',
+        coinvestigator_set: initialSciApp.coinvestigator_set || [],
+        timerequest_set: initialSciApp.timerequest_set || [],
+        pdf: null
+      };
+      if (_.get(sciApp, 'timerequest_set', []).length === 0) {
+        sciApp.timerequest_set = [this.getEmptyTimeRequest()];
+      }
+      if (_.get(sciApp, 'coinvestigator_set', []).length === 0) {
+        sciApp.coinvestigator_set = [this.getEmptyCoInvestigator()];
+      }
+      // `pdfPath` will either be null for a new science application or
+      // for an application to be updated where no pdf has been uploaded yet,
+      // or it will be the path to an uploaded pdf.
+      return { sciApp: sciApp, pdfPath: initialSciApp.pdf || null };
+    },
+    getEmptyTimeRequest: function() {
+      return { semester: '', instrument: '', std_time: 0, rr_time: 0, tc_time: 0 };
+    },
+    getEmptyCoInvestigator: function() {
+      return { email: '', first_name: '', last_name: '', institution: '' };
     },
     getApiValidationError: function(path) {
       return _.get(this.apiValidationErrors, path, null);
@@ -612,11 +622,10 @@ export default {
         .done(function(response) {
           that.apiValidationErrors = {};
           if (data.get('status') === 'DRAFT' && that.updatingSciApp) {
-            // Most fields of the sciapp do not need to be reset when staying on the update page since the fields
-            // are right anyway. However, the new pdf path must be set because the pdf path was set on the server side.
-            that.pdfPath = response.pdf;
+            let sciAppData = that.getSciAppData(that.callId, response);
+            that.pdfPath = sciAppData.pdfPath;
+            that.sciApp = sciAppData.sciApp;
             that.clearPdf = false;
-            that.sciApp.pdf = null;
             that.$store.commit('addMessage', { text: 'Application saved.', variant: 'success' });
           } else if (data.get('status') === 'DRAFT' && !that.updatingSciApp) {
             that.$store.commit('addMessage', { text: 'Application created.', variant: 'success' });
@@ -634,7 +643,7 @@ export default {
             that.$store.commit('addMessage', { text: 'Either the application can not be updated, or the call has closed.', variant: 'danger' });
           } else {
             that.$store.commit('addMessage', {
-              text: 'There was an unexpected error sending your applicaiton, please try again later.',
+              text: 'There was an unexpected error sending your application, please try again later.',
               variant: 'danger'
             });
           }
@@ -727,7 +736,7 @@ export default {
       this.sendApplication(this.getApplicationSubmissionBody('SUBMITTED'));
     },
     deleteApplication: function() {
-      if (this.initialSciApp) {
+      if (this.updatingSciApp) {
         this.$store.commit('clearAllMessages');
         this.isBusyDeletingApplication = true;
         let that = this;

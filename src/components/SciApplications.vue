@@ -32,14 +32,13 @@
           </b-col>
         </b-row>
       </template>
-      <template #cell(preview)>
-        <!-- TODO: Make these icons link to their respective targets -->
-        <b-link href="#">
+      <template #cell(preview)="data">
+        <router-link :to="{ name: 'appDetail', params: { sciAppId: data.item.id } }">
           <span class="text-primary mx-auto"><i class="fa fa-print"></i></span>
-        </b-link>
-        <b-link href="#">
+        </router-link>
+        <router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: data.item.id } }">
           <span class="text-primary mx-auto"><i class="far fa-file-pdf"></i></span>
-        </b-link>
+        </router-link>
       </template>
       <template #cell(delete)="data">
         <b-link
@@ -81,14 +80,13 @@
           </b-col>
         </b-row>
       </template>
-      <template #cell(view)>
-        <!-- TODO: Make these icons link to their respective targets -->
-        <b-link href="#">
+      <template #cell(view)="data">
+        <router-link :to="{ name: 'appDetail', params: { sciAppId: data.item.id } }">
           <span class="text-primary mx-auto"><i class="fa fa-print"></i></span>
-        </b-link>
-        <b-link href="#">
+        </router-link>
+        <router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: data.item.id } }">
           <span class="text-primary mx-auto"><i class="far fa-file-pdf"></i></span>
-        </b-link>
+        </router-link>
       </template>
     </b-table>
   </div>

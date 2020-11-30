@@ -5,10 +5,9 @@
         v-if="fieldType === 'textarea'"
         :id="fieldId"
         :value="value"
-        :placeholder="placeholder"
         :state="validationState"
         :aria-describedby="helpId + ' ' + feedbackId"
-        rows="8"
+        v-bind="$attrs"
         @input="input($event)"
         @blur="blur($event)"
       ></b-form-textarea>
@@ -18,7 +17,7 @@
         :value="value"
         :state="validationState"
         :aria-describedby="helpId + ' ' + feedbackId"
-        :options="options"
+        v-bind="$attrs"
         @input="input($event)"
         @blur="blur($event)"
       ></b-form-select>
@@ -28,7 +27,7 @@
         :value="value"
         :state="validationState"
         :aria-describedby="helpId + ' ' + feedbackId"
-        accept=".pdf, .PDF"
+        v-bind="$attrs"
         @input="input($event)"
         @blur="blur($event)"
       ></b-form-file>
@@ -36,10 +35,9 @@
         v-else
         :id="fieldId"
         :value="value"
-        :type="inputType"
         :state="validationState"
         :aria-describedby="helpId + ' ' + feedbackId"
-        :placeholder="placeholder"
+        v-bind="$attrs"
         @input="input($event)"
         @blur="blur($event)"
       ></b-form-input>
@@ -57,6 +55,9 @@ import _ from 'lodash';
 
 export default {
   name: 'BasicCustomField',
+  inheritAttrs: false,
+  // Any attributes that are set on <basic-custom-field> that are not props
+  // will be passed to the <input> tag in this component.
   props: {
     fieldType: {
       validator: function(value) {
@@ -64,19 +65,8 @@ export default {
       },
       default: 'input'
     },
-    options: {
-      type: Array,
-      default: function() {
-        return [];
-      }
-    },
     value: {
       validator: function(value) {
-        let result = value === null || value === undefined || typeof value === 'string' || typeof value === 'number' || typeof value === 'object';
-        if (!result) {
-          console.log(typeof value);
-          console.log(value);
-        }
         return value === null || value === undefined || typeof value === 'string' || typeof value === 'number' || typeof value === 'object';
       },
       required: true
@@ -91,10 +81,6 @@ export default {
         return _.kebabCase(this.label);
       }
     },
-    placeholder: {
-      type: String,
-      default: ''
-    },
     errors: {
       validator: function(value) {
         return value === null || typeof value === 'object';
@@ -106,10 +92,6 @@ export default {
     helpText: {
       type: String,
       default: ''
-    },
-    inputType: {
-      type: String,
-      default: 'text'
     },
     labelSrOnly: {
       type: Boolean

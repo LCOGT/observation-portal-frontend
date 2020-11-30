@@ -1,5 +1,8 @@
 <template>
-  <div id="app" class="d-flex flex-column h-100">
+  <div v-if="isPlainPage">
+    <router-view />
+  </div>
+  <div v-else id="app" class="d-flex flex-column h-100">
     <div>
       <b-navbar toggleable="lg" variant="lco-dark-blue" type="dark">
         <b-navbar-brand href="https://lco.global">
@@ -132,12 +135,36 @@ export default {
       return this.$store.state.messages;
     },
     isFluidPage: function() {
+      // A fluid page is a page where the contents take up the entire width of the page.
       return this.$route.meta.isFluidPage;
+    },
+    isPlainPage: function() {
+      // A plain page is a page that has minimal styling and that does not have the usual
+      // page header and footer.
+      return this.$route.meta.isPlainPage;
     }
+  },
+  watch: {
+    isPlainPage: function() {
+      this.updatePageStyles();
+    }
+  },
+  created: function() {
+    this.updatePageStyles();
   },
   methods: {
     deleteMessage: function(messageText) {
       this.$store.commit('deleteMessage', messageText);
+    },
+    updatePageStyles: function() {
+      // Disable all styles on the page if this route is marked as plain.
+      for (let styleSheet of document.styleSheets) {
+        if (this.isPlainPage) {
+          styleSheet.disabled = true;
+        } else {
+          styleSheet.disabled = false;
+        }
+      }
     }
   }
 };
