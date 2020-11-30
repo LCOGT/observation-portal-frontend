@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/calls/?open=true';
+      return '/api/calls/?only_open=true';
     },
     getTimeRequested: function(callId, telescopeName) {
       for (let call of this.data.results) {

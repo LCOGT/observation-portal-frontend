@@ -6,7 +6,7 @@
       <li><router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: sciApp.id } }">View Pdf</router-link></li>
     </ul>
     <template v-if="sciApp.title">
-      <h1>{{ sciApp.title }}  {{ sciApp.title }}</h1>
+      <h1>{{ sciApp.title }}</h1>
       <br />
     </template>
     <h2>
