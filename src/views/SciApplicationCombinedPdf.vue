@@ -43,15 +43,17 @@ export default {
     }
   },
   watch: {
-    readyToGeneratePdf: function() {
-      try {
-        if (this.data.pdf) {
-          this.createCombinedPdfFromUploadedAndHtml(this.data.pdf);
-        } else {
-          this.createCombinedPdfFromOnlyHtml();
+    readyToGeneratePdf: function(value) {
+      if (value) {
+        try {
+          if (this.data.pdf) {
+            this.createCombinedPdfFromUploadedAndHtml(this.data.pdf);
+          } else {
+            this.createCombinedPdfFromOnlyHtml();
+          }
+        } catch (err) {
+          this.combinedPdfGenerationFailed = { message: 'There was an error generating your pdf.', failed: true };
         }
-      } catch (err) {
-        this.combinedPdfGenerationFailed = { message: 'There was an error generating your pdf.', failed: true };
       }
     },
     dataNotFound: function(value) {
