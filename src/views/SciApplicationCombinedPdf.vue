@@ -30,13 +30,33 @@ export default {
   },
   data: function() {
     return {
+      finishedMounting: false,
       combinedPdfGenerationFailed: {
         message: '',
         failed: false
       }
     };
   },
+  mounted: function() {
+    this.finishedMounting = true;
+  },
+  computed: {
+    readyToGeneratePdf: function() {
+      return this.finishedMounting && this.dataLoaded;
+    }
+  },
   watch: {
+    readyToGeneratePdf: function() {
+      try {
+        if (response.pdf) {
+          this.createCombinedPdfFromUploadedAndHtml(response.pdf);
+        } else {
+          this.createCombinedPdfFromOnlyHtml();
+        }
+      } catch (err) {
+        this.combinedPdfGenerationFailed = { message: 'There was an error generating your pdf.', failed: true };
+      }
+    },
     dataNotFound: function(value) {
       if (value) {
         this.$store.commit('addMessage', { text: 'PDF generation failed - science application not found.', variant: 'warning' });
@@ -62,19 +82,6 @@ export default {
   methods: {
     initializeDataEndpoint: function() {
       return '/api/scienceapplications/' + this.sciAppId + '/';
-    },
-    onSuccessfulRetrieval: function(response) {
-      console.log('generating pdf')
-      try {
-        if (response.pdf) {
-          this.createCombinedPdfFromUploadedAndHtml(response.pdf);
-        } else {
-          this.createCombinedPdfFromOnlyHtml();
-        }
-      } catch (err) {
-        console.log('pdf generation failed');
-        this.combinedPdfGenerationFailed = { message: 'There was an error generating your pdf.', failed: true };
-      }
     },
     createCombinedPdf: function(uploadedPdfArrayBuffer) {
       var options = {
