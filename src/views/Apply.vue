@@ -12,7 +12,7 @@
         </template>
         <template #cell(deadline)="data">
           <span v-if="data.item.proposal_type === 'DDT'">N/A</span>
-          <span v-else>{{ data.item.deadline }}</span>
+          <span v-else>{{ data.item.deadline | formatDate }}</span>
         </template>
         <template #cell(applyButton)="data">
           <router-link :to="{ name: 'createApp', params: { callId: data.item.id } }" class="btn btn-primary">Apply</router-link>
@@ -36,13 +36,23 @@
           You are the admin of the {{ sciencecollaborationallocation.id }} collaboration group. Here you will be able to review, edit and submit
           proposals to LCO.
         </p>
-        <b-table :items="collabCalls" :fields="collabCallsFields">
+        <b-table :items="collabCalls" :fields="collabCallsFields" :busy="!dataLoaded" show-empty>
+          <template #table-busy>
+            <div class="text-center my-2"><i class="fa fa-spin fa-spinner" /> Loading...</div>
+          </template>
+          <template #empty>
+            <div v-if="dataLoadError" class="text-center text-muted my-2">Oops, there was a problem getting your data. Please try again.</div>
+            <div v-else class="text-center text-muted my-2">No active collaboration calls at this time.</div>
+          </template>
           <template #head(allocations)>
             <b-row>
               <b-col v-for="allocation in allocations" :key="allocation.telescope_name">
                 {{ allocation.raw_telescope_name }}
               </b-col>
             </b-row>
+          </template>
+          <template #cell(deadline)="data">
+            {{ data.item.deadline | formatDate }}
           </template>
           <template #cell(allocations)="data">
             <b-row>
@@ -65,6 +75,7 @@
 <script>
 import _ from 'lodash';
 
+import { formatDate } from '@/utils.js';
 import SciApplications from '@/components/SciApplications.vue';
 import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 
@@ -72,6 +83,15 @@ export default {
   name: 'Apply',
   components: {
     SciApplications
+  },
+  filters: {
+    formatDate: function(value) {
+      if (value) {
+        return formatDate(value, 'YYYY-MM-DD HH:mm:ss');
+      } else {
+        return value;
+      }
+    }
   },
   mixins: [getDataListWithCountMixin],
   data: function() {
@@ -98,14 +118,7 @@ export default {
       });
     },
     sciencecollaborationallocation: function() {
-      let sca = {};
-      for (let call of this.data.results) {
-        if (call.sca.id) {
-          sca = call.sca;
-          break;
-        }
-      }
-      return sca;
+      return this.$store.state.profile.profile.sciencecollaborationallocation;
     },
     allocations: function() {
       return _.get(this.sciencecollaborationallocation, 'collaborationallocation_set', []);
@@ -118,7 +131,7 @@ export default {
     getTimeRequested: function(callId, telescopeName) {
       for (let call of this.data.results) {
         if (call.id === callId) {
-          return _.get(call, ['sca', 'time_requested', telescopeName], 0);
+          return _.get(call, ['time_requested', telescopeName], 0);
         }
       }
       return 0;

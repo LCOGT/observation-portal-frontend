@@ -16,7 +16,7 @@
       <template #cell(semester)="data">{{ data.item.call.semester }}</template>
       <template #cell(deadline)="data">
         <span v-if="data.item.call.proposal_type === 'DDT'">N/A</span>
-        <span v-else>{{ data.item.call.deadline }}</span>
+        <span v-else>{{ data.item.call.deadline | formatDate }}</span>
       </template>
       <template #head(allocations)>
         <b-row>
@@ -33,10 +33,10 @@
         </b-row>
       </template>
       <template #cell(preview)="data">
-        <router-link :to="{ name: 'appDetail', params: { sciAppId: data.item.id } }">
+        <router-link :to="{ name: 'appDetail', params: { sciAppId: data.item.id } }" class="px-1">
           <span class="text-primary mx-auto"><i class="fa fa-print"></i></span>
         </router-link>
-        <router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: data.item.id } }">
+        <router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: data.item.id } }" class="px-1">
           <span class="text-primary mx-auto"><i class="far fa-file-pdf"></i></span>
         </router-link>
       </template>
@@ -64,7 +64,7 @@
       <template #cell(semester)="data">{{ data.item.call.semester }}</template>
       <template #cell(deadline)="data">
         <span v-if="data.item.call.proposal_type === 'DDT'">N/A</span>
-        <span v-else>{{ data.item.call.deadline }}</span>
+        <span v-else>{{ data.item.call.deadline | formatDate }}</span>
       </template>
       <template #head(allocations)>
         <b-row>
@@ -95,11 +95,21 @@
 import $ from 'jquery';
 import _ from 'lodash';
 
+import { formatDate } from '@/utils.js';
 import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 import { confirmMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'SciApplications',
+  filters: {
+    formatDate: function(value) {
+      if (value) {
+        return formatDate(value, 'YYYY-MM-DD HH:mm:ss');
+      } else {
+        return value;
+      }
+    }
+  },
   mixins: [getDataListWithCountMixin, confirmMixin],
   props: {
     isSciCollab: {

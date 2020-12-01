@@ -14,7 +14,7 @@
     </b-row>
     <b-row>
       <b-col md="9" cols="12">
-        <p>You are creating a proposal for {{ data.semester }} - {{ data.proposal_type_display }}.</p>
+        <p>You are creating a proposal for {{ data.semester }}.</p>
         <template v-if="data.proposal_type !== 'DDT'">
           <p>
             Deadline: <strong>{{ data.deadline | formatDate }}</strong> ({{ data.deadline | timeFromNow }})
