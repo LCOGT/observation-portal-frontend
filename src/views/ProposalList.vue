@@ -160,7 +160,7 @@ export default {
     getCalls: function() {
       let that = this;
       $.ajax({
-        url: this.observationPortalApiUrl + '/api/calls/'
+        url: this.observationPortalApiUrl + '/api/calls/?only_open=true'
       }).done(function(response) {
         that.calls = response;
       });
