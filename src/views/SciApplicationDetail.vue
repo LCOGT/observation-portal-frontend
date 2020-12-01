@@ -35,7 +35,7 @@ export default {
         });
         this.$router.push({ name: 'apply', params: { persistMessage: true } });
       }
-    },
+    }
   },
   methods: {
     initializeDataEndpoint: function() {

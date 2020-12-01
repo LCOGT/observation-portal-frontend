@@ -37,9 +37,6 @@ export default {
       }
     };
   },
-  mounted: function() {
-    this.finishedMounting = true;
-  },
   computed: {
     readyToGeneratePdf: function() {
       return this.finishedMounting && this.dataLoaded;
@@ -48,8 +45,8 @@ export default {
   watch: {
     readyToGeneratePdf: function() {
       try {
-        if (response.pdf) {
-          this.createCombinedPdfFromUploadedAndHtml(response.pdf);
+        if (this.data.pdf) {
+          this.createCombinedPdfFromUploadedAndHtml(this.data.pdf);
         } else {
           this.createCombinedPdfFromOnlyHtml();
         }
@@ -78,6 +75,9 @@ export default {
         this.$router.push({ name: 'apply', params: { persistMessage: true } });
       }
     }
+  },
+  mounted: function() {
+    this.finishedMounting = true;
   },
   methods: {
     initializeDataEndpoint: function() {
