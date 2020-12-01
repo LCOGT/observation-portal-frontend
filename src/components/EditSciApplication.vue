@@ -716,11 +716,12 @@ export default {
         formData.append('timerequest_set[' + i + ']rr_time', timeRequests[i].rr_time);
         formData.append('timerequest_set[' + i + ']tc_time', timeRequests[i].tc_time);
       }
+
       for (let i in coInvestigators) {
-        formData.append('coinvestigator_set[' + i + ']email', coInvestigators[i].email);
-        formData.append('coinvestigator_set[' + i + ']first_name', coInvestigators[i].first_name);
-        formData.append('coinvestigator_set[' + i + ']last_name', coInvestigators[i].last_name);
-        formData.append('coinvestigator_set[' + i + ']institution', coInvestigators[i].institution);
+        formData.append('coinvestigator_set[' + i + ']email', coInvestigators[i].email || '');
+        formData.append('coinvestigator_set[' + i + ']first_name', coInvestigators[i].first_name || '');
+        formData.append('coinvestigator_set[' + i + ']last_name', coInvestigators[i].last_name || '');
+        formData.append('coinvestigator_set[' + i + ']institution', coInvestigators[i].institution || '');
       }
       if (this.sciApp.pdf) {
         formData.append('pdf', this.sciApp.pdf);
