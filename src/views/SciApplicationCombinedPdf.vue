@@ -46,17 +46,18 @@ export default {
   watch: {
     readyToGeneratePdf: function(value) {
       if (value) {
-        Vue.nextTick(function () {
+        let that = this;
+        Vue.nextTick(function() {
           try {
-            if (this.data.pdf) {
-              this.createCombinedPdfFromUploadedAndHtml(this.data.pdf);
+            if (that.data.pdf) {
+              that.createCombinedPdfFromUploadedAndHtml(that.data.pdf);
             } else {
-              this.createCombinedPdfFromOnlyHtml();
+              that.createCombinedPdfFromOnlyHtml();
             }
           } catch (err) {
-            this.combinedPdfGenerationFailed = { message: 'There was an error generating your pdf.', failed: true };
+            that.combinedPdfGenerationFailed = { message: 'There was an error generating your pdf.', failed: true };
           }
-        })
+        });
       }
     },
     dataNotFound: function(value) {
