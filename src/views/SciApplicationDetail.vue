@@ -23,14 +23,14 @@ export default {
   watch: {
     dataNotFound: function(value) {
       if (value) {
-        this.$store.commit('addMessage', { text: 'science application not found.', variant: 'warning' });
+        this.$store.commit('addMessage', { text: 'Science application not found.', variant: 'warning' });
         this.$router.push({ name: 'apply', params: { persistMessage: true } });
       }
     },
     dataLoadError: function(value) {
       if (value) {
         this.$store.commit('addMessage', {
-          text: 'failed to load science application. Please try again.',
+          text: 'Failed to load science application. Please try again.',
           variant: 'warning'
         });
         this.$router.push({ name: 'apply', params: { persistMessage: true } });

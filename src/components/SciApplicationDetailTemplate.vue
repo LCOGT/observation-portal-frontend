@@ -105,11 +105,18 @@
         border-spacing: 10px;
         table-layout: fixed;
       }
+      .observing-budget-table {
+        border-top: 1px solid black;
+        border-right: 1px solid black;
+      }
       .observing-budget-table thead tr th,
       .observing-budget-table tbody tr td {
-        border: 1px solid black;
+        border-bottom: 1px solid black;
+        border-left: 1px solid black;
+        border-collapse: collapse;
       }
       .semester-row {
+        border-collapse: collapse;
         border-left: 1px solid black;
       }
       .coi-table thead tr th,
@@ -133,7 +140,7 @@
       .sciapp-detail-content h2 span {
         font-size: 14px;
         font-weight: 700;
-        padding-left: 4px;
+        padding-left: 1px;
       }
       .sciapp-detail-content p {
         page-break-inside: avoid;
