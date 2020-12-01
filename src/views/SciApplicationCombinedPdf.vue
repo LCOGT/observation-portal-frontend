@@ -9,6 +9,7 @@
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
+import Vue from 'vue';
 import { PDFDocument } from 'pdf-lib';
 import html2pdf from 'html2pdf.js';
 
@@ -45,15 +46,17 @@ export default {
   watch: {
     readyToGeneratePdf: function(value) {
       if (value) {
-        try {
-          if (this.data.pdf) {
-            this.createCombinedPdfFromUploadedAndHtml(this.data.pdf);
-          } else {
-            this.createCombinedPdfFromOnlyHtml();
+        Vue.nextTick(function () {
+          try {
+            if (this.data.pdf) {
+              this.createCombinedPdfFromUploadedAndHtml(this.data.pdf);
+            } else {
+              this.createCombinedPdfFromOnlyHtml();
+            }
+          } catch (err) {
+            this.combinedPdfGenerationFailed = { message: 'There was an error generating your pdf.', failed: true };
           }
-        } catch (err) {
-          this.combinedPdfGenerationFailed = { message: 'There was an error generating your pdf.', failed: true };
-        }
+        })
       }
     },
     dataNotFound: function(value) {
