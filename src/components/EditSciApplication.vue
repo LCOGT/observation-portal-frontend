@@ -699,7 +699,7 @@ export default {
       var formData = new FormData();
       formData.append('status', status);
       formData.append('title', this.sciApp.title);
-      formData.append('call', this.callId);
+      formData.append('call_id', this.callId);
       formData.append('abstract', this.sciApp.abstract);
       formData.append('pi', this.sciApp.pi);
       formData.append('pi_first_name', this.sciApp.pi_first_name);
