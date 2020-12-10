@@ -18,6 +18,11 @@ import ProposalDetail from '../views/ProposalDetail.vue';
 import SemesterDetail from '../views/SemesterDetail.vue';
 import SemesterDetailCurrent from '../views/SemesterDetailCurrent.vue';
 import SemesterAdminTable from '../views/SemesterAdminTable.vue';
+import Apply from '../views/Apply.vue';
+import SciApplicationDetail from '../views/SciApplicationDetail.vue';
+import SciApplicationCombinedPdf from '../views/SciApplicationCombinedPdf.vue';
+import CreateSciApplication from '../views/CreateSciApplication.vue';
+import UpdateSciApplication from '../views/UpdateSciApplication.vue';
 import NotFound from '../components/NotFound.vue';
 import store from '../store/index.js';
 import _ from 'lodash';
@@ -127,8 +132,52 @@ const routes = [
   {
     path: '/apply',
     name: 'apply',
-    // TODO: Update with sciapplications component
-    component: NotFound
+    component: Apply,
+    meta: {
+      title: 'Submit Proposal',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/apply/:sciAppId',
+    name: 'appDetail',
+    component: SciApplicationDetail,
+    props: true,
+    meta: {
+      title: 'Science Application',
+      requiresAuth: true,
+      isPlainPage: true
+    }
+  },
+  {
+    path: '/apply/:sciAppId/combined_pdf',
+    name: 'appCombinedPdf',
+    component: SciApplicationCombinedPdf,
+    props: true,
+    meta: {
+      requiresAuth: true,
+      isPlainPage: true
+    }
+  },
+  {
+    path: '/apply/create/:callId',
+    name: 'createApp',
+    component: CreateSciApplication,
+    props: true,
+    meta: {
+      title: 'Submit Application',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/apply/update/:sciAppId',
+    name: 'updateApp',
+    component: UpdateSciApplication,
+    props: true,
+    meta: {
+      title: 'Submit Application',
+      requiresAuth: true
+    }
   },
   {
     path: '/create',
