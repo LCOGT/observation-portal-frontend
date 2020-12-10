@@ -53,7 +53,7 @@
               </strong>
             </div>
             <div class="help-block">
-              The first name of the principal investigator will be presented to reviewers as an initial.
+              The principle investigator will not be presented to reviewers.
             </div>
             <b-table-lite :items="[{}]" :fields="userTableFields">
               <template #cell(email)>
@@ -102,7 +102,7 @@
           <h5>Co-investigators</h5>
           <div class="help-block">
             <!-- TODO: Translate this -->
-            Add the details of co-investigators on this proposal. First names will be presented as initials.
+            Add the details of co-investigators on this proposal. Co-investigators will not be presented to reviewers.
           </div>
           <b-alert v-for="error in coInvestigatorsNonFieldErrors" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
           <b-table-lite :items="sciApp.coinvestigator_set" :fields="userTableFields" class="mb-0">
