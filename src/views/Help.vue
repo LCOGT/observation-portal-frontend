@@ -62,10 +62,10 @@
         best-effort basis.
       </p>
       <ul class="list-unstyled">
-        <li>Google Chrome/Chromium: <strong>56+</strong></li>
-        <li>Mozilla Firefox: <strong>46+</strong></li>
+        <li>Google Chrome/Chromium: <strong>67+</strong></li>
+        <li>Mozilla Firefox: <strong>78+</strong></li>
         <li>Apple Safari: <strong>11.1+</strong></li>
-        <li>Microsoft Edge: <strong>17+</strong></li>
+        <li>Microsoft Edge: <strong>80+</strong></li>
         <li>Internet Explorer: <strong>10+</strong> (minimal support)</li>
       </ul>
       <p>
