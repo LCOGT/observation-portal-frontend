@@ -60,4 +60,4 @@ $.ajax({
       // TODO: Display error page
       console.log('Error getting profile data');
     });
-})
+});
