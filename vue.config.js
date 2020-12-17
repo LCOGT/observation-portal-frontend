@@ -1,6 +1,10 @@
 const path = require('path');
 
 module.exports = {
+  transpileDependencies: [
+    'pdf-lib',
+    'html2pdf.js'
+  ],
   chainWebpack: config => {
     config.plugin('html').tap(args => {
       args[0].title = 'LCO Observation Portal';

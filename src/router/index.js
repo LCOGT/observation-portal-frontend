@@ -201,7 +201,8 @@ const routes = [
     name: 'profile',
     component: Profile,
     meta: {
-      title: 'Profile'
+      title: 'Profile',
+      requiresAuth: true
     }
   },
   {

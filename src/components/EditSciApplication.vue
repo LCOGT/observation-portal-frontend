@@ -22,7 +22,7 @@
         </template>
         <p>{{ data.eligibility }}</p>
         <b-alert v-for="error in apiValidationErrors.non_field_errors" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
-        <b-alert v-for="error in apiValidationErrors.call" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
+        <b-alert v-for="error in apiValidationErrors.call_id" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
         <b-form>
           <basic-custom-field v-model="sciApp.title" :errors="apiValidationErrors.title" label="Title" placeholder="Title"></basic-custom-field>
           <basic-custom-field
@@ -496,7 +496,8 @@ export default {
     },
     pdfBaseName: function() {
       let lastElementofPath = _.last(_.split(this.pdfPath, '/'));
-      return lastElementofPath || this.pdfPath;
+      let lastElementWithoutQueryString = _.head(_.split(lastElementofPath, '?'));
+      return lastElementWithoutQueryString || this.pdfPath;
     },
     pdfErrors: function() {
       let errors = this.apiValidationErrors.pdf || [];
