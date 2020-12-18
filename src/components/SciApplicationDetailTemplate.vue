@@ -1,7 +1,7 @@
 <template>
   <div class="sciapp-detail-content">
     <ul v-if="!isCombinedPdf" style="float:right;">
-      <li><a href="#" @click="goBack()">Back</a></li>
+      <li><b-link href="#" @click="goBack()">Back</b-link></li>
       <li><b-link href="#" @click="printPage()">Print this page</b-link></li>
       <li><router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: sciApp.id } }" target="_blank">View Pdf</router-link></li>
     </ul>
