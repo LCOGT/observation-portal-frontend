@@ -361,7 +361,7 @@
                 </template>
               </div>
               <template v-if="pdfPath">
-                Currently: <b-link :href="pdfPath">{{ pdfBaseName }}</b-link>
+                Currently: <b-link :href="pdfPath" target="_blank">{{ pdfBaseName }}</b-link>
                 <b-form-checkbox v-model="clearPdf" class="d-inline ml-1">Clear</b-form-checkbox>
                 <b-alert v-for="error in apiValidationErrors.clear_pdf" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
                 <div class="pt-2">Change:</div>
@@ -599,7 +599,7 @@ export default {
       }
     },
     addCoInvestigator: function() {
-      this.sciApp.coinvestigator_set.push(copyObject(this.emptyCoInvestigator));
+      this.sciApp.coinvestigator_set.push(copyObject(this.getEmptyCoInvestigator()));
     },
     removeTimeRequest: function(index) {
       if (index >= 0) {
@@ -607,7 +607,7 @@ export default {
       }
     },
     addTimeRequest: function() {
-      this.sciApp.timerequest_set.push(copyObject(this.emptyTimeRequest));
+      this.sciApp.timerequest_set.push(copyObject(this.getEmptyTimeRequest()));
     },
     sendApplication(data) {
       let method = 'POST';

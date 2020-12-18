@@ -36,7 +36,7 @@
         <router-link :to="{ name: 'appDetail', params: { sciAppId: data.item.id } }" class="px-1">
           <span class="text-primary mx-auto"><i class="fa fa-print"></i></span>
         </router-link>
-        <router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: data.item.id } }" class="px-1">
+        <router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: data.item.id } }" class="px-1" target="_blank">
           <span class="text-primary mx-auto"><i class="far fa-file-pdf"></i></span>
         </router-link>
       </template>
@@ -84,7 +84,7 @@
         <router-link :to="{ name: 'appDetail', params: { sciAppId: data.item.id } }">
           <span class="text-primary mx-auto"><i class="fa fa-print"></i></span>
         </router-link>
-        <router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: data.item.id } }">
+        <router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: data.item.id } }" target="_blank">
           <span class="text-primary mx-auto"><i class="far fa-file-pdf"></i></span>
         </router-link>
       </template>
