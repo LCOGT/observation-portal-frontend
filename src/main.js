@@ -12,12 +12,10 @@ Vue.use(BootstrapVue);
 
 Vue.config.productionTip = false;
 
-const getRuntimeConfig = async () => {
-  const runtimeConfig = await fetch('/config/urls.json');
-  return await runtimeConfig.json();
-};
-
-getRuntimeConfig().then(function(json) {
+$.ajax({
+  method: 'GET',
+  url: '/config/urls.json'
+}).done(function(json) {
   store.commit('setRuntimeConfig', {
     observationPortalApi: process.env.VUE_APP_OBSERVATION_PORTAL_API_URL || json.observationPortalApiUrl,
     archiveApi: process.env.VUE_APP_ARCHIVE_API_URL || json.archiveApiUrl,

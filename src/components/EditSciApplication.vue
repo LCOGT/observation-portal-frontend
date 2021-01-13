@@ -22,7 +22,7 @@
         </template>
         <p>{{ data.eligibility }}</p>
         <b-alert v-for="error in apiValidationErrors.non_field_errors" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
-        <b-alert v-for="error in apiValidationErrors.call" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
+        <b-alert v-for="error in apiValidationErrors.call_id" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
         <b-form>
           <basic-custom-field v-model="sciApp.title" :errors="apiValidationErrors.title" label="Title" placeholder="Title"></basic-custom-field>
           <basic-custom-field
@@ -361,8 +361,9 @@
                 </template>
               </div>
               <template v-if="pdfPath">
-                Currently: <b-link :href="pdfPath">{{ pdfBaseName }}</b-link>
+                Currently: <b-link :href="pdfPath" target="_blank">{{ pdfBaseName }}</b-link>
                 <b-form-checkbox v-model="clearPdf" class="d-inline ml-1">Clear</b-form-checkbox>
+                <b-alert v-for="error in apiValidationErrors.clear_pdf" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
                 <div class="pt-2">Change:</div>
               </template>
               <basic-custom-field v-model="sciApp.pdf" field-type="file" :errors="pdfErrors" label="Upload PDF" accept=".pdf, .PDF" label-sr-only>
@@ -496,10 +497,16 @@ export default {
     },
     pdfBaseName: function() {
       let lastElementofPath = _.last(_.split(this.pdfPath, '/'));
-      return lastElementofPath || this.pdfPath;
+      let lastElementWithoutQueryString = _.head(_.split(lastElementofPath, '?'));
+      return lastElementWithoutQueryString || this.pdfPath;
     },
     pdfErrors: function() {
-      let errors = this.apiValidationErrors.pdf || [];
+      let errors = [];
+      if (this.apiValidationErrors.pdf) {
+        for (let pdfApiValidationError of this.apiValidationErrors.pdf) {
+          errors.push(pdfApiValidationError);
+        }
+      }
       if (this.pdfIsTooLarge) {
         errors.push('PDF is too large');
       }
@@ -592,7 +599,7 @@ export default {
       }
     },
     addCoInvestigator: function() {
-      this.sciApp.coinvestigator_set.push(copyObject(this.emptyCoInvestigator));
+      this.sciApp.coinvestigator_set.push(copyObject(this.getEmptyCoInvestigator()));
     },
     removeTimeRequest: function(index) {
       if (index >= 0) {
@@ -600,7 +607,7 @@ export default {
       }
     },
     addTimeRequest: function() {
-      this.sciApp.timerequest_set.push(copyObject(this.emptyTimeRequest));
+      this.sciApp.timerequest_set.push(copyObject(this.getEmptyTimeRequest()));
     },
     sendApplication(data) {
       let method = 'POST';

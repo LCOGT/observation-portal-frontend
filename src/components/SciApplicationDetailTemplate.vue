@@ -1,9 +1,9 @@
 <template>
   <div class="sciapp-detail-content">
     <ul v-if="!isCombinedPdf" style="float:right;">
-      <li><a href="#" @click="goBack()">Back</a></li>
+      <li><b-link href="#" @click="goBack()">Back</b-link></li>
       <li><b-link href="#" @click="printPage()">Print this page</b-link></li>
-      <li><router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: sciApp.id } }">View Pdf</router-link></li>
+      <li><router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: sciApp.id } }" target="_blank">View Pdf</router-link></li>
     </ul>
     <template v-if="sciApp.title">
       <h1>{{ sciApp.title }}</h1>
@@ -84,7 +84,7 @@
     </template>
     <template v-if="sciApp.pdf && !isCombinedPdf">
       <h2>Uploaded PDF</h2>
-      <p><a :href="sciApp.pdf">Download</a></p>
+      <p><a :href="sciApp.pdf" target="_blank">Download</a></p>
     </template>
     <!-- eslint-disable -->
     <component :is="'style'">

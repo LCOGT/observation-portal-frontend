@@ -5,7 +5,7 @@
       <b-table :items="nonCollabCalls" :fields="nonCollabCallsFields" :busy="!dataLoaded" show-empty>
         <template #empty>
           <div v-if="dataLoadError" class="text-center text-muted my-2">Oops, there was a problem getting your data. Please try again.</div>
-          <h4 v-else>No active calls at this time</h4>
+          <div v-else class="text-center text-muted my-2">No active calls at this time.</div>
         </template>
         <template #table-busy>
           <div class="text-center my-2"><i class="fa fa-spin fa-spinner" /> Loading...</div>
