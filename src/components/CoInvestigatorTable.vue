@@ -97,7 +97,7 @@
             </b-collapse>
           </template>
           <template v-slot:cell(time_used_by_user)="data">
-            {{ data.item.time_used_by_user | formatFloat(3) }}
+            {{ (data.item.time_used_by_user / 3600) | formatFloat(3) }}
           </template>
         </b-table>
         <custom-pagination
