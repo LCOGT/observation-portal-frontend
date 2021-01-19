@@ -74,7 +74,7 @@
         </b-collapse>
       </b-navbar>
     </div>
-    <b-container :fluid="isFluidPage" class="flex-shrink-0 p-0">
+    <b-container :fluid="isFluidPage" class="flex-shrink-0 p-1">
       <b-row>
         <b-col md="12">
           <b-alert
