@@ -231,7 +231,7 @@ export default {
         site: [],
         enclosure: [],
         telescope: [],
-        state: ['COMPLETED', 'PENDING', 'IN_PROGRESS', 'ABORTED', 'FAILED'],
+        state: ['COMPLETED', 'PENDING', 'IN_PROGRESS', 'ABORTED', 'FAILED', 'NOT_ATTEMPTED'],
         time_span: '',
         observation_type: [],
         request_state: [],
@@ -266,7 +266,7 @@ export default {
       } else {
         if (item.state === 'COMPLETED') {
           return 'table-success';
-        } else if (item.state === 'CANCELED') {
+        } else if (item.state === 'CANCELED' || item.state === 'NOT_ATTEMPTED') {
           return 'table-secondary';
         } else if (item.state === 'FAILED' || item.state === 'ABORTED') {
           return 'table-danger';
