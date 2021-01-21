@@ -74,7 +74,7 @@ export default {
           } else {
             // Successful submission, and no redirect has been set. Replace the contents with
             // the main content of the response.
-            let reponseContent = $(response).find('.content-container');
+            let reponseContent = $(response).find('div, p');
             $('#passthrough-container').replaceWith(reponseContent);
           }
         },

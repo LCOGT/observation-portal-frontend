@@ -50,7 +50,9 @@
         <b-row>
           <b-col>
             <h3 class="mt-4">
-              Telescope availability history<sup v-b-tooltip="tooltipConfig" class="text-primary" :title="telescopeAvailabilityChartHelpText">?</sup>
+              Telescope availability history<sup v-b-tooltip="tooltipConfig" class="text-primary small" :title="telescopeAvailabilityChartHelpText"
+                >?</sup
+              >
             </h3>
             <telescope-availability-chart />
             <a href="https://lco.global/observatory/status/">Detailed observatory status</a>

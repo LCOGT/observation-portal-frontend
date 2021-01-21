@@ -154,6 +154,7 @@
               label="Defocus"
               field="defocus"
               :errors="null"
+              type="number"
               desc="Observations may be defocused to prevent the CCD from saturating on bright targets. This
                     term describes the offset (in mm) of the secondary mirror from its default (focused)
                     position. The limits are ± 3mm."
