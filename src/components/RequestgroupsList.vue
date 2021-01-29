@@ -139,13 +139,13 @@
               <div class="text-center align-middle">{{ data.item.requests.length }}</div>
             </b-col>
             <b-col md="1" cols="12" class="request-count request-block text-neutral">
-              <div class="text-center align-middle">{{ data.item | requestStateCount('PENDING') }}</div>
+              <div class="text-center align-middle">{{ data.item | requestStateCount(['PENDING']) }}</div>
             </b-col>
             <b-col md="1" cols="12" class="request-count request-block text-danger">
-              <div class="text-center align-middle">{{ data.item | requestStateCount('WINDOW_EXPIRED') }}</div>
+              <div class="text-center align-middle">{{ data.item | requestStateCount(['WINDOW_EXPIRED', 'FAILURE_LIMIT_REACHED']) }}</div>
             </b-col>
             <b-col md="1" cols="12" class="request-count request-block text-success">
-              <div class="text-center align-middle">{{ data.item | requestStateCount('COMPLETED') }}</div>
+              <div class="text-center align-middle">{{ data.item | requestStateCount(['COMPLETED']) }}</div>
             </b-col>
           </b-row>
         </template>
@@ -173,10 +173,10 @@ import CustomPagination from '@/components/util/CustomPagination.vue';
 export default {
   name: 'RequestgroupsList',
   filters: {
-    requestStateCount: function(requestgroup, state) {
+    requestStateCount: function(requestgroup, states) {
       let count = 0;
       for (let request of requestgroup.requests) {
-        if (request.state === state) {
+        if (states.includes(request.state)) {
           count++;
         }
       }
@@ -207,6 +207,7 @@ export default {
       { value: '', text: '---------' },
       { value: 'PENDING', text: 'PENDING' },
       { value: 'COMPLETED', text: 'COMPLETED' },
+      { value: 'FAILURE_LIMIT_REACHED', text: 'FAILURE_LIMIT_REACHED' },
       { value: 'WINDOW_EXPIRED', text: 'WINDOW_EXPIRED' },
       { value: 'CANCELED', text: 'CANCELED' }
     ];
