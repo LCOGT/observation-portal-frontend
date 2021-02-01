@@ -323,6 +323,7 @@ function stateToBsClass(state, classPrefix) {
     PENDING: 'neutral',
     SCHEDULED: 'info',
     COMPLETED: 'success',
+    FAILURE_LIMIT_REACHED: 'danger',
     WINDOW_EXPIRED: 'danger',
     CANCELED: 'danger'
   };
@@ -334,6 +335,7 @@ function stateToIcon(state) {
     PENDING: 'sync',
     SCHEDULED: 'sync',
     COMPLETED: 'check',
+    FAILURE_LIMIT_REACHED: 'times',
     WINDOW_EXPIRED: 'times',
     CANCELED: 'times'
   };
