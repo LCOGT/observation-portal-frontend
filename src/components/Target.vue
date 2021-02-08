@@ -279,6 +279,11 @@ export default {
       dec_help_text: this.decHelp(this.target.dec)
     };
   },
+  computed: {
+    simbadServiceUrl: function() {
+      return this.$store.state.urls.simbadService;
+    }
+  },
   watch: {
     'target.name': _.debounce(function(name) {
       this.lookingUP = true;
@@ -293,7 +298,8 @@ export default {
         target_type = 'NON_SIDEREAL';
       }
       this.lookupReq = $.getJSON(
-        'https://simbad2k.lco.global/' +
+        this.simbadServiceUrl +
+          '/' +
           encodeURIComponent(name) +
           '?target_type=' +
           encodeURIComponent(target_type) +
