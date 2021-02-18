@@ -151,8 +151,9 @@
 </template>
 <script>
 import _ from 'lodash';
+import { OCSUtil } from 'ocs-component-lib';
 
-import { collapseMixin } from '@/utils.js';
+import { collapseMixin, getFieldDescription, apiFieldToReadable } from '@/utils.js';
 import Panel from '@/components/util/Panel.vue';
 import CustomAlert from '@/components/util/CustomAlert.vue';
 import CustomField from '@/components/util/CustomField.vue';
@@ -170,6 +171,14 @@ export default {
     InstrumentConfig,
     Constraints,
     Target
+  },
+  filters: {
+    formatField: function(value) {
+      return OCSUtil.formatField(value, apiFieldToReadable);
+    },
+    getFieldDescription: function(value) {
+      return getFieldDescription(value);
+    }
   },
   mixins: [collapseMixin],
   props: {
