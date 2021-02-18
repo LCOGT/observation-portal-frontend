@@ -7,8 +7,10 @@ import 'bootstrap';
 import '@/assets/scss/app.scss';
 import $ from 'jquery';
 import { getCookie, csrfSafeMethod } from '@/utils.js';
+import { OCSComponentLib } from 'ocs-component-lib';
 
 Vue.use(BootstrapVue);
+Vue.use(OCSComponentLib);
 
 Vue.config.productionTip = false;
 
