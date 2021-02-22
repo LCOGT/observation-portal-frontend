@@ -168,6 +168,7 @@
 </template>
 <script>
 import _ from 'lodash';
+import { OCSUtil } from 'ocs-component-lib';
 
 import {
   collapseMixin,
@@ -175,7 +176,7 @@ import {
   arcDefaultExposureTime,
   extractTopLevelErrors,
   getFieldDescription,
-  formatField
+  apiFieldToReadable
 } from '@/utils.js';
 import CustomField from '@/components/util/CustomField.vue';
 import CustomSelect from '@/components/util/CustomSelect.vue';
@@ -191,7 +192,7 @@ export default {
   },
   filters: {
     formatField: function(value) {
-      return formatField(value);
+      return OCSUtil.formatField(value, apiFieldToReadable);
     },
     getFieldDescription: function(value) {
       return getFieldDescription(value);

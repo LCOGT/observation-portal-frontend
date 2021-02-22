@@ -208,15 +208,9 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import { OCSUtil } from 'ocs-component-lib';
 
-import {
-  collapseMixin,
-  sexagesimalRaToDecimal,
-  sexagesimalDecToDecimal,
-  julianToModifiedJulian,
-  decimalRaToSexigesimal,
-  decimalDecToSexigesimal
-} from '@/utils.js';
+import { collapseMixin, sexagesimalRaToDecimal, sexagesimalDecToDecimal, julianToModifiedJulian } from '@/utils.js';
 import Archive from '@/components/Archive.vue';
 import Panel from '@/components/util/Panel.vue';
 import CustomAlert from '@/components/util/CustomAlert.vue';
@@ -384,14 +378,14 @@ export default {
       if (isNaN(Number(ra))) {
         return 'Decimal: ' + Number(sexagesimalRaToDecimal(ra));
       } else {
-        return 'Sexagesimal: ' + decimalRaToSexigesimal(ra).str;
+        return 'Sexagesimal: ' + OCSUtil.decimalRaToSexigesimal(ra).str;
       }
     },
     decHelp: function(dec) {
       if (isNaN(Number(dec))) {
         return 'Decimal: ' + Number(sexagesimalDecToDecimal(dec));
       } else {
-        return 'Sexagesimal: ' + decimalDecToSexigesimal(dec).str;
+        return 'Sexagesimal: ' + OCSUtil.decimalDecToSexigesimal(dec).str;
       }
     }
   }
