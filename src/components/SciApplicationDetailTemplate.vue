@@ -160,13 +160,12 @@
 </template>
 <script>
 import _ from 'lodash';
-
-import { formatDate } from '@/utils.js';
+import { OCSUtil } from 'ocs-component-lib';
 
 export default {
   filters: {
     formatDate: function(value) {
-      return formatDate(value, 'D MMM YYYY, h:mm a z');
+      return OCSUtil.formatDate(value, 'D MMM YYYY, h:mm a z');
     },
     first: function(value) {
       if (value) {

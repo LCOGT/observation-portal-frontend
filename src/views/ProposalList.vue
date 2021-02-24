@@ -77,9 +77,9 @@
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
+import { OCSMixin } from 'ocs-component-lib';
 
-import { paginationAndFilteringMixin } from '@/components/util/paginationMixins.js';
-import CustomPagination from '@/components/util/CustomPagination.vue';
+import { clearAndSetErrorsMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'ProposalList',
@@ -88,8 +88,7 @@ export default {
       return count === 1 ? singleSuffix : multipleSuffix;
     }
   },
-  components: { CustomPagination },
-  mixins: [paginationAndFilteringMixin],
+  mixins: [OCSMixin.paginationAndFilteringMixin, clearAndSetErrorsMixin],
   data: function() {
     return {
       calls: { results: [], count: 0 },
@@ -138,7 +137,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/proposals/';
+      return this.$store.state.urls.observationPortalApi + '/api/proposals/';
     },
     initializeDefaultQueryParams: function() {
       const defaultQueryParams = {
@@ -170,6 +169,12 @@ export default {
     },
     getNumberOfCoInvestigators: function(proposal) {
       return _.get(proposal, 'coi_count', 0);
+    },
+    onSuccessfulDataRetrieval: function() {
+      this.clearErrors();
+    },
+    onErrorRetrievingData: function(response) {
+      this.setErrorsOnFailedAJAXCall(response);
     }
   }
 };

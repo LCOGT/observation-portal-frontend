@@ -94,8 +94,8 @@
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
+import { OCSUtil } from 'ocs-component-lib';
 
-import { formatDate } from '@/utils.js';
 import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 import { confirmMixin } from '@/components/util/utilMixins.js';
 
@@ -104,7 +104,7 @@ export default {
   filters: {
     formatDate: function(value) {
       if (value) {
-        return formatDate(value, 'YYYY-MM-DD HH:mm:ss');
+        return OCSUtil.formatDate(value, 'YYYY-MM-DD HH:mm:ss');
       } else {
         return value;
       }

@@ -8,6 +8,7 @@ import '@/assets/scss/app.scss';
 import $ from 'jquery';
 import { getCookie, csrfSafeMethod } from '@/utils.js';
 import { OCSComponentLib } from 'ocs-component-lib';
+import 'ocs-component-lib/dist/ocs-component-lib.css';
 
 Vue.use(BootstrapVue);
 Vue.use(OCSComponentLib);

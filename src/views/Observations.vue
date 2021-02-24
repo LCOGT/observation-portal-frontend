@@ -169,22 +169,18 @@
 </template>
 <script>
 import $ from 'jquery';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { formatDate } from '@/utils.js';
-import { paginationAndFilteringMixin } from '@/components/util/paginationMixins.js';
-import CustomPagination from '@/components/util/CustomPagination.vue';
+import { clearAndSetErrorsMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'ObservationsList',
-  components: {
-    CustomPagination
-  },
   filters: {
     formatDate(value) {
-      return formatDate(value);
+      return OCSUtil.formatDate(value);
     }
   },
-  mixins: [paginationAndFilteringMixin],
+  mixins: [OCSMixin.paginationAndFilteringMixin, clearAndSetErrorsMixin],
   data: function() {
     return {
       fields: [
@@ -224,7 +220,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/observations/';
+      return this.$store.state.urls.observationPortalApi + '/api/observations/';
     },
     initializeDefaultQueryParams: function() {
       const defaultQueryParams = {
@@ -248,6 +244,12 @@ export default {
         offset: 0
       };
       return defaultQueryParams;
+    },
+    onSuccessfulDataRetrieval: function() {
+      this.clearErrors();
+    },
+    onErrorRetrievingData: function(response) {
+      this.setErrorsOnFailedAJAXCall(response);
     },
     parseInstrumentsInObservation: function(observation) {
       let instruments = [];

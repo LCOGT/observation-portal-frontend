@@ -142,8 +142,7 @@
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
-
-import { copyObject } from '@/utils.js';
+import { OCSUtil } from 'ocs-component-lib';
 
 export default {
   name: 'Profile',
@@ -161,7 +160,7 @@ export default {
       return _.get(this.profile, 'profile.api_quota', {});
     },
     profile: function() {
-      return copyObject(this.$store.state.profile);
+      return OCSUtil.copyObject(this.$store.state.profile);
     },
     observationPortalApiUrl: function() {
       return this.$store.state.urls.observationPortalApi;
@@ -207,8 +206,8 @@ export default {
       this.setProfileData();
     },
     setProfileData: function() {
-      let profileData = copyObject(this.$store.state.profile.profile);
-      let topLevelData = copyObject(this.$store.state.profile);
+      let profileData = OCSUtil.copyObject(this.$store.state.profile.profile);
+      let topLevelData = OCSUtil.copyObject(this.$store.state.profile);
       topLevelData.profile = profileData;
       this.formData = topLevelData;
     },

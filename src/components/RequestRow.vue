@@ -1,5 +1,6 @@
 <template>
-  <b-row class="requestgroup m-0" :class="request.state | stateToBsClass('requestgroup')">
+  <b-row class="m-0 border position-relative">
+  <div class="state-color-marker" :class="requestgroup.state | stateToBsClass('bg')"></div>
     <b-col md="10">
       <b-row>
         <b-col md="4" class="requestgroup-block border-right">
@@ -85,21 +86,21 @@
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
+import { OCSUtil } from 'ocs-component-lib';
 
-import { stateToBsClass, stateToIcon, formatDate } from '@/utils.js';
 import { downloadAll, getLatestFrame } from '@/archive.js';
 
 export default {
   name: 'RequestRow',
   filters: {
     stateToBsClass: function(state, prefix) {
-      return stateToBsClass(state, prefix);
+      return OCSUtil.stateToBsClass(state, prefix);
     },
     stateToIcon: function(state) {
-      return stateToIcon(state);
+      return OCSUtil.stateToIcon(state);
     },
     formatDate(value) {
-      return formatDate(value);
+      return OCSUtil.formatDate(value);
     }
   },
   props: {
@@ -219,5 +220,18 @@ export default {
 .requestgroup-block > p {
   margin: 0px;
   padding-bottom: 0px;
+}
+.requestgroup-title {
+  font-size: 1em;
+  margin-left: 4px;
+  font-weight: 600;
+}
+.state-color-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: 10px;
+  min-width: 10px;
+  height: 100%;
 }
 </style>
