@@ -71,7 +71,7 @@
       <template v-if="filtersLoaded">
         <b-form @submit="onSubmit" @reset="onReset">
           <b-button-group class="my-2">
-            <b-button type="submit" variant="outline-info" :disabled="isBusy">
+            <b-button type="submit" variant="outline-primary" :disabled="isBusy">
               <span>Filter</span>
             </b-button>
             <b-button type="reset" variant="outline-danger" :disabled="isBusy">
@@ -150,7 +150,7 @@
             <b-form-select id="input-ordering" v-model="queryParams.ordering" :options="formattedFilterOptions.ordering"></b-form-select>
           </b-form-group>
           <b-button-group>
-            <b-button type="submit" variant="outline-info" :disabled="isBusy">
+            <b-button type="submit" variant="outline-primary" :disabled="isBusy">
               <span>Filter</span>
             </b-button>
             <b-button type="reset" variant="outline-danger" :disabled="isBusy">

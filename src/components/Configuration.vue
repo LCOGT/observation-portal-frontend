@@ -36,7 +36,7 @@
                 We recommend that you schedule calibration frames with a spectrum type configuration. Click <em>'Create calibration frames'</em> to
                 add four calibration configurations to this request: one arc and one flat before and one arc and one flat after your spectrum.
               </p>
-              <b-button variant="outline-info" block @click="generateCalibs">
+              <b-button variant="outline-primary" block @click="generateCalibs">
                 Create calibration frames
               </b-button>
             </b-col>
