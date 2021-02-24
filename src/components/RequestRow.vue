@@ -1,6 +1,6 @@
 <template>
   <b-row class="m-0 border position-relative">
-  <div class="state-color-marker" :class="requestgroup.state | stateToBsClass('bg')"></div>
+    <div class="state-color-marker" :class="requestgroup.state | stateToBsClass('bg')"></div>
     <b-col md="10">
       <b-row>
         <b-col md="4" class="requestgroup-block border-right">

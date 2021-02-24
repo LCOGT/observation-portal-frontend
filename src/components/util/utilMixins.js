@@ -16,7 +16,7 @@ export var clearAndSetErrorsMixin = {
   data: function() {
     return {
       errorMessages: []
-    }
+    };
   },
   methods: {
     clearErrors: function() {
@@ -46,4 +46,4 @@ export var clearAndSetErrorsMixin = {
       }
     }
   }
-}
+};

@@ -1,9 +1,9 @@
 <template>
   <request-group-list
-    :observationPortalApiBaseUrl="observationPortalApiUrl"
+    :observation-portal-api-base-url="observationPortalApiUrl"
     :profile="profile"
-    :proposalLink="generateProposalLink"
-    :requestgroupLink="generateRequestgroupLink"
+    :proposal-link="generateProposalLink"
+    :requestgroup-link="generateRequestgroupLink"
     @success="onSuccess"
     @error="onError"
   >
@@ -31,8 +31,6 @@
   </request-group-list>
 </template>
 <script>
-import _ from 'lodash';
-
 import { clearAndSetErrorsMixin } from '@/components/util/utilMixins.js';
 
 export default {
@@ -54,7 +52,7 @@ export default {
       this.setErrorsOnFailedAJAXCall(evt);
     },
     generateProposalLink: function(proposalId) {
-      return {to: { name: 'proposalDetail', params: { id: proposalId } } };
+      return { to: { name: 'proposalDetail', params: { id: proposalId } } };
     },
     generateRequestgroupLink: function(requestgroupId) {
       return { to: { name: 'requestgroupDetail', params: { id: requestgroupId } } };
