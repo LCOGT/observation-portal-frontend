@@ -1,5 +1,6 @@
 <template>
   <request-group-list
+    class="p-0"
     :observation-portal-api-base-url="observationPortalApiUrl"
     :profile="profile"
     :proposal-link="generateProposalLink"
