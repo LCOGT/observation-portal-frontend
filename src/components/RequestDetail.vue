@@ -50,7 +50,7 @@
             <div class="col-md-12">
               <h4>Configurations</h4>
               <div role="tablist">
-                <request-configurations-detail :configurations="request.configurations"></request-configurations-detail>
+                <ocs-request-configurations-detail :configurations="request.configurations"></ocs-request-configurations-detail>
               </div>
             </div>
           </div>

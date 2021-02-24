@@ -61,7 +61,7 @@
             {{ getNumberOfCoInvestigators(data.item) }}
           </template>
         </b-table>
-        <custom-pagination
+        <ocs-pagination
           v-if="!isBusy"
           table-id="proposals-table"
           :per-page="queryParams.limit"
@@ -69,7 +69,7 @@
           :current-page="currentPage"
           @pageChange="onPageChange"
           @limitChange="onLimitChange"
-        ></custom-pagination>
+        ></ocs-pagination>
       </b-col>
     </b-row>
   </b-col>

@@ -100,14 +100,14 @@
             {{ (data.item.time_used_by_user / 3600) | formatFloat(3) }}
           </template>
         </b-table>
-        <custom-pagination
+        <ocs-pagination
           v-if="!isBusy"
           table-id="coinvestigator-table"
           :per-page="queryParams.limit"
           :total-rows="data.count"
           :current-page="currentPage"
           @pageChange="onPageChange"
-        ></custom-pagination>
+        ></ocs-pagination>
         <br />
       </div>
     </template>

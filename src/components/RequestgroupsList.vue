@@ -1,5 +1,5 @@
 <template>
-  <request-group-list
+  <ocs-request-group-table
     class="p-0"
     :observation-portal-api-base-url="observationPortalApiUrl"
     :profile="profile"
@@ -29,7 +29,7 @@
         </center>
       </div>
     </template>
-  </request-group-list>
+  </ocs-request-group-table>
 </template>
 <script>
 import { clearAndSetErrorsMixin } from '@/components/util/utilMixins.js';

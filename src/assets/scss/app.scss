@@ -17,6 +17,17 @@ $dropdown-link-hover-bg: $yellow;
 @import '~bootstrap';
 @import '~bootstrap-vue';
 
+
+// Override bootstrap bg-danger class. Soften the danger color when used as a background color.
+.bg-danger {
+  background-color: darken($danger, 12) !important;
+}
+
+// Override bootstrap bg-success class. Soften the success color when used as a background color
+.bg-success {
+  background-color: darken($success, 10) !important;
+}
+
 // Highlight the text of links on a page when hovered
 a:hover {
   background-color: $yellow;

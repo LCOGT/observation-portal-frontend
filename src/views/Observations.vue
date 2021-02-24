@@ -1,14 +1,14 @@
 <template>
   <b-row class="p-3">
     <b-col cols="10" md="10">
-      <custom-pagination
+      <ocs-pagination
         v-if="!isBusy"
         table-id="observations-table"
         :per-page="queryParams.limit"
         :total-rows="data.count"
         :current-page="currentPage"
         @pageChange="onPageChange"
-      ></custom-pagination>
+      ></ocs-pagination>
       <b-row>
         <b-table
           id="observations-table"
@@ -58,14 +58,14 @@
           </template>
         </b-table>
       </b-row>
-      <custom-pagination
+      <ocs-pagination
         v-if="!isBusy"
         table-id="observations-table"
         :per-page="queryParams.limit"
         :total-rows="data.count"
         :current-page="currentPage"
         @pageChange="onPageChange"
-      ></custom-pagination>
+      ></ocs-pagination>
     </b-col>
     <b-col cols="2" md="2">
       <template v-if="filtersLoaded">
