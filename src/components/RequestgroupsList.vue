@@ -243,7 +243,7 @@ export default {
       }
       if (this.profile.proposals) {
         for (let proposal of this.profile.proposals) {
-          let proposalText = `${proposal.title} (${proposal.id})`;
+          let proposalText = `${proposal.id}: ${proposal.title}`;
           options.push({ value: proposal.id, text: proposalText, selected: selected === proposal.id });
         }
       }
