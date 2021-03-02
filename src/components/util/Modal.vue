@@ -5,7 +5,7 @@
       <b-button v-show="showCancel" variant="secondary" class="float-right m-1" @click="close">
         Cancel
       </b-button>
-      <b-button v-show="showAccept" variant="info" class="float-right m-1" @click="submit">
+      <b-button v-show="showAccept" variant="primary" class="float-right m-1" @click="submit">
         Ok
       </b-button>
     </div>

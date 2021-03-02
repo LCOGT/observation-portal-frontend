@@ -30,8 +30,8 @@
 </template>
 <script>
 import $ from 'jquery';
+import { OCSUtil } from 'ocs-component-lib';
 
-import { formatDate } from '@/utils.js';
 import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 import { confirmMixin } from '@/components/util/utilMixins.js';
 
@@ -39,7 +39,7 @@ export default {
   name: 'ProposalInvitaions',
   filters: {
     formatDate: function(date) {
-      return formatDate(date);
+      return OCSUtil.formatDate(date);
     }
   },
   mixins: [getDataListWithCountMixin, confirmMixin],

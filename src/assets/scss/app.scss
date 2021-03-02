@@ -7,7 +7,6 @@ $link-hover-decoration: none;
 
 $theme-colors: (
   'lco-dark-blue': $lco-dark-blue,
-  'neutral': $neutral
 );
 
 $pagination-hover-bg: $yellow;
@@ -17,6 +16,17 @@ $dropdown-link-hover-bg: $yellow;
 
 @import '~bootstrap';
 @import '~bootstrap-vue';
+
+
+// Override bootstrap bg-danger class. Soften the danger color when used as a background color.
+.bg-danger {
+  background-color: darken($danger, 12) !important;
+}
+
+// Override bootstrap bg-success class. Soften the success color when used as a background color
+.bg-success {
+  background-color: darken($success, 10) !important;
+}
 
 // Highlight the text of links on a page when hovered
 a:hover {
@@ -64,36 +74,6 @@ a.navbar-brand:hover {
   background-color: rgba($yellow, 0.5);
   border-color: darken($yellow, 20);
   color: $black;
-}
-
-// Requestgroup styling
-
-.requestgroup-success {
-  background: linear-gradient(to right, darken($success, 10) 0, darken($success, 10) 10px, $white 10px, $white 100%) no-repeat;
-}
-
-.requestgroup-neutral {
-  background: linear-gradient(to right, $neutral 0, $neutral 10px, $white 10px, $white 100%) no-repeat;
-}
-
-.requestgroup-danger {
-  background: linear-gradient(to right, darken($danger, 12) 0, darken($danger, 12) 10px, #fff 10px, #fff 100%) no-repeat;
-}
-
-.requestgroup-info {
-  background: linear-gradient(to right, $info 0, $info 10px, #fff 10px, #fff 100%) no-repeat;
-}
-
-.requestgroup {
-  border: 1px solid $gray-200;
-  min-height: 75px;
-  margin: 0;
-}
-
-.requestgroup-title {
-  font-size: 1em;
-  margin-left: 4px;
-  font-weight: 600;
 }
 
 // General styling

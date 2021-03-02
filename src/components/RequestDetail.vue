@@ -50,7 +50,7 @@
             <div class="col-md-12">
               <h4>Configurations</h4>
               <div role="tablist">
-                <request-configurations-detail :configurations="request.configurations"></request-configurations-detail>
+                <ocs-request-configurations-detail :configurations="request.configurations"></ocs-request-configurations-detail>
               </div>
             </div>
           </div>
@@ -109,16 +109,16 @@
 import Vue from 'vue';
 import $ from 'jquery';
 import _ from 'lodash';
+import { OCSUtil } from 'ocs-component-lib';
 
 import Thumbnail from '@/components/Thumbnail.vue';
 import ArchiveTable from '@/components/ArchiveTable.vue';
 import ObservationHistory from '@/components/ObservationHistory.vue';
 import AirmassTelescopeStates from '@/components/AirmassTelescopeStates.vue';
 import { getLatestFrame } from '@/archive.js';
-import { formatDate } from '@/utils.js';
 
 Vue.filter('formatDate', function(value) {
-  return formatDate(value);
+  return OCSUtil.formatDate(value);
 });
 
 export default {

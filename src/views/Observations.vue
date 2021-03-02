@@ -1,14 +1,14 @@
 <template>
   <b-row class="p-3">
     <b-col cols="10" md="10">
-      <custom-pagination
+      <ocs-pagination
         v-if="!isBusy"
         table-id="observations-table"
         :per-page="queryParams.limit"
         :total-rows="data.count"
         :current-page="currentPage"
         @pageChange="onPageChange"
-      ></custom-pagination>
+      ></ocs-pagination>
       <b-row>
         <b-table
           id="observations-table"
@@ -58,20 +58,20 @@
           </template>
         </b-table>
       </b-row>
-      <custom-pagination
+      <ocs-pagination
         v-if="!isBusy"
         table-id="observations-table"
         :per-page="queryParams.limit"
         :total-rows="data.count"
         :current-page="currentPage"
         @pageChange="onPageChange"
-      ></custom-pagination>
+      ></ocs-pagination>
     </b-col>
     <b-col cols="2" md="2">
       <template v-if="filtersLoaded">
         <b-form @submit="onSubmit" @reset="onReset">
           <b-button-group class="my-2">
-            <b-button type="submit" variant="outline-info" :disabled="isBusy">
+            <b-button type="submit" variant="outline-primary" :disabled="isBusy">
               <span>Filter</span>
             </b-button>
             <b-button type="reset" variant="outline-danger" :disabled="isBusy">
@@ -150,7 +150,7 @@
             <b-form-select id="input-ordering" v-model="queryParams.ordering" :options="formattedFilterOptions.ordering"></b-form-select>
           </b-form-group>
           <b-button-group>
-            <b-button type="submit" variant="outline-info" :disabled="isBusy">
+            <b-button type="submit" variant="outline-primary" :disabled="isBusy">
               <span>Filter</span>
             </b-button>
             <b-button type="reset" variant="outline-danger" :disabled="isBusy">
@@ -169,22 +169,18 @@
 </template>
 <script>
 import $ from 'jquery';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { formatDate } from '@/utils.js';
-import { paginationAndFilteringMixin } from '@/components/util/paginationMixins.js';
-import CustomPagination from '@/components/util/CustomPagination.vue';
+import { clearAndSetErrorsMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'ObservationsList',
-  components: {
-    CustomPagination
-  },
   filters: {
     formatDate(value) {
-      return formatDate(value);
+      return OCSUtil.formatDate(value);
     }
   },
-  mixins: [paginationAndFilteringMixin],
+  mixins: [OCSMixin.paginationAndFilteringMixin, clearAndSetErrorsMixin],
   data: function() {
     return {
       fields: [
@@ -224,7 +220,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/observations/';
+      return this.$store.state.urls.observationPortalApi + '/api/observations/';
     },
     initializeDefaultQueryParams: function() {
       const defaultQueryParams = {
@@ -248,6 +244,12 @@ export default {
         offset: 0
       };
       return defaultQueryParams;
+    },
+    onSuccessfulDataRetrieval: function() {
+      this.clearErrors();
+    },
+    onErrorRetrievingData: function(response) {
+      this.setErrorsOnFailedAJAXCall(response);
     },
     parseInstrumentsInObservation: function(observation) {
       let instruments = [];

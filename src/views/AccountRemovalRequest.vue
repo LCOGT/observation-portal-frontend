@@ -9,7 +9,7 @@
           <span v-for="msg in error.messages" :key="msg">{{ msg }}</span>
         </b-form-invalid-feedback>
       </b-form-group>
-      <b-button type="submit" variant="info">
+      <b-button type="submit" variant="primary">
         Submit request
       </b-button>
     </b-form>

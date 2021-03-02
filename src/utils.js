@@ -1,4 +1,3 @@
-import moment from 'moment';
 import _ from 'lodash';
 import $ from 'jquery';
 
@@ -124,21 +123,6 @@ function QueryString() {
   return qString;
 }
 
-function formatDate(date, formatString) {
-  formatString = formatString || datetimeFormat;
-  if (date) {
-    return moment.utc(String(date)).format(formatString);
-  }
-}
-
-function timeFromNow(date) {
-  if (date) {
-    return moment.utc(String(date)).fromNow();
-  } else {
-    return '';
-  }
-}
-
 function julianToModifiedJulian(jd) {
   if (jd && jd >= 2400000.5) {
     let precision = (jd + '').split('.')[1].length;
@@ -183,12 +167,6 @@ function formatFloat(value, precision) {
   } else {
     return value;
   }
-}
-
-function copyObject(source) {
-  let copy = {};
-  _.assign(copy, source);
-  return copy;
 }
 
 function extractTopLevelErrors(errors) {
@@ -243,30 +221,6 @@ let collapseMixin = {
     }
   }
 };
-
-function stateToBsClass(state, classPrefix) {
-  let state_map = {
-    PENDING: 'neutral',
-    SCHEDULED: 'info',
-    COMPLETED: 'success',
-    FAILURE_LIMIT_REACHED: 'danger',
-    WINDOW_EXPIRED: 'danger',
-    CANCELED: 'danger'
-  };
-  return classPrefix + '-' + state_map[state];
-}
-
-function stateToIcon(state) {
-  let stateMap = {
-    PENDING: 'sync',
-    SCHEDULED: 'sync',
-    COMPLETED: 'check',
-    FAILURE_LIMIT_REACHED: 'times',
-    WINDOW_EXPIRED: 'times',
-    CANCELED: 'times'
-  };
-  return 'fa fa-fw fa-' + stateMap[state];
-}
 
 let siteToColor = {
   tfn: '#263c6f', // dark blue
@@ -447,10 +401,7 @@ export {
   sexagesimalDecToDecimal,
   QueryString,
   apiFieldToReadable,
-  formatDate,
-  copyObject,
   datetimeFormat,
-  timeFromNow,
   collapseMixin,
   siteToColor,
   siteCodeToName,
@@ -465,7 +416,5 @@ export {
   getCookie,
   csrfSafeMethod,
   extractTopLevelErrors,
-  stateToBsClass,
-  stateToIcon,
   formatFloat
 };

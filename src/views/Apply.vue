@@ -74,8 +74,8 @@
 </template>
 <script>
 import _ from 'lodash';
+import { OCSUtil } from 'ocs-component-lib';
 
-import { formatDate } from '@/utils.js';
 import SciApplications from '@/components/SciApplications.vue';
 import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 
@@ -87,7 +87,7 @@ export default {
   filters: {
     formatDate: function(value) {
       if (value) {
-        return formatDate(value, 'YYYY-MM-DD HH:mm:ss');
+        return OCSUtil.formatDate(value, 'YYYY-MM-DD HH:mm:ss');
       } else {
         return value;
       }

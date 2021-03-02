@@ -81,23 +81,24 @@
 </template>
 <script>
 import $ from 'jquery';
+import { OCSUtil } from 'ocs-component-lib';
 
-import { stateToBsClass, stateToIcon, formatDate, formatFloat } from '@/utils.js';
+import { formatFloat } from '@/utils.js';
 
 export default {
   name: 'RequestgroupHeader',
   filters: {
     stateToBsClass: function(state, prefix) {
-      return stateToBsClass(state, prefix);
+      return OCSUtil.stateToBsClass(state, prefix);
     },
     stateToIcon: function(state) {
-      return stateToIcon(state);
+      return OCSUtil.stateToIcon(state);
     },
     formatIpp: function(ipp) {
       return formatFloat(ipp, 6);
     },
     formatDate: function(date) {
-      return formatDate(date);
+      return OCSUtil.formatDate(date);
     }
   },
   props: {

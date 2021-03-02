@@ -90,7 +90,7 @@
               label=""
               label-for="cadence-button"
             >
-              <b-button id="cadence-button" block variant="outline-info" @click="genCadence">
+              <b-button id="cadence-button" block variant="outline-primary" @click="genCadence">
                 Generate Cadence
               </b-button>
             </b-form-group>

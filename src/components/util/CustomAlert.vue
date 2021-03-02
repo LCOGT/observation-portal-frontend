@@ -12,7 +12,7 @@ export default {
   props: {
     alertclass: {
       type: String,
-      default: 'info'
+      default: 'primary'
     },
     dismissible: {
       type: Boolean,

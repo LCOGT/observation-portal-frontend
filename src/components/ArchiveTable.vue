@@ -11,7 +11,8 @@
 <script>
 import 'bootstrap-table';
 import $ from 'jquery';
-import { formatDate } from '@/utils.js';
+import { OCSUtil } from 'ocs-component-lib';
+
 import { downloadAll, downloadZip } from '@/archive.js';
 
 export default {
@@ -84,7 +85,7 @@ export default {
           title: 'DATE_OBS',
           sortable: 'true',
           formatter: function(value) {
-            return formatDate(value);
+            return OCSUtil.formatDate(value);
           }
         },
         {

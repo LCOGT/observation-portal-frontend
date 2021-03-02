@@ -27,8 +27,7 @@
 </template>
 <script>
 import $ from 'jquery';
-
-import { formatDate } from '@/utils.js';
+import { OCSUtil } from 'ocs-component-lib';
 
 export default {
   name: 'Drafts',
@@ -73,7 +72,7 @@ export default {
           id: this.drafts[i].id,
           author: this.drafts[i].author,
           proposal: this.drafts[i].proposal,
-          modified_time: formatDate(this.drafts[i].modified),
+          modified_time: OCSUtil.formatDate(this.drafts[i].modified),
           delete: this.drafts[i].id
         });
       }

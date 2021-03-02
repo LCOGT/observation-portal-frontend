@@ -413,12 +413,12 @@
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
+import { OCSUtil } from 'ocs-component-lib';
 
 import DataLoader from '@/components/DataLoader.vue';
 import BasicCustomField from '@/components/util/BasicCustomField.vue';
 import { getDataMixin } from '@/components/util/getDataMixins.js';
 import { confirmMixin } from '@/components/util/utilMixins.js';
-import { formatDate, timeFromNow, copyObject } from '@/utils.js';
 
 export default {
   name: 'CreateSciApplication',
@@ -428,10 +428,10 @@ export default {
   },
   filters: {
     formatDate: function(value) {
-      return formatDate(value, 'D MMM YYYY, h:mm a z');
+      return OCSUtil.formatDate(value, 'D MMM YYYY, h:mm a z');
     },
     timeFromNow: function(value) {
-      return timeFromNow(value);
+      return OCSUtil.timeFromNow(value);
     },
     lowerCase: function(value) {
       return _.lowerCase(value);
@@ -599,7 +599,7 @@ export default {
       }
     },
     addCoInvestigator: function() {
-      this.sciApp.coinvestigator_set.push(copyObject(this.getEmptyCoInvestigator()));
+      this.sciApp.coinvestigator_set.push(OCSUtil.copyObject(this.getEmptyCoInvestigator()));
     },
     removeTimeRequest: function(index) {
       if (index >= 0) {
@@ -607,7 +607,7 @@ export default {
       }
     },
     addTimeRequest: function() {
-      this.sciApp.timerequest_set.push(copyObject(this.getEmptyTimeRequest()));
+      this.sciApp.timerequest_set.push(OCSUtil.copyObject(this.getEmptyTimeRequest()));
     },
     sendApplication(data) {
       let method = 'POST';
@@ -672,7 +672,7 @@ export default {
           }
         }
         if (hasData) {
-          rowsWithData.push(copyObject(row));
+          rowsWithData.push(OCSUtil.copyObject(row));
         }
       }
       return rowsWithData;

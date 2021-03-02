@@ -77,7 +77,8 @@
   </data-loader>
 </template>
 <script>
-import { formatDate } from '@/utils.js';
+import { OCSUtil } from 'ocs-component-lib';
+
 import DataLoader from '@/components/DataLoader.vue';
 import { getDataMixin } from '@/components/util/getDataMixins.js';
 
@@ -88,7 +89,7 @@ export default {
   },
   filters: {
     formatDate(value) {
-      return formatDate(value);
+      return OCSUtil.formatDate(value);
     }
   },
   mixins: [getDataMixin],

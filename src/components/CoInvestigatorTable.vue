@@ -100,14 +100,14 @@
             {{ (data.item.time_used_by_user / 3600) | formatFloat(3) }}
           </template>
         </b-table>
-        <custom-pagination
+        <ocs-pagination
           v-if="!isBusy"
           table-id="coinvestigator-table"
           :per-page="queryParams.limit"
           :total-rows="data.count"
           :current-page="currentPage"
           @pageChange="onPageChange"
-        ></custom-pagination>
+        ></ocs-pagination>
         <br />
       </div>
     </template>
@@ -115,23 +115,19 @@
 </template>
 <script>
 import $ from 'jquery';
+import { OCSMixin } from 'ocs-component-lib';
 
 import { formatFloat } from '@/utils.js';
-import { paginationAndFilteringMixin } from '@/components/util/paginationMixins.js';
-import { confirmMixin } from '@/components/util/utilMixins.js';
-import CustomPagination from '@/components/util/CustomPagination.vue';
+import { confirmMixin, clearAndSetErrorsMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'CoInvestigatorTable',
-  components: {
-    CustomPagination
-  },
   filters: {
     formatFloat: function(value, precision) {
       return formatFloat(value, precision);
     }
   },
-  mixins: [paginationAndFilteringMixin, confirmMixin],
+  mixins: [OCSMixin.paginationAndFilteringMixin, confirmMixin, clearAndSetErrorsMixin],
   props: {
     proposalId: {
       type: String,
@@ -209,7 +205,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/memberships/';
+      return this.$store.state.urls.observationPortalApi + '/api/memberships/';
     },
     initializeDefaultQueryParams: function() {
       const defaultQueryParams = {
@@ -223,6 +219,12 @@ export default {
         offset: 0
       };
       return defaultQueryParams;
+    },
+    onSuccessfulDataRetrieval: function() {
+      this.clearErrors();
+    },
+    onErrorRetrievingData: function(response) {
+      this.setErrorsOnFailedAJAXCall(response);
     },
     addMessage: function(text, variant) {
       this.$store.commit('addMessage', { text: text, variant: variant, namespace: 'coinvestigator-table' });
