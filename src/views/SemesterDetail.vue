@@ -94,8 +94,8 @@
 </template>
 <script>
 import _ from 'lodash';
+import { OCSUtil } from 'ocs-component-lib';
 
-import { formatFloat } from '@/utils.js';
 import DataLoader from '@/components/DataLoader.vue';
 import { getDataListMixin } from '@/components/util/getDataMixins.js';
 
@@ -106,7 +106,7 @@ export default {
   },
   filters: {
     formatFloat: function(value, precision) {
-      return formatFloat(value, precision);
+      return OCSUtil.formatFloat(value, precision);
     },
     initial: function(value) {
       return value.charAt(0);

@@ -211,8 +211,9 @@
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import { OCSUtil } from 'ocs-component-lib';
 
-import { formatFloat, tooltipConfig } from '@/utils.js';
+import { tooltipConfig } from '@/utils.js';
 import DataLoader from '@/components/DataLoader.vue';
 import CoInvestigatorTable from '@/components/CoInvestigatorTable.vue';
 import ProposalInvitations from '@/components/ProposalInvitations.vue';
@@ -223,7 +224,7 @@ export default {
   name: 'ProposalDetail',
   filters: {
     formatFloat: function(value, precision) {
-      return formatFloat(value, precision);
+      return OCSUtil.formatFloat(value, precision);
     }
   },
   components: {
