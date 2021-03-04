@@ -9,20 +9,7 @@
           <div v-if="request.windows && request.windows.length != 0" class="row">
             <div class="col-md-12">
               <h4>Windows</h4>
-              <table class="table table-sm">
-                <thead class="no-top-border">
-                  <tr>
-                    <td><strong>Start</strong></td>
-                    <td><strong>End</strong></td>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(window, index) in request.windows" :key="'window-' + index">
-                    <td>{{ window.start | formatDate }}</td>
-                    <td>{{ window.end | formatDate }}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <ocs-request-windows-detail :windows="request.windows"></ocs-request-windows-detail>
             </div>
           </div>
           <div v-if="scheduled && scheduled.start" class="row">
