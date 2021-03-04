@@ -10,7 +10,7 @@
     </b-row>
     <ocs-request-group-header
       :requestgroup="requestgroup"
-      :proposalLink="{ to: { name: 'proposalDetail', params: { id: requestgroup.proposal } } }"
+      :proposal-link="{ to: { name: 'proposalDetail', params: { id: requestgroup.proposal } } }"
       show-extra-column
     >
       <template v-slot:extra-column-content>

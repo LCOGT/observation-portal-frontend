@@ -320,7 +320,7 @@ export default {
     },
     sumFormatter: function(field) {
       let data = _.map(this.filteredTimeallocations, field);
-      return formatFloat(_.sum(data), 3);
+      return OCSUtil.formatFloat(_.sum(data), 3);
     },
     getTdClass: function(allocation, used) {
       return allocation > 0 && used >= allocation ? 'bg-danger' : '';
