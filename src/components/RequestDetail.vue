@@ -46,7 +46,12 @@
           <template slot="title">
             <span title="Scheduling history.">Scheduling</span>
           </template>
-          <observation-history v-show="observationData.length > 0" :data="observationData" :show-plot-controls="true" />
+          <ocs-observation-history-plot
+            v-show="observationData.length > 0"
+            :data="observationData"
+            show-plot-controls
+            show-legend
+          ></ocs-observation-history-plot>
           <div v-show="observationData.length < 1" class="text-center">
             <h3>This request has not been scheduled.</h3>
           </div>
@@ -100,7 +105,6 @@ import { OCSUtil } from 'ocs-component-lib';
 
 import Thumbnail from '@/components/Thumbnail.vue';
 import ArchiveTable from '@/components/ArchiveTable.vue';
-import ObservationHistory from '@/components/ObservationHistory.vue';
 import AirmassTelescopeStates from '@/components/AirmassTelescopeStates.vue';
 import { getLatestFrame } from '@/archive.js';
 
@@ -113,7 +117,6 @@ export default {
   components: {
     Thumbnail,
     ArchiveTable,
-    ObservationHistory,
     AirmassTelescopeStates
   },
   props: {
