@@ -1,5 +1,8 @@
 <template>
-  <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+  <ocs-data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <template v-slot:not-found>
+      <not-found />
+    </template>
     <h1>{{ id }} proposals</h1>
     <template v-if="data.length < 1">
       There are no active proposals for this semester.
@@ -90,20 +93,16 @@
         </table>
       </div>
     </template>
-  </data-loader>
+  </ocs-data-loader>
 </template>
 <script>
 import _ from 'lodash';
-import { OCSUtil } from 'ocs-component-lib';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import DataLoader from '@/components/DataLoader.vue';
-import { getDataListMixin } from '@/components/util/getDataMixins.js';
+import NotFound from '@/components/NotFound.vue';
 
 export default {
   name: 'SemesterDetail',
-  components: {
-    DataLoader
-  },
   filters: {
     formatFloat: function(value, precision) {
       return OCSUtil.formatFloat(value, precision);
@@ -112,7 +111,10 @@ export default {
       return value.charAt(0);
     }
   },
-  mixins: [getDataListMixin],
+  components: {
+    NotFound
+  },
+  mixins: [OCSMixin.getDataListMixin],
   props: {
     id: {
       type: String,

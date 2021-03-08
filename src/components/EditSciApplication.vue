@@ -1,5 +1,8 @@
 <template>
-  <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+  <ocs-data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <template v-slot:not-found>
+      <not-found />
+    </template>
     <b-row>
       <b-col>
         <b-breadcrumb class="bg-light">
@@ -408,23 +411,22 @@
         </template>
       </b-col>
     </b-row>
-  </data-loader>
+  </ocs-data-loader>
 </template>
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
-import { OCSUtil } from 'ocs-component-lib';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import DataLoader from '@/components/DataLoader.vue';
 import BasicCustomField from '@/components/util/BasicCustomField.vue';
-import { getDataMixin } from '@/components/util/getDataMixins.js';
+import NotFound from '@/components/NotFound.vue';
 import { confirmMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'CreateSciApplication',
   components: {
-    DataLoader,
-    BasicCustomField
+    BasicCustomField,
+    NotFound
   },
   filters: {
     formatDate: function(value) {
@@ -437,7 +439,7 @@ export default {
       return _.lowerCase(value);
     }
   },
-  mixins: [getDataMixin, confirmMixin],
+  mixins: [OCSMixin.getDataMixin, confirmMixin],
   props: {
     callId: {
       type: [String, Number],

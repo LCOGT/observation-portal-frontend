@@ -30,19 +30,18 @@
 </template>
 <script>
 import $ from 'jquery';
-import { OCSUtil } from 'ocs-component-lib';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 import { confirmMixin } from '@/components/util/utilMixins.js';
 
 export default {
-  name: 'ProposalInvitaions',
+  name: 'ProposalInvitations',
   filters: {
     formatDate: function(date) {
       return OCSUtil.formatDate(date);
     }
   },
-  mixins: [getDataListWithCountMixin, confirmMixin],
+  mixins: [OCSMixin.getDataListWithCountMixin, confirmMixin],
   props: {
     proposalId: {
       type: String,

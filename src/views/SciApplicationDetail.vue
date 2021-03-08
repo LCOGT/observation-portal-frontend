@@ -1,19 +1,23 @@
 <template>
-  <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+  <ocs-data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <template v-slot:not-found>
+      <not-found />
+    </template>
     <sci-application-detail-template :sci-app="data"></sci-application-detail-template>
-  </data-loader>
+  </ocs-data-loader>
 </template>
 <script>
-import DataLoader from '@/components/DataLoader.vue';
+import { OCSMixin } from 'ocs-component-lib';
+
 import SciApplicationDetailTemplate from '@/components/SciApplicationDetailTemplate.vue';
-import { getDataMixin } from '@/components/util/getDataMixins.js';
+import NotFound from '@/components/NotFound.vue';
 
 export default {
   components: {
-    DataLoader,
-    SciApplicationDetailTemplate
+    SciApplicationDetailTemplate,
+    NotFound
   },
-  mixins: [getDataMixin],
+  mixins: [OCSMixin.getDataMixin],
   props: {
     sciAppId: {
       type: [String, Number],

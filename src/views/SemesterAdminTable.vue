@@ -1,6 +1,9 @@
 <template>
   <div>
-    <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <ocs-data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+      <template v-slot:not-found>
+        <not-found />
+      </template>
       <b-row>
         <b-col md="8">
           <b-form inline>
@@ -122,7 +125,7 @@
           <br />
         </template>
       </b-table>
-    </data-loader>
+    </ocs-data-loader>
     <!-- These are included for downloading the table data-->
     <script src="https://cdn.lco.global/script/tableExport.min.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js" type="application/javascript"></script>
@@ -131,22 +134,21 @@
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
-import { OCSUtil } from 'ocs-component-lib';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import DataLoader from '@/components/DataLoader.vue';
-import { getDataListMixin } from '@/components/util/getDataMixins.js';
+import NotFound from '@/components/NotFound.vue';
 
 export default {
   name: 'SemesterAdminTable',
-  components: {
-    DataLoader
-  },
   filters: {
     formatFloat: function(value, precision) {
       return OCSUtil.formatFloat(value, precision);
     }
   },
-  mixins: [getDataListMixin],
+  components: {
+    NotFound
+  },
+  mixins: [OCSMixin.getDataListMixin],
   props: {
     id: {
       type: String,

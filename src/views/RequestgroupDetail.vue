@@ -1,5 +1,8 @@
 <template>
-  <data-loader :data-loaded="requestgroupLoaded" :data-load-error="requestgroupLoadError" :data-not-found="requestgroupNotFound">
+  <ocs-data-loader :data-loaded="requestgroupLoaded" :data-load-error="requestgroupLoadError" :data-not-found="requestgroupNotFound">
+    <template v-slot:not-found>
+      <not-found />
+    </template>
     <b-row>
       <b-col>
         <h2 class="text-break">
@@ -86,7 +89,7 @@
         aria-controls="requests-table"
       />
     </template>
-  </data-loader>
+  </ocs-data-loader>
 </template>
 <script>
 import $ from 'jquery';
@@ -94,14 +97,14 @@ import _ from 'lodash';
 
 import RequestDetail from '@/components/RequestDetail.vue';
 import RequestRow from '@/components/RequestRow.vue';
-import DataLoader from '@/components/DataLoader.vue';
+import NotFound from '@/components/NotFound.vue';
 
 export default {
   name: 'RequestgroupDetail',
   components: {
     RequestDetail,
     RequestRow,
-    DataLoader
+    NotFound
   },
   data: function() {
     return {

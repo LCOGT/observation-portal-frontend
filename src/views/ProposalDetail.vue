@@ -1,5 +1,8 @@
 <template>
-  <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+  <ocs-data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <template v-slot:not-found>
+      <not-found />
+    </template>
     <b-row>
       <b-col>
         <b-row>
@@ -206,19 +209,18 @@
         </div>
       </b-col>
     </b-row>
-  </data-loader>
+  </ocs-data-loader>
 </template>
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
-import { OCSUtil } from 'ocs-component-lib';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
 import { tooltipConfig } from '@/utils.js';
-import DataLoader from '@/components/DataLoader.vue';
+import NotFound from '@/components/NotFound.vue';
 import CoInvestigatorTable from '@/components/CoInvestigatorTable.vue';
 import ProposalInvitations from '@/components/ProposalInvitations.vue';
 import InviteCoInvestigatorsForm from '@/components/InviteCoInvestigatorsForm.vue';
-import { getDataMixin } from '@/components/util/getDataMixins.js';
 
 export default {
   name: 'ProposalDetail',
@@ -228,12 +230,12 @@ export default {
     }
   },
   components: {
-    DataLoader,
     CoInvestigatorTable,
     ProposalInvitations,
-    InviteCoInvestigatorsForm
+    InviteCoInvestigatorsForm,
+    NotFound
   },
-  mixins: [getDataMixin],
+  mixins: [OCSMixin.getDataMixin],
   props: {
     id: {
       type: String,

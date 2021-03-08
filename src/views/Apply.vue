@@ -74,10 +74,9 @@
 </template>
 <script>
 import _ from 'lodash';
-import { OCSUtil } from 'ocs-component-lib';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
 import SciApplications from '@/components/SciApplications.vue';
-import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 
 export default {
   name: 'Apply',
@@ -93,7 +92,7 @@ export default {
       }
     }
   },
-  mixins: [getDataListWithCountMixin],
+  mixins: [OCSMixin.getDataListWithCountMixin],
   data: function() {
     return {
       collabCallsFields: [{ key: 'semester' }, { key: 'allocations' }, { key: 'deadline' }, { key: 'addProposal', label: '' }],

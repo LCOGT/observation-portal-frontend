@@ -94,9 +94,8 @@
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
-import { OCSUtil } from 'ocs-component-lib';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 import { confirmMixin } from '@/components/util/utilMixins.js';
 
 export default {
@@ -110,7 +109,7 @@ export default {
       }
     }
   },
-  mixins: [getDataListWithCountMixin, confirmMixin],
+  mixins: [OCSMixin.getDataListWithCountMixin, confirmMixin],
   props: {
     isSciCollab: {
       type: Boolean,
