@@ -51,7 +51,8 @@
             :data="observationData"
             show-plot-controls
             show-legend
-          ></ocs-observation-history-plot>
+            @observationClicked="onObservationClicked"
+          />
           <div v-show="observationData.length < 1" class="text-center">
             <h3>This request has not been scheduled.</h3>
           </div>
@@ -307,6 +308,9 @@ export default {
         that.loadingColor = false;
         window.open(data['url'], '_blank');
       });
+    },
+    onObservationClicked: function(observationId) {
+      this.$router.push({ name: 'observationDetail', params: { id: observationId } });
     }
   }
 };
