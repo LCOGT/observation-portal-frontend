@@ -171,7 +171,7 @@ export default {
   methods: {
     initializeDataEndpoint: function() {
       // TODO: Paginate results
-      let endpoint = '/api/scienceapplications/?only_authored=true&limit=1000&ordering=-call__semester';
+      let endpoint = this.$store.state.urls.observationPortalApi + '/api/scienceapplications/?only_authored=true&limit=1000&ordering=-call__semester';
       if (this.isSciCollab) {
         return endpoint + '&proposal_type=COLAB';
       } else {

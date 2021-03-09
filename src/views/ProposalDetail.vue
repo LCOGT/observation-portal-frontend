@@ -294,7 +294,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/proposals/' + this.id + '/';
+      return this.$store.state.urls.observationPortalApi + '/api/proposals/' + this.id + '/';
     },
     clearMessages: function() {
       this.$store.commit('clearAllMessages');

@@ -128,7 +128,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/semesters/' + this.id + '/proposals/';
+      return this.$store.state.urls.observationPortalApi + '/api/semesters/' + this.id + '/proposals/';
     },
     getAllocationForInstrument: function(allocation, instrumentType) {
       let hours = 0;

@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/invitations/?pending=true&proposal=' + this.proposalId;
+      return this.$store.state.urls.observationPortalApi + '/api/invitations/?pending=true&proposal=' + this.proposalId;
     },
     getDeleteInvitationConfirmationMessage: function(email) {
       return 'Are you sure you want to delete the invitation for ' + email + ' for this proposal?';

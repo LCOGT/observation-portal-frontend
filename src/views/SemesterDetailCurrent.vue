@@ -21,7 +21,7 @@ export default {
   methods: {
     initializeDataEndpoint: function() {
       let datetimeNow = moment.utc().format(datetimeFormat);
-      return '/api/semesters/?semester_contains=' + datetimeNow;
+      return this.$store.state.urls.observationPortalApi + '/api/semesters/?semester_contains=' + datetimeNow;
     },
     initializeSetNotFoundOnEmptyList: function() {
       return true;

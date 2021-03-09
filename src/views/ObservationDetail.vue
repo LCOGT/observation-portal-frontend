@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/observations/' + this.id + '/';
+      return this.$store.state.urls.observationPortalApi + '/api/observations/' + this.id + '/';
     }
   }
 };

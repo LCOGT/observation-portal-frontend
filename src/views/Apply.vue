@@ -125,7 +125,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/calls/?only_open=true';
+      return this.$store.state.urls.observationPortalApi + '/api/calls/?only_open=true';
     },
     getTimeRequested: function(callId, telescopeName) {
       for (let call of this.data.results) {

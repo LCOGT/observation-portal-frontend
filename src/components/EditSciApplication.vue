@@ -553,7 +553,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/calls/' + this.callId + '/';
+      return this.$store.state.urls.observationPortalApi + '/api/calls/' + this.callId + '/';
     },
     getSciAppData: function(callId, initialSciApp) {
       // Return sciApp data. If `initialSciApp` is passed in, the sciApp data that

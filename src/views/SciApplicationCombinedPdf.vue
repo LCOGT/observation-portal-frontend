@@ -90,7 +90,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/scienceapplications/' + this.sciAppId + '/';
+      return this.$store.state.urls.observationPortalApi + '/api/scienceapplications/' + this.sciAppId + '/';
     },
     createCombinedPdf: function(uploadedPdfArrayBuffer) {
       var options = {

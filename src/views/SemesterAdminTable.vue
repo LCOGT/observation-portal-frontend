@@ -315,7 +315,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return this.generateDataEndpoint();
+      return this.$store.state.urls.observationPortalApi + this.generateDataEndpoint();
     },
     generateDataEndpoint: function() {
       return '/api/semesters/' + this.id + '/timeallocations/';
