@@ -36,7 +36,7 @@
             ><sup
               v-b-tooltip="tooltipConfig"
               class="text-primary"
-              title="If notifications are enabled, you will recieve notifications whenever a requested observation on this proposal is completed."
+              title="If notifications are enabled, you will receive notifications whenever a requested observation on this proposal is completed."
               >?</sup
             >
             <b-form @submit="updateProposalNotification">

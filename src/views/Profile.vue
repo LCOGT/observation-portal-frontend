@@ -51,7 +51,7 @@
         <b-form-group id="checkbox-group-notifications-enabled" label-for="checkbox-notifications-enabled">
           <template slot="description">
             <p>
-              Recieve email notifications for every completed observation on all proposals. To recieve email notifications for a single proposal,
+              Receive email notifications for every completed observation on all proposals. To receive email notifications for a single proposal,
               update your preferences on that proposal's detail page.
             </p>
           </template>
@@ -66,7 +66,7 @@
         <b-form-group id="checkbox-group-notifications-on-authored-only" label-for="checkbox-notifications-on-authored-only">
           <template slot="description">
             <p>
-              Only recieve email notifications for requests you have submitted yourself. Note this setting alone does not enable any notifications.
+              Only receive email notifications for requests you have submitted yourself. Note this setting alone does not enable any notifications.
               You must either enable the "Notifications enabled" setting above or enable notifications on a specific proposal for this to take effect.
             </p>
           </template>
