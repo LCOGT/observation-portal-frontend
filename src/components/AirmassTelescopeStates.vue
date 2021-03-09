@@ -56,7 +56,7 @@ export default {
         { eventType: 'SEQUENCER_DISABLED', text: 'Manually Disabled' },
         { eventType: 'NO_CONNECTION', text: 'No Connection to Telescope' }
       ],
-      additionalEventTypeText: {
+      eventTypeReasonPrefix: {
         AVAILABLE: 'Available',
         NOT_OK_TO_OPEN: '',
         SEQUENCER_DISABLED: 'Manually Disabled',
@@ -84,7 +84,7 @@ export default {
           } else if (this.initializingEventTypeCodes.indexOf(event['event_type']) > -1) {
             reason = ': Telescope initializing';
           }
-          let additionalText = _.get(this.additionalEventTypeText, [event['event_type']], '');
+          let additionalText = _.get(this.eventTypeReasonPrefix, [event['event_type']], '');
           this.telescopeStatesData[telescope][i]['event_reason'] = additionalText + reason;
         }
       }

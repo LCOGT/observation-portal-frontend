@@ -7,7 +7,7 @@
     <ocs-observation-detail
       :observation="data"
       :request-link="{ to: { name: 'requestDetail', params: { id: data.request } } }"
-    ></ocs-observation-detail>
+    />
   </ocs-data-loader>
 </template>
 <script>
