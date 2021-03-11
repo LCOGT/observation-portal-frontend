@@ -5,7 +5,7 @@
 import EditSciApplication from '@/components/EditSciApplication.vue';
 
 export default {
-  name: 'UpdateSciApplication',
+  name: 'CreateSciApplication',
   components: {
     EditSciApplication
   },

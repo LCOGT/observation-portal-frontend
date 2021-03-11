@@ -157,6 +157,9 @@ export default {
     };
   },
   computed: {
+    observationPortalApiUrl: function() {
+      return this.$store.state.urls.observationPortalApi;
+    },
     submittedApplications: function() {
       return _.filter(this.data.results, app => {
         return app.status !== 'DRAFT';
