@@ -4,10 +4,7 @@
       <not-found />
     </template>
     <h1>Observation {{ id }}</h1>
-    <ocs-observation-detail
-      :observation="data"
-      :request-link="{ to: { name: 'requestDetail', params: { id: data.request } } }"
-    />
+    <ocs-observation-detail :observation="data" :request-link="{ to: { name: 'requestDetail', params: { id: data.request } } }" />
   </ocs-data-loader>
 </template>
 <script>
