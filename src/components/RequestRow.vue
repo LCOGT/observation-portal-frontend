@@ -11,7 +11,7 @@
         <b-col align-self="center" class="border-right">
           <b-row align-h="center">
             <b-button-group>
-              <b-button :href="requestApiUrl" variant="outline-secondary">View in API</b-button>
+              <b-button :href="requestApiUrl" variant="outline-secondary"><i class="fa fa-fw fa-code" /> View in API</b-button>
               <b-button v-if="requestIsComplete" variant="outline-secondary" :disabled="!archiveDataIsAvailable" @click="downloadAllData">
                 <i class="fa fa-fw fa-download" /> Download
               </b-button>

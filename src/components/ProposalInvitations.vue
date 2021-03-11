@@ -59,6 +59,11 @@ export default {
       }
     };
   },
+  computed: {
+    observationPortalApiUrl: function() {
+      return this.$store.state.urls.observationPortalApi;
+    }
+  },
   methods: {
     initializeDataEndpoint: function() {
       return this.$store.state.urls.observationPortalApi + '/api/invitations/?pending=true&proposal=' + this.proposalId;

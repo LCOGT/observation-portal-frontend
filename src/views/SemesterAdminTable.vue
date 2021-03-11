@@ -315,10 +315,10 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return this.$store.state.urls.observationPortalApi + this.generateDataEndpoint();
+      return this.generateDataEndpoint();
     },
     generateDataEndpoint: function() {
-      return '/api/semesters/' + this.id + '/timeallocations/';
+      return this.$store.state.urls.observationPortalApi + '/api/semesters/' + this.id + '/timeallocations/';
     },
     sumFormatter: function(field) {
       let data = _.map(this.filteredTimeallocations, field);

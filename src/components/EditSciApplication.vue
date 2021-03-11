@@ -519,6 +519,9 @@ export default {
     },
     coInvestigatorsNonFieldErrors: function() {
       return _.get(this.apiValidationErrors, ['coinvestigator_set', 'non_field_errors'], []);
+    },
+    observationPortalApiUrl: function() {
+      return this.$store.state.urls.observationPortalApi;
     }
   },
   watch: {

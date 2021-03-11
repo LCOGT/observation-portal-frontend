@@ -14,7 +14,7 @@
     <ocs-telescope-states-plot
       v-show="'airmass_limit' in airmassData"
       ref="telescope_states"
-      :data="telescopeStatesData"
+      :data="transformedTelescopeData"
       :active-observation="activeObservation"
       :show-zoom-controls="false"
       :site-code-to-color="siteToColor"
@@ -27,6 +27,7 @@
 </template>
 <script>
 import _ from 'lodash';
+import { OCSUtil } from 'ocs-component-lib';
 
 import { siteToColor, siteCodeToName } from '@/utils.js';
 
@@ -61,34 +62,39 @@ export default {
         NOT_OK_TO_OPEN: '',
         SEQUENCER_DISABLED: 'Manually Disabled',
         SITE_AGENT_UNRESPONSIVE: 'No Connection to Telescope',
+        NOT_AVAILABLE: 'No Connection to Telescope',
         OFFLINE: 'Manually Disabled',
         ENCLOSURE_INTERLOCK: '',
+        ENCLOSURE_DISABLED: '',
         SEQUENCER_UNAVAILABLE: '',
         NO_CONNECTION: ''
       },
-      unavailableEventTypeCodes: ['NOT_OK_TO_OPEN', 'ENCLOSURE_INTERLOCK'],
+      unavailableEventTypeCodes: ['NOT_OK_TO_OPEN', 'ENCLOSURE_INTERLOCK', 'ENCLOSURE_DISABLED'],
       initializingEventTypeCodes: ['SEQUENCER_UNAVAILABLE']
     };
   },
-  created: function() {
-    this.transformEventData();
-  },
-  methods: {
-    transformEventData: function() {
+  computed: {
+    transformedTelescopeData: function() {
+      let transformedData = {};
       for (let telescope in this.telescopeStatesData) {
+        transformedData[telescope] = [];
         for (let i in this.telescopeStatesData[telescope]) {
-          let event = this.telescopeStatesData[telescope][i];
+          transformedData[telescope].push(OCSUtil.copyObject(this.telescopeStatesData[telescope][i]));
+          let event = transformedData[telescope][i];
           let reason = '';
           if (this.unavailableEventTypeCodes.indexOf(event['event_type']) > -1) {
             reason = event['event_reason'];
           } else if (this.initializingEventTypeCodes.indexOf(event['event_type']) > -1) {
             reason = ': Telescope initializing';
           }
-          let additionalText = _.get(this.eventTypeReasonPrefix, [event['event_type']], '');
-          this.telescopeStatesData[telescope][i]['event_reason'] = additionalText + reason;
+          let prefixText = _.get(this.eventTypeReasonPrefix, [event['event_type']], '');
+          transformedData[telescope][i]['event_reason'] = prefixText + reason;
         }
       }
-    },
+      return transformedData;
+    }
+  },
+  methods: {
     updateAirmassRange: function(window) {
       this.$refs.airmass.updateWindow(window);
     },
@@ -129,7 +135,17 @@ export default {
   border-color: purple;
 }
 
+.ENCLOSURE_DISABLED {
+  background-color: purple;
+  border-color: purple;
+}
+
 .SEQUENCER_UNAVAILABLE {
+  background-color: purple;
+  border-color: purple;
+}
+
+.NOT_AVAILABLE {
   background-color: purple;
   border-color: purple;
 }
