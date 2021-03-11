@@ -1,5 +1,8 @@
 <template>
-  <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+  <ocs-data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <template v-slot:not-found>
+      <not-found />
+    </template>
     <b-row>
       <b-col>
         <b-row>
@@ -33,7 +36,7 @@
             ><sup
               v-b-tooltip="tooltipConfig"
               class="text-primary"
-              title="If notifications are enabled, you will recieve notifications whenever a requested observation on this proposal is completed."
+              title="If notifications are enabled, you will receive notifications whenever a requested observation on this proposal is completed."
               >?</sup
             >
             <b-form @submit="updateProposalNotification">
@@ -206,33 +209,33 @@
         </div>
       </b-col>
     </b-row>
-  </data-loader>
+  </ocs-data-loader>
 </template>
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { formatFloat, tooltipConfig } from '@/utils.js';
-import DataLoader from '@/components/DataLoader.vue';
+import { tooltipConfig } from '@/utils.js';
+import NotFound from '@/components/NotFound.vue';
 import CoInvestigatorTable from '@/components/CoInvestigatorTable.vue';
 import ProposalInvitations from '@/components/ProposalInvitations.vue';
 import InviteCoInvestigatorsForm from '@/components/InviteCoInvestigatorsForm.vue';
-import { getDataMixin } from '@/components/util/getDataMixins.js';
 
 export default {
   name: 'ProposalDetail',
   filters: {
     formatFloat: function(value, precision) {
-      return formatFloat(value, precision);
+      return OCSUtil.formatFloat(value, precision);
     }
   },
   components: {
-    DataLoader,
     CoInvestigatorTable,
     ProposalInvitations,
-    InviteCoInvestigatorsForm
+    InviteCoInvestigatorsForm,
+    NotFound
   },
-  mixins: [getDataMixin],
+  mixins: [OCSMixin.getDataMixin],
   props: {
     id: {
       type: String,
@@ -291,7 +294,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/proposals/' + this.id + '/';
+      return this.$store.state.urls.observationPortalApi + '/api/proposals/' + this.id + '/';
     },
     clearMessages: function() {
       this.$store.commit('clearAllMessages');

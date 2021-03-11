@@ -30,19 +30,18 @@
 </template>
 <script>
 import $ from 'jquery';
-import { OCSUtil } from 'ocs-component-lib';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 import { confirmMixin } from '@/components/util/utilMixins.js';
 
 export default {
-  name: 'ProposalInvitaions',
+  name: 'ProposalInvitations',
   filters: {
     formatDate: function(date) {
       return OCSUtil.formatDate(date);
     }
   },
-  mixins: [getDataListWithCountMixin, confirmMixin],
+  mixins: [OCSMixin.getDataListWithCountMixin, confirmMixin],
   props: {
     proposalId: {
       type: String,
@@ -60,9 +59,14 @@ export default {
       }
     };
   },
+  computed: {
+    observationPortalApiUrl: function() {
+      return this.$store.state.urls.observationPortalApi;
+    }
+  },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/invitations/?pending=true&proposal=' + this.proposalId;
+      return this.$store.state.urls.observationPortalApi + '/api/invitations/?pending=true&proposal=' + this.proposalId;
     },
     getDeleteInvitationConfirmationMessage: function(email) {
       return 'Are you sure you want to delete the invitation for ' + email + ' for this proposal?';

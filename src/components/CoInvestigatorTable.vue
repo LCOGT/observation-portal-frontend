@@ -115,16 +115,15 @@
 </template>
 <script>
 import $ from 'jquery';
-import { OCSMixin } from 'ocs-component-lib';
+import { OCSMixin, OCSUtil } from 'ocs-component-lib';
 
-import { formatFloat } from '@/utils.js';
 import { confirmMixin, clearAndSetErrorsMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'CoInvestigatorTable',
   filters: {
     formatFloat: function(value, precision) {
-      return formatFloat(value, precision);
+      return OCSUtil.formatFloat(value, precision);
     }
   },
   mixins: [OCSMixin.paginationAndFilteringMixin, confirmMixin, clearAndSetErrorsMixin],

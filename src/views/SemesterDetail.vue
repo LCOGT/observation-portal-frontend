@@ -1,5 +1,8 @@
 <template>
-  <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+  <ocs-data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <template v-slot:not-found>
+      <not-found />
+    </template>
     <h1>{{ id }} proposals</h1>
     <template v-if="data.length < 1">
       There are no active proposals for this semester.
@@ -90,29 +93,28 @@
         </table>
       </div>
     </template>
-  </data-loader>
+  </ocs-data-loader>
 </template>
 <script>
 import _ from 'lodash';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { formatFloat } from '@/utils.js';
-import DataLoader from '@/components/DataLoader.vue';
-import { getDataListMixin } from '@/components/util/getDataMixins.js';
+import NotFound from '@/components/NotFound.vue';
 
 export default {
   name: 'SemesterDetail',
-  components: {
-    DataLoader
-  },
   filters: {
     formatFloat: function(value, precision) {
-      return formatFloat(value, precision);
+      return OCSUtil.formatFloat(value, precision);
     },
     initial: function(value) {
       return value.charAt(0);
     }
   },
-  mixins: [getDataListMixin],
+  components: {
+    NotFound
+  },
+  mixins: [OCSMixin.getDataListMixin],
   props: {
     id: {
       type: String,
@@ -126,7 +128,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/semesters/' + this.id + '/proposals/';
+      return this.$store.state.urls.observationPortalApi + '/api/semesters/' + this.id + '/proposals/';
     },
     getAllocationForInstrument: function(allocation, instrumentType) {
       let hours = 0;

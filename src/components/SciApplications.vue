@@ -94,9 +94,8 @@
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
-import { OCSUtil } from 'ocs-component-lib';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { getDataListWithCountMixin } from '@/components/util/getDataMixins.js';
 import { confirmMixin } from '@/components/util/utilMixins.js';
 
 export default {
@@ -110,7 +109,7 @@ export default {
       }
     }
   },
-  mixins: [getDataListWithCountMixin, confirmMixin],
+  mixins: [OCSMixin.getDataListWithCountMixin, confirmMixin],
   props: {
     isSciCollab: {
       type: Boolean,
@@ -158,6 +157,9 @@ export default {
     };
   },
   computed: {
+    observationPortalApiUrl: function() {
+      return this.$store.state.urls.observationPortalApi;
+    },
     submittedApplications: function() {
       return _.filter(this.data.results, app => {
         return app.status !== 'DRAFT';
@@ -172,7 +174,7 @@ export default {
   methods: {
     initializeDataEndpoint: function() {
       // TODO: Paginate results
-      let endpoint = '/api/scienceapplications/?only_authored=true&limit=1000&ordering=-call__semester';
+      let endpoint = this.$store.state.urls.observationPortalApi + '/api/scienceapplications/?only_authored=true&limit=1000&ordering=-call__semester';
       if (this.isSciCollab) {
         return endpoint + '&proposal_type=COLAB';
       } else {

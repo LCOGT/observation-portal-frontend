@@ -1,87 +1,54 @@
 <template>
-  <b-row class="m-0 border position-relative">
-    <div class="state-color-marker" :class="request.state | stateToBsClass('bg')"></div>
-    <b-col md="10">
+  <ocs-request-overview
+    :request="request"
+    :instruments="instruments"
+    :request-link="requestLink"
+    :extra-column-attrs="{ cols: 12, md: 6, 'align-self': 'center' }"
+    show-extra-column
+  >
+    <template v-slot:extra-column-content>
       <b-row>
-        <b-col md="4" class="requestgroup-block border-right">
-          <router-link v-if="link" class="requestgroup-title" :to="{ name: 'requestDetail', params: { id: request.id } }">
-            # {{ request.id }}
-          </router-link>
-          <span v-else class="requestgroup-title"># {{ request.id }}</span>
-          <p>
-            <i class="far fa-clock" />
-            <span title="Total exposure time + observing overhead">Duration: {{ request.duration }} seconds</span>
-          </p>
-          <p>
-            <i class="fa fa-camera" />
-            Instrument: {{ instrumentName }}
-          </p>
-        </b-col>
-        <b-col md="4" class="requestgroup-block border-right">
-          <p>
-            <span :class="request.state | stateToBsClass('text')">
-              <i :class="request.state | stateToIcon" />
-              {{ request.state }}
-            </span>
-          </p>
-          <p>
-            <i class="fa fa-clipboard-check" />
-            Acceptability Threshold: {{ request.acceptability_threshold }}%
-          </p>
-          <p>
-            <i class="fa fa-calendar" />
-            {{ request.modified | formatDate }}
-          </p>
-        </b-col>
-        <b-col md="4" class="requestgroup-block my-auto">
-          <b-row class="border-right mx-auto">
-            <div>
-              <div class="btn-group mr-2" role="group" aria-label="button group">
-                <a :href="requestApiUrl" class="btn btn-outline-secondary"> <i class="fa fa-fw fa-code" /> View in API </a>
-                <button
-                  v-if="request.state === 'COMPLETED'"
-                  class="btn btn-outline-secondary"
-                  type="button"
-                  :disabled="!archiveDataIsAvailable"
-                  @click="downloadAllData"
-                >
-                  <i class="fa fa-fw fa-download" /> Download
-                </button>
-              </div>
-            </div>
+        <b-col align-self="center" class="border-right">
+          <b-row align-h="center">
+            <b-button-group>
+              <b-button :href="requestApiUrl" variant="outline-secondary"><i class="fa fa-fw fa-code" /> View in API</b-button>
+              <b-button v-if="requestIsComplete" variant="outline-secondary" :disabled="!archiveDataIsAvailable" @click="downloadAllData">
+                <i class="fa fa-fw fa-download" /> Download
+              </b-button>
+            </b-button-group>
           </b-row>
         </b-col>
-      </b-row>
-    </b-col>
-    <b-col md="2" class="text-center my-auto">
-      <template v-if="request.state == 'COMPLETED'">
-        <b-img v-if="thumbnailUrl" :src="thumbnailUrl" fluid :alt="frame.filename" :title="frame.filename" />
-        <div v-else-if="thumbnailError">
-          {{ thumbnailError }}
-        </div>
-        <div v-else-if="archiveError">
-          {{ archiveError }}
-        </div>
-        <i v-else class="fa fa-spin fa-spinner" />
-      </template>
-      <template v-else-if="request.state == 'PENDING'">
-        <div>
-          <template v-if="schedulingInformation.found">
+        <b-col align-self="center" class="text-center">
+          <template v-if="requestIsComplete">
+            <b-img v-if="thumbnailUrl" :src="thumbnailUrl" fluid :alt="frame.filename" :title="frame.filename" />
+            <div v-else-if="thumbnailError">
+              {{ thumbnailError }}
+            </div>
+            <div v-else-if="archiveError">
+              {{ archiveError }}
+            </div>
+            <i v-else class="fa fa-spin fa-spinner" />
+          </template>
+          <template v-else-if="requestIsPending">
             <div>
-              <strong>{{ schedulingInformation.site }}</strong>
-              <br />
-              {{ schedulingInformation.start | formatDate }} to
-              {{ schedulingInformation.end | formatDate }}
+              <template v-if="schedulingInformation.found">
+                <div>
+                  <strong>{{ schedulingInformation.site }}</strong>
+                  <br />
+                  {{ schedulingInformation.start | formatDate }} to
+                  {{ schedulingInformation.end | formatDate }}
+                </div>
+              </template>
+              <div v-else-if="schedulingInformation.error">
+                {{ schedulingInformation.error }}
+              </div>
+              <i v-else class="fa fa-spinner fa-spin" />
             </div>
           </template>
-          <div v-else-if="schedulingInformation.error">
-            {{ schedulingInformation.error }}
-          </div>
-          <i v-else class="fa fa-spinner fa-spin" />
-        </div>
-      </template>
-    </b-col>
-  </b-row>
+        </b-col>
+      </b-row>
+    </template>
+  </ocs-request-overview>
 </template>
 <script>
 import $ from 'jquery';
@@ -158,6 +125,19 @@ export default {
     },
     archiveDataIsAvailable: function() {
       return this.frame.id ? true : false;
+    },
+    requestLink: function() {
+      if (this.link) {
+        return { to: { name: 'requestDetail', params: { id: this.request.id } } };
+      } else {
+        return {};
+      }
+    },
+    requestIsComplete: function() {
+      return this.request.state === 'COMPLETED';
+    },
+    requestIsPending: function() {
+      return this.request.state === 'PENDING';
     }
   },
   created: function() {
@@ -216,22 +196,3 @@ export default {
   }
 };
 </script>
-<style scoped>
-.requestgroup-block > p {
-  margin: 0px;
-  padding-bottom: 0px;
-}
-.requestgroup-title {
-  font-size: 1em;
-  margin-left: 4px;
-  font-weight: 600;
-}
-.state-color-marker {
-  position: absolute;
-  top: 0;
-  left: 0;
-  max-width: 10px;
-  min-width: 10px;
-  height: 100%;
-}
-</style>

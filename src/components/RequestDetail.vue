@@ -9,20 +9,7 @@
           <div v-if="request.windows && request.windows.length != 0" class="row">
             <div class="col-md-12">
               <h4>Windows</h4>
-              <table class="table table-sm">
-                <thead class="no-top-border">
-                  <tr>
-                    <td><strong>Start</strong></td>
-                    <td><strong>End</strong></td>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(window, index) in request.windows" :key="'window-' + index">
-                    <td>{{ window.start | formatDate }}</td>
-                    <td>{{ window.end | formatDate }}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <ocs-request-windows-detail :windows="request.windows"></ocs-request-windows-detail>
             </div>
           </div>
           <div v-if="scheduled && scheduled.start" class="row">
@@ -59,7 +46,13 @@
           <template slot="title">
             <span title="Scheduling history.">Scheduling</span>
           </template>
-          <observation-history v-show="observationData.length > 0" :data="observationData" :show-plot-controls="true" />
+          <ocs-observation-history-plot
+            v-show="observationData.length > 0"
+            :data="observationData"
+            show-plot-controls
+            show-legend
+            @observationClicked="onObservationClicked"
+          />
           <div v-show="observationData.length < 1" class="text-center">
             <h3>This request has not been scheduled.</h3>
           </div>
@@ -113,7 +106,6 @@ import { OCSUtil } from 'ocs-component-lib';
 
 import Thumbnail from '@/components/Thumbnail.vue';
 import ArchiveTable from '@/components/ArchiveTable.vue';
-import ObservationHistory from '@/components/ObservationHistory.vue';
 import AirmassTelescopeStates from '@/components/AirmassTelescopeStates.vue';
 import { getLatestFrame } from '@/archive.js';
 
@@ -126,7 +118,6 @@ export default {
   components: {
     Thumbnail,
     ArchiveTable,
-    ObservationHistory,
     AirmassTelescopeStates
   },
   props: {
@@ -317,6 +308,9 @@ export default {
         that.loadingColor = false;
         window.open(data['url'], '_blank');
       });
+    },
+    onObservationClicked: function(observationId) {
+      this.$router.push({ name: 'observationDetail', params: { id: observationId } });
     }
   }
 };

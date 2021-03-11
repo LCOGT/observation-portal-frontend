@@ -1,6 +1,51 @@
 <template>
-  <data-loader :data-loaded="requestgroupLoaded" :data-load-error="requestgroupLoadError" :data-not-found="requestgroupNotFound">
-    <requestgroup-header :requestgroup="requestgroup" />
+  <ocs-data-loader :data-loaded="requestgroupLoaded" :data-load-error="requestgroupLoadError" :data-not-found="requestgroupNotFound">
+    <template v-slot:not-found>
+      <not-found />
+    </template>
+    <b-row>
+      <b-col>
+        <h2 class="text-break">
+          {{ requestgroup.name }}
+        </h2>
+        <h4>RequestGroup # {{ requestgroup.id }}</h4>
+      </b-col>
+    </b-row>
+    <ocs-request-group-header
+      :requestgroup="requestgroup"
+      :proposal-link="{ to: { name: 'proposalDetail', params: { id: requestgroup.proposal } } }"
+      show-extra-column
+    >
+      <template v-slot:extra-column-content>
+        <div class="dropdown">
+          <button
+            id="rgOptionsButton"
+            type="button"
+            class="btn btn-outline-secondary dropdown-toggle btn-block px-0"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            title="Options"
+            block
+          >
+            <i class="fas fa-cog"></i><span class="d-inline-block d-lg-none">&nbsp;Options</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="rgOptionsButton">
+            <router-link class="dropdown-item" title="Copy this request" :to="{ name: 'create', query: { requestgroupid: requestgroup.id } }">
+              <i class="fa fa-copy" /> Copy
+            </router-link>
+            <a
+              v-if="userIsAuthenticated && requestgroup.state == 'PENDING'"
+              class="dropdown-item"
+              title="Cancel this request"
+              @click="cancelRequestGroup"
+            >
+              <i class="fa fa-times" /> Cancel
+            </a>
+          </div>
+        </div>
+      </template>
+    </ocs-request-group-header>
     <b-row>
       <b-col>
         <b-breadcrumb class="bg-light">
@@ -44,24 +89,22 @@
         aria-controls="requests-table"
       />
     </template>
-  </data-loader>
+  </ocs-data-loader>
 </template>
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
 
-import RequestgroupHeader from '@/components/RequestgroupHeader.vue';
 import RequestDetail from '@/components/RequestDetail.vue';
 import RequestRow from '@/components/RequestRow.vue';
-import DataLoader from '@/components/DataLoader.vue';
+import NotFound from '@/components/NotFound.vue';
 
 export default {
   name: 'RequestgroupDetail',
   components: {
-    RequestgroupHeader,
     RequestDetail,
     RequestRow,
-    DataLoader
+    NotFound
   },
   data: function() {
     return {
@@ -80,8 +123,8 @@ export default {
     observationPortalApiUrl: function() {
       return this.$store.state.urls.observationPortalApi;
     },
-    dataLoaded: function() {
-      return this.requestgroupLoaded && this.archiveTokenLoaded;
+    userIsAuthenticated: function() {
+      return this.$store.state.userIsAuthenticated;
     },
     numberOfRequests: function() {
       if (this.requestgroup.requests) {
@@ -183,6 +226,29 @@ export default {
         .always(function() {
           that.requestgroupLoaded = true;
         });
+    },
+    cancelRequestGroup: function() {
+      let that = this;
+      if (confirm('Cancel this request? This action cannot be undone')) {
+        $.ajax({
+          type: 'POST',
+          url: this.observationPortalApiUrl + '/api/requestgroups/' + this.requestgroup.id + '/cancel/',
+          contentType: 'application/json',
+          success: function() {
+            // TODO: Redirect with router
+            window.location = '/requestgroups/' + that.requestgroup.id + '/';
+          },
+          error: function(response) {
+            if (response.status === 429) {
+              alert(
+                'Your account has submitted too many cancel requests in a day, so your request to cancel has been throttled. Please contact support.'
+              );
+            } else {
+              alert(response.responseJSON.errors[0]);
+            }
+          }
+        });
+      }
     }
   }
 };

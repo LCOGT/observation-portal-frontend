@@ -1,20 +1,24 @@
 <template>
-  <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+  <ocs-data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <template v-slot:not-found>
+      <not-found />
+    </template>
     <edit-sci-application v-if="data.call" :call-id="data.call.id" :initial-sci-app="data"> </edit-sci-application>
-  </data-loader>
+  </ocs-data-loader>
 </template>
 <script>
-import { getDataMixin } from '@/components/util/getDataMixins.js';
-import DataLoader from '@/components/DataLoader.vue';
+import { OCSMixin } from 'ocs-component-lib';
+
 import EditSciApplication from '@/components/EditSciApplication.vue';
+import NotFound from '@/components/NotFound.vue';
 
 export default {
   name: 'UpdateSciApplication',
   components: {
-    DataLoader,
-    EditSciApplication
+    EditSciApplication,
+    NotFound
   },
-  mixins: [getDataMixin],
+  mixins: [OCSMixin.getDataMixin],
   props: {
     sciAppId: {
       type: [String, Number],
@@ -23,7 +27,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/scienceapplications/' + this.sciAppId + '/?status=DRAFT';
+      return this.$store.state.urls.observationPortalApi + '/api/scienceapplications/' + this.sciAppId + '/?status=DRAFT';
     }
   }
 };

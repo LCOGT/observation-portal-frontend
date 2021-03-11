@@ -1,10 +1,13 @@
 <template>
-  <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+  <ocs-data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <template v-slot:not-found>
+      <not-found />
+    </template>
     <iframe id="combined-pdf" style="position:absolute; left: 0; top: 0; border: none;" width="100%" height="100%" type="application/pdf" />
     <b-embed type="iframe" height="0" width="0" style="border: none;">
       <sci-application-detail-template id="pdf-content" :sci-app="data" is-combined-pdf></sci-application-detail-template>
     </b-embed>
-  </data-loader>
+  </ocs-data-loader>
 </template>
 <script>
 import $ from 'jquery';
@@ -12,17 +15,17 @@ import _ from 'lodash';
 import Vue from 'vue';
 import { PDFDocument } from 'pdf-lib';
 import html2pdf from 'html2pdf.js';
+import { OCSMixin } from 'ocs-component-lib';
 
-import DataLoader from '@/components/DataLoader.vue';
 import SciApplicationDetailTemplate from '@/components/SciApplicationDetailTemplate.vue';
-import { getDataMixin } from '@/components/util/getDataMixins.js';
+import NotFound from '@/components/NotFound.vue';
 
 export default {
   components: {
-    DataLoader,
-    SciApplicationDetailTemplate
+    SciApplicationDetailTemplate,
+    NotFound
   },
-  mixins: [getDataMixin],
+  mixins: [OCSMixin.getDataMixin],
   props: {
     sciAppId: {
       type: [String, Number],
@@ -87,7 +90,7 @@ export default {
   },
   methods: {
     initializeDataEndpoint: function() {
-      return '/api/scienceapplications/' + this.sciAppId + '/';
+      return this.$store.state.urls.observationPortalApi + '/api/scienceapplications/' + this.sciAppId + '/';
     },
     createCombinedPdf: function(uploadedPdfArrayBuffer) {
       var options = {

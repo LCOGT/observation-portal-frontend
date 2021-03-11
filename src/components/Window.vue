@@ -32,7 +32,13 @@
           <h4 v-show="showAirmass" class="text-center">
             Visibility
           </h4>
-          <airmass v-show="showAirmass" :data="airmassData" :show-zoom-controls="true" />
+          <ocs-airmass-plot
+            v-show="showAirmass"
+            :data="airmassData"
+            :site-code-to-color="siteToColor"
+            :site-code-to-name="siteCodeToName"
+            show-zoom-controls
+          />
         </b-col>
         <b-col :md="show ? 6 : 12">
           <b-form>
@@ -104,13 +110,12 @@
 import $ from 'jquery';
 import _ from 'lodash';
 
-import { collapseMixin, extractTopLevelErrors } from '@/utils.js';
+import { collapseMixin, extractTopLevelErrors, siteToColor, siteCodeToName } from '@/utils.js';
 import Panel from '@/components/util/Panel.vue';
 import CustomAlert from '@/components/util/CustomAlert.vue';
 import CustomDatetime from '@/components/util/CustomDatetime.vue';
 import CustomField from '@/components/util/CustomField.vue';
 import CustomSelect from '@/components/util/CustomSelect.vue';
-import Airmass from '@/components/Airmass.vue';
 
 export default {
   components: {
@@ -118,8 +123,7 @@ export default {
     CustomField,
     CustomSelect,
     Panel,
-    CustomAlert,
-    Airmass
+    CustomAlert
   },
   mixins: [collapseMixin],
   props: {
@@ -153,7 +157,9 @@ export default {
       showAirmass: false,
       cadence: 'none',
       period: 24.0,
-      jitter: 12.0
+      jitter: 12.0,
+      siteToColor: siteToColor,
+      siteCodeToName: siteCodeToName
     };
   },
   computed: {

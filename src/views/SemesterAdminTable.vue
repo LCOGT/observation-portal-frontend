@@ -1,6 +1,9 @@
 <template>
   <div>
-    <data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+    <ocs-data-loader :data-loaded="dataLoaded" :data-load-error="dataLoadError" :data-not-found="dataNotFound">
+      <template v-slot:not-found>
+        <not-found />
+      </template>
       <b-row>
         <b-col md="8">
           <b-form inline>
@@ -122,7 +125,7 @@
           <br />
         </template>
       </b-table>
-    </data-loader>
+    </ocs-data-loader>
     <!-- These are included for downloading the table data-->
     <script src="https://cdn.lco.global/script/tableExport.min.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js" type="application/javascript"></script>
@@ -131,22 +134,21 @@
 <script>
 import $ from 'jquery';
 import _ from 'lodash';
+import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { formatFloat } from '@/utils.js';
-import DataLoader from '@/components/DataLoader.vue';
-import { getDataListMixin } from '@/components/util/getDataMixins.js';
+import NotFound from '@/components/NotFound.vue';
 
 export default {
   name: 'SemesterAdminTable',
-  components: {
-    DataLoader
-  },
   filters: {
     formatFloat: function(value, precision) {
-      return formatFloat(value, precision);
+      return OCSUtil.formatFloat(value, precision);
     }
   },
-  mixins: [getDataListMixin],
+  components: {
+    NotFound
+  },
+  mixins: [OCSMixin.getDataListMixin],
   props: {
     id: {
       type: String,
@@ -316,11 +318,11 @@ export default {
       return this.generateDataEndpoint();
     },
     generateDataEndpoint: function() {
-      return '/api/semesters/' + this.id + '/timeallocations/';
+      return this.$store.state.urls.observationPortalApi + '/api/semesters/' + this.id + '/timeallocations/';
     },
     sumFormatter: function(field) {
       let data = _.map(this.filteredTimeallocations, field);
-      return formatFloat(_.sum(data), 3);
+      return OCSUtil.formatFloat(_.sum(data), 3);
     },
     getTdClass: function(allocation, used) {
       return allocation > 0 && used >= allocation ? 'bg-danger' : '';
