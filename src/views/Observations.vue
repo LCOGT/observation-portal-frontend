@@ -2,7 +2,7 @@
   <ocs-observations-table 
     :observationPortalApiBaseUrl="observationPortalApiUrl"
     :observationDetailLink="generateObservationLink"
-    :requestgroupLink="generateRequestgroupLink"
+    :requestLink="generateRequestLink"
     @onSuccessfulDataRetrieval="clearErrors"
     @onErrorRetrievingData="setErrorsOnFailedAJAXCall"
   />
@@ -21,8 +21,8 @@ export default {
     generateObservationLink: function(observationId) {
       return { to: { name: 'observationDetail', params: { id: observationId } } };
     },
-    generateRequestgroupLink: function(requestgroupId) {
-      return { to: { name: 'requestgroupDetail', params: { id: requestgroupId } } };
+    generateRequestLink: function(requestId) {
+      return { to: { name: 'requestDetail', params: { id: requestId } } };
     }
   }
 };
