@@ -163,7 +163,7 @@
             <div class="help-block">
               Requested observing time in hours for the semester. Time for
               <a href="https://lco.global/documentation/special-scheduling-modes/" target="_blank">Rapid Response mode</a>
-              (within 15 minutes of submission) and
+              and
               <a href="https://lco.global/documentation/special-scheduling-modes/" target="_blank">Time-Critical mode</a> observations must be
               requested separately.
             </div>
@@ -236,14 +236,14 @@
               <div class="help-block">
                 <template v-if="data.proposal_type === 'SCI'">
                   <p>
-                    For the remainder of your proposal, please upload a single pdf file that includes the following sections:
+                    For the remainder of your proposal, please upload a single pdf file that includes the following sections but <em>not</em> an author list:
                   </p>
                   <ul>
                     <li>
                       <strong>Science Justification.</strong> This section must provide appropriate background information and state the goals of the
                       project. The results of any previous time allocated for this project should be discussed. Pertinent references should be
-                      included. Figures may be embedded or appended, but the text itself should be limited to approximately the equivalent of a single
-                      page.
+                      included. Figures may be embedded or appended, but the text itself should be limited to approximately the equivalent of two
+                      pages.
                     </li>
                     <li>
                       <strong>Experimental Design.</strong> This section should describe the strategy of your observing program, including the
@@ -255,12 +255,12 @@
                       identify them.
                     </li>
                     <li>
-                      <strong>Report of related programs on other telescopes.</strong>
+                      <strong>Report of related programs on other telescopes.</strong> A concise account of other programs that relate to this proposal.
                     </li>
                     <li>
-                      <strong>Report on use of LCO in the past 3 years.</strong>
+                      <strong>Report on use of LCO in the past 3 years.</strong> A concise account of LCO network time used in the past 3 years.
                     </li>
-                    <li><strong>List of the authors’ related publications. </strong>You may include up to 10 publications</li>
+                    <li><strong>List of the authors’ related publications. </strong>Up to 10 publications.</li>
                   </ul>
                   <p>The format of the pdf file is subject to the following constraints.</p>
                   <ul>
@@ -268,19 +268,19 @@
                     <li>Margins on all edges must be at least 1 inch.</li>
                     <li>Line spacing must be no denser than 6 lines per inch.</li>
                     <li>The file size must be under {{ pdfSizeLimit.asMegaBytes }}MB.</li>
-                    <li>The recommended length is 6 pages.</li>
+                    <li>The recommended length is 7 pages.</li>
                   </ul>
                 </template>
                 <template v-else-if="data.proposal_type === 'KEY'">
                   <p>
-                    For the remainder of your proposal, please upload a single pdf file that includes the sections listed below. Consult the Call for
+                    For the remainder of your proposal, please upload a single pdf file that includes the sections listed below, but <em>not</em> an author list. Consult the Call for
                     Key Projects for information on the sections (e.g. Plan for management) that are unique to key projects.
                   </p>
                   <ul>
                     <li>
                       <strong>Science Justification.</strong> This section must provide appropriate background information and state the goals of the
                       project. The results of any previous time allocated for this project should be discussed. Pertinent references should be
-                      included. Figures may be embedded or appended, but the text itself should be limited to approximately the equivalent of two
+                      included. Figures may be embedded or appended, but the text itself should be limited to approximately the equivalent of three
                       pages.
                     </li>
                     <li>
@@ -305,10 +305,10 @@
                       additional time on the LCO network from their own institutions, computing resources, or scientist time.
                     </li>
                     <li>
-                      <strong>Report of related programs on other telescopes.</strong>
+                      <strong>Report of related programs on other telescopes.</strong> A concise account of other programs that relate to this proposal.
                     </li>
                     <li>
-                      <strong>Report on use of LCO in the past 3 years.</strong>
+                      <strong>Report on use of LCO in the past 3 years.</strong> A concise account of LCO network time used in the past 3 years.
                     </li>
                     <li>
                       <strong>List of the authors’ related publications.</strong>
