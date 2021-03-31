@@ -1,8 +1,8 @@
 <template>
-  <ocs-observations-table 
-    :observationPortalApiBaseUrl="observationPortalApiUrl"
-    :observationDetailLink="generateObservationLink"
-    :requestLink="generateRequestLink"
+  <ocs-observations-table
+    :observation-portal-api-base-url="observationPortalApiUrl"
+    :observation-detail-link="generateObservationLink"
+    :request-link="generateRequestLink"
     @onSuccessfulDataRetrieval="clearErrors"
     @onErrorRetrievingData="setErrorsOnFailedAJAXCall"
   />

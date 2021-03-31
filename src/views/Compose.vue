@@ -41,12 +41,11 @@
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col class="bg-light rounded">
-              <b-container class="p-4">
-                <b-button :href="dataAsEncodedStr" download="apiview.json" variant="primary" class="float-right">
-                  <i class="fa fa-download" /> Download as JSON
-                </b-button>
-                <pre>{{ JSON.stringify(requestgroup, null, 4) }}</pre>
-              </b-container>
+              <ocs-request-group-api-display
+                class="p-4"
+                :requestgroup="requestgroup"
+                :extra-download-button-attrs="{ class: 'float-right', variant: 'primary' }"
+              />
             </b-col>
           </b-form-row>
         </b-container>
@@ -58,7 +57,22 @@
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col>
-              <drafts :tab="tab" @loaddraft="loadDraft" />
+              <ocs-request-group-drafts-table
+                v-if="tab === 3"
+                table-id="drafts-table"
+                :observation-portal-api-base-url="observationPortalApiUrl"
+                :extra-table-attrs="{ hover: true, striped: true }"
+                show-extra-field
+                extra-field-label="Load"
+                show-delete-button
+                :extra-delete-button-attrs="{ size: 'sm', variant: 'danger' }"
+              >
+                <template #extra-field-content="data">
+                  <b-button variant="primary" size="sm" @click="loadDraft(data.rowData.id)">
+                    <i class="fa fa-download" />
+                  </b-button>
+                </template>
+              </ocs-request-group-drafts-table>
             </b-col>
           </b-form-row>
         </b-container>
@@ -120,7 +134,6 @@ import $ from 'jquery';
 import Vue from 'vue';
 
 import Requestgroup from '@/components/Requestgroup.vue';
-import Drafts from '@/components/Drafts.vue';
 import Sidenav from '@/components/Sidenav.vue';
 import CustomAlert from '@/components/util/CustomAlert.vue';
 import { datetimeFormat } from '@/utils.js';
@@ -129,7 +142,6 @@ export default {
   name: 'Compose',
   components: {
     Requestgroup,
-    Drafts,
     Sidenav,
     CustomAlert
   },
@@ -212,9 +224,6 @@ export default {
     };
   },
   computed: {
-    dataAsEncodedStr: function() {
-      return 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.requestgroup));
-    },
     observationPortalApiUrl: function() {
       return this.$store.state.urls.observationPortalApi;
     }
