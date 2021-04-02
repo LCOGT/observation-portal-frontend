@@ -4,6 +4,14 @@
       <b-col>
         <!-- TODO Add in LCO terms -->
 
+        <custom-alert v-show="!isMemberOfActiveProposals" alertclass="danger" :dismissible="false">
+          <p>
+            You must be a member of a currently active proposal in order to create and submit observation requests. You can review the
+            <a href="https://lco.global/files/User_Documentation/gettingstartedonthelconetwork.latest.pdf">getting started guide</a> or the
+            <a href="https://lco.global/observatory/proposal/process/">proposal process documentation</a> to see how to become a member of a proposal.
+          </p>
+        </custom-alert>
+
         <!-- TODO: If the same alert is brought up more than once, it will only display the
         first time. This applies to all alerts, not just this one -->
         <custom-alert v-for="alert in alerts" :key="alert.msg" :alertclass="alert.class" :dismissible="true">
@@ -13,37 +21,137 @@
     </b-form-row>
     <b-tabs id="tabs" fill>
       <b-tab :active="tab == 1" @click="tab = 1">
-        <template slot="title"
-          ><span><i class="far fa-edit" /> Form</span></template
+        <template slot="title">
+          <span><i class="far fa-edit" /> Form</span>
+        </template>
+        <ocs-request-group-composition-form
+          class="p-4"
+          :observation-portal-api-base-url="observationPortalApiUrl"
+          :datetime-format="datetimeFormat"
+          :profile="profile"
+          :request-group="requestgroup"
+          :instruments="instruments"
+          :site-code-to-color="siteToColor"
+          :site-code-to-name="siteCodeToName"
+          @save-draft-failed="onSaveDraftFailed"
+          @save-draft-succeeded="onSaveDraftSucceeded"
+          @request-group-saved="onRequestGroupSaved"
         >
-        <b-container class="p-0 mt-2">
-          <b-form-row>
-            <b-col class="m-0 p-0">
-              <requestgroup :errors="errors" :duration-data="durationData" :requestgroup="requestgroup" @requestgroupupdate="requestgroupUpdated" />
-            </b-col>
-            <b-col cols="auto" class="m-0 p-0">
-              <sidenav
-                :requestgroup="requestgroup"
-                :errors="errors"
-                :draft-id="draftId"
-                @savedraft="saveDraft($event.draftId)"
-                @submit="submit()"
-                @clear="clear()"
-              />
-            </b-col>
-          </b-form-row>
-        </b-container>
+          <template #request-group-help="slotProps">
+            <h3>
+              Duration of Observation Request:
+              <sup
+                v-b-tooltip="tooltipConfig"
+                class="text-primary"
+                title="The time that will be deducted from your proposal when this request completes.
+                Includes exposure times, slew times, and instrument overheads."
+              >
+                ?
+              </sup>
+            </h3>
+            <h2>{{ slotProps.data.durationDisplay }}</h2>
+            <br />
+            <div v-if="!simpleInterface">
+              <ul>
+                <li>
+                  <a target="_blank" href="https://lco.global/documentation/special-scheduling-modes/">More information about Rapid Response mode.</a>
+                </li>
+                <li>
+                  <a target="_blank" href=" https://lco.global/documents/20/the_new_priority_factor.pdf">
+                    More information about IntraProprosal Priority (IPP).
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </template>
+          <template #request-help>
+            <ul>
+              <li>
+                <a target="_blank" href="https://lco.global/observatory/instruments/">More information about LCO instruments.</a>
+              </li>
+            </ul>
+          </template>
+          <template #window-help>
+            <ul>
+              <li>
+                Try the
+                <a href="https://lco.global/observatory/visibility/" title="Target Visibilty Calculator" target="_blank">
+                  Target Visibility Calculator.
+                </a>
+              </li>
+
+              <!-- TODO: Pass through observation type -->
+              <li v-show="observationType === 'RAPID_RESPONSE'">
+                A start time cannot be selected for a Rapid Response observation. It will be scheduled as soon as possible.
+              </li>
+            </ul>
+          </template>
+          <template #configuration-help="slotProps">
+            <ul>
+              <li>
+                For more information on the different options, see the "Getting Started" guide in our
+                <a href="https://lco.global/documentation/" target="_blank">
+                  Documentation section.
+                </a>
+              </li>
+            </ul>
+
+            {{ slotProps }}
+
+            <!-- TODO: Do not show if calibrations have been created -->
+
+            <!-- TODO: Implement generating calib frames from here -->
+
+            <!-- <b-row v-show="configuration.type === 'SPECTRUM'" class="p-2">
+              <b-col>
+                <h3>Calibration frames</h3>
+                <p>
+                  We recommend that you schedule calibration frames with a spectrum type configuration. Click <em>'Create calibration frames'</em> to
+                  add four calibration configurations to this request: one arc and one flat before and one arc and one flat after your spectrum.
+                </p>
+                <b-button variant="outline-primary" block @click="generateCalibs">
+                  Create calibration frames
+                </b-button>
+              </b-col>
+            </b-row> -->
+          </template>
+          <template #instrument-config-help>
+            <ul>
+              <li>
+                Try the
+                <a href=" https://exposure-time-calculator.lco.global/" target="_blank">
+                  online Exposure Time Calculator.
+                </a>
+              </li>
+            </ul>
+          </template>
+          <template #target-help="slotProps">
+            {{ slotProps }}
+            <!-- TODO -->
+            <!-- <archive v-if="target.ra && target.dec" :ra="target.ra" :dec="target.dec" /> -->
+          </template>
+          <template #constraints-help>
+            <ul>
+              <li>
+                Advice on
+                <a href="https://lco.global/documentation/airmass-limit" target="_blank">
+                  setting the airmass limit.
+                </a>
+              </li>
+            </ul>
+          </template>
+        </ocs-request-group-composition-form>
       </b-tab>
       <b-tab :active="tab == 2" @click="tab = 2">
-        <template slot="title"
-          ><span><i class="fas fa-code" /> API View</span></template
-        >
+        <template slot="title">
+          <span><i class="fas fa-code" /> API View</span>
+        </template>
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col class="bg-light rounded">
               <ocs-request-group-api-display
                 class="p-4"
-                :requestgroup="requestgroup"
+                :request-group="requestgroup"
                 :extra-download-button-attrs="{ class: 'float-right', variant: 'primary' }"
               />
             </b-col>
@@ -51,9 +159,9 @@
         </b-container>
       </b-tab>
       <b-tab :active="tab == 3" @click="tab = 3">
-        <template slot="title"
-          ><span><i class="far fa-file-alt" /> Drafts</span></template
-        >
+        <template slot="title">
+          <span><i class="far fa-file-alt" /> Drafts</span>
+        </template>
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col>
@@ -78,9 +186,9 @@
         </b-container>
       </b-tab>
       <b-tab :active="tab == 4" @click="tab = 4">
-        <template slot="title"
-          ><span><i class="fas fa-question" /> How to use this page</span></template
-        >
+        <template slot="title">
+          <span><i class="fas fa-question" /> How to use this page</span>
+        </template>
         <b-container class="p-0 mt-2">
           <b-form-row>
             <b-col class="my-3">
@@ -125,30 +233,59 @@
         </b-container>
       </b-tab>
     </b-tabs>
+    <modal :show="showEdPopup" :show-cancel="false" @close="closeEdPopup" @submit="closeEdPopup">
+      <h3>Welcome to the LCO observation request page!</h3>
+      <p>Using this form you can instruct the LCO telescope network to perform an astronomical observation on your behalf.</p>
+      <p>
+        Fields should be filled out from top to bottom. Some fields labels have blue question marks next to them. Hover over one of these question
+        marks to view more information about that field.
+      </p>
+      <p>
+        A field highlighted in red with means that there is a problem with the given value. An error message will be displayed below any underneath a
+        field such as this. An observation request cannot be submitted until the form is free of errors.
+      </p>
+      <p>
+        Some elements may be copied using the <i class="fa fa-copy text-success" /> copy button. For example: to create an RGB image you can copy the
+        instrument configuration twice so that there are three, and set the filters in each accordingly.
+      </p>
+      <p>Thanks for using Las Cumbres Observatory!</p>
+    </modal>
   </b-container>
 </template>
 <script>
-import moment from 'moment';
 import _ from 'lodash';
 import $ from 'jquery';
+import moment from 'moment';
 import Vue from 'vue';
 
-import Requestgroup from '@/components/Requestgroup.vue';
-import Sidenav from '@/components/Sidenav.vue';
 import CustomAlert from '@/components/util/CustomAlert.vue';
-import { datetimeFormat } from '@/utils.js';
+import Modal from '@/components/util/Modal.vue';
+import { siteToColor, siteCodeToName, tooltipConfig, julianToModifiedJulian } from '@/utils.js';
 
 export default {
   name: 'Compose',
   components: {
-    Requestgroup,
-    Sidenav,
-    CustomAlert
+    CustomAlert,
+    Modal
   },
   data: function() {
+    // TODO: If there is a requestgroupid in the url, get the requestgroup from the api and
+    // use that as the requestgroup that is passed into the data
+
+    let datetimeFormat = 'YYYY-MM-DD HH:mm:ss';
+    let simpleInterface = this.$store.state.profile.profile.simple_interface;
     return {
       tab: 1,
-      draftId: -1,
+      alerts: [],
+      instruments: {},
+      datetimeFormat: datetimeFormat,
+      siteToColor: siteToColor,
+      siteCodeToName: siteCodeToName,
+      tooltipConfig: tooltipConfig,
+      lookingUP: false,
+      lookupFail: false,
+      lookupText: '',
+      lookupReq: undefined,
       requestgroup: {
         name: '',
         proposal: '',
@@ -198,7 +335,7 @@ export default {
                   parallax: 0
                 },
                 constraints: {
-                  max_airmass: 1.6,
+                  max_airmass: simpleInterface ? 2 : 1.6,
                   min_lunar_distance: 30.0
                 }
               }
@@ -217,110 +354,132 @@ export default {
             }
           }
         ]
-      },
-      errors: {},
-      durationData: {},
-      alerts: []
+      }
     };
   },
   computed: {
     observationPortalApiUrl: function() {
       return this.$store.state.urls.observationPortalApi;
+    },
+    simbadServiceUrl: function() {
+      return this.$store.state.urls.simbadService;
+    },
+    simpleInterface: function() {
+      return this.$store.state.profile.profile.simple_interface;
+    },
+    showEdPopup: function() {
+      return localStorage.getItem('hasVisited') != 'true' && this.simpleInterface;
+    },
+    profile: function() {
+      return this.$store.state.profile;
+    },
+    isMemberOfActiveProposals: function() {
+      let nActiveProposals = 0;
+      for (let proposal of this.profile.proposals) {
+        if (proposal.current) {
+          nActiveProposals++;
+        }
+      }
+      return nActiveProposals > 0 ? true : false;
     }
   },
+  created: function() {
+    $.ajax({
+      url: `${this.observationPortalApiUrl}/api/instruments/`
+    }).done(data => {
+      this.instruments = data;
+    });
+  },
   methods: {
-    validate: _.debounce(function() {
-      let that = this;
-      $.ajax({
-        type: 'POST',
-        url: this.observationPortalApiUrl + '/api/requestgroups/validate/',
-        data: JSON.stringify(that.requestgroup),
-        contentType: 'application/json',
-        success: function(data) {
-          that.errors = data.errors;
-          that.durationData = data.request_durations;
-        }
-      });
-    }, 200),
-    submit: function() {
-      let duration = moment.duration(this.durationData.duration, 'seconds');
-      let duration_string = '';
-      if (duration.days() > 0) {
-        duration_string = duration.days() + ' days, ' + duration_string;
-      }
-      if (duration.hours() > 0) {
-        duration_string += duration.hours() + ' hours, ';
-      }
-      duration_string += duration.minutes() + ' minutes, ' + duration.seconds() + ' seconds';
-      if (confirm('The request will take approximately ' + duration_string + ' of telescope time. Are you sure you want to submit the request?')) {
-        let that = this;
-        $.ajax({
-          type: 'POST',
-          url: this.observationPortalApiUrl + '/api/requestgroups/',
-          data: JSON.stringify(that.requestgroup),
-          contentType: 'application/json',
-          success: function(data) {
-            that.$router.push({ name: 'requestgroupDetail', params: { id: data.id } });
-          }
-        });
-      }
-    },
-    requestgroupUpdated: function() {
-      console.log('requestgroup updated');
-      this.validate();
-    },
-    saveDraft: function(id) {
-      // Clear out alerts first so that only current alerts are displayed
-      _.remove(this.alerts);
-      if (!this.requestgroup.name || !this.requestgroup.proposal) {
-        this.alerts.push({ class: 'danger', msg: 'Please give your draft a title and proposal' });
-        return;
-      }
-      let url = this.observationPortalApiUrl + '/api/drafts/';
-      let method = 'POST';
-      if (id > -1) {
-        url += id + '/';
-        method = 'PUT';
-      }
-      let that = this;
-      $.ajax({
-        type: method,
-        url: url,
-        data: JSON.stringify({
-          proposal: that.requestgroup.proposal,
-          title: that.requestgroup.name,
-          content: JSON.stringify(that.requestgroup)
-        }),
-        contentType: 'application/json'
-      })
-        .done(function(data) {
-          that.draftId = data.id;
-          that.alerts.push({ class: 'success', msg: 'Draft id: ' + data.id + ' saved successfully' });
-          console.log('Draft saved ' + that.draftId);
-        })
-        .fail(function(data) {
-          for (let error in data.responseJSON.non_field_errors) {
-            that.alerts.push({ class: 'danger', msg: data.responseJSON.non_field_errors[error] });
-          }
-        });
-    },
     loadDraft: function(id) {
       this.draftId = id;
       this.tab = 1;
-      let that = this;
-      $.getJSON(this.observationPortalApiUrl + '/api/drafts/' + id + '/', function(data) {
-        that.requestgroup = {};
-        Vue.nextTick(function() {
-          that.requestgroup = JSON.parse(data.content);
+      $.getJSON(this.observationPortalApiUrl + '/api/drafts/' + id + '/', data => {
+        // TODO: Load the draft into the form component
+
+        this.requestgroup = {};
+        Vue.nextTick(() => {
+          this.requestgroup = JSON.parse(data.content);
         });
-        that.validate();
+        // this.validate();
       });
     },
-    clear: function() {
-      if (confirm('Clear the form?')) {
-        window.location.reload();
-      }
+    closeEdPopup: function() {
+      localStorage.setItem('hasVisited', 'true');
+    },
+    onSaveDraftFailed: function(msg) {
+      console.log('onSaveDraftFailed', msg);
+    },
+    onSaveDraftSucceeded: function(msg) {
+      console.log('onSaveDraftSucceeded', msg);
+    },
+    onRequestGroupSaved: function(msg) {
+      console.log('onRequestGroupSaved', msg);
     }
+  },
+  watch: {
+    'target.name': _.debounce(function(name) {
+      // TODO
+
+      this.lookingUP = true;
+      this.lookupFail = false;
+      this.lookupText = 'Searching for coordinates...';
+      let that = this;
+      if (this.lookupReq) {
+        this.lookupReq.abort();
+      }
+      let target_type = 'SIDEREAL';
+      if (this.target.type === 'ORBITAL_ELEMENTS') {
+        target_type = 'NON_SIDEREAL';
+      }
+      this.lookupReq = $.getJSON(
+        this.simbadServiceUrl +
+          '/' +
+          encodeURIComponent(name) +
+          '?target_type=' +
+          encodeURIComponent(target_type) +
+          '&scheme=' +
+          encodeURIComponent(this.target.scheme)
+      )
+        .done(function(data) {
+          if (_.get(data, ['error'], null) === null) {
+            that.target.ra = _.get(data, ['ra_d'], null);
+            that.target.dec = _.get(data, ['dec_d'], null);
+            that.ra_display = _.get(data, ['ra_d'], null);
+            that.dec_display = _.get(data, ['dec_d'], null);
+            that.target.proper_motion_ra = _.get(data, ['pmra'], null);
+            that.target.proper_motion_dec = _.get(data, ['pmdec'], null);
+            that.target.parallax = _.get(data, ['plx_value'], null);
+            that.target.epochofel = julianToModifiedJulian(_.get(data, ['epoch_jd'], null));
+            that.target.orbinc = _.get(data, ['inclination'], null);
+            that.target.longascnode = _.get(data, ['ascending_node'], null);
+            that.target.argofperih = _.get(data, ['argument_of_perihelion'], null);
+            that.target.eccentricity = _.get(data, ['eccentricity'], null);
+            that.target.perihdist = _.get(data, ['perihelion_distance'], null);
+            that.target.epochofperih = julianToModifiedJulian(_.get(data, ['perihelion_date_jd'], null));
+            that.target.meandist = _.get(data, ['semimajor_axis'], null);
+            that.target.meananom = _.get(data, ['mean_anomaly'], null);
+            that.target.dailymot = _.get(data, ['mean_daily_motion'], null);
+            that.updateRA();
+            that.updateDec();
+          } else {
+            that.lookupText = 'Could not find any matching objects';
+            that.lookupFail = true;
+          }
+        })
+        .fail(function(_response, status) {
+          if (status !== 'abort') {
+            that.lookupText = 'Could not find any matching objects';
+            that.lookupFail = true;
+          }
+        })
+        .always(function(_response, status) {
+          if (status !== 'abort') {
+            that.lookingUP = false;
+          }
+          that.update();
+        });
+    }, 500)
   }
 };
 </script>
