@@ -33,11 +33,14 @@
           :instruments="instruments"
           :site-code-to-color="siteToColor"
           :site-code-to-name="siteCodeToName"
+          show-airmass-plot
           @save-draft-failed="onSaveDraftFailed"
           @save-draft-succeeded="onSaveDraftSucceeded"
           @request-group-saved="onRequestGroupSaved"
         >
           <template #request-group-help="slotProps">
+            {{ slotProps }}
+
             <h3>
               Duration of Observation Request:
               <sup
@@ -49,7 +52,7 @@
                 ?
               </sup>
             </h3>
-            <h2>{{ slotProps.data.durationDisplay }}</h2>
+            <h2>{{ slotProps.data.durationData | generateDurationString }}</h2>
             <br />
             <div v-if="!simpleInterface">
               <ul>
@@ -64,14 +67,20 @@
               </ul>
             </div>
           </template>
-          <template #request-help>
+
+          <template #request-help="slotProps">
+            {{ slotProps.data.position }}
+
             <ul>
               <li>
                 <a target="_blank" href="https://lco.global/observatory/instruments/">More information about LCO instruments.</a>
               </li>
             </ul>
           </template>
-          <template #window-help>
+
+          <template #window-help="slotProps">
+            {{ slotProps.data.position }}
+
             <ul>
               <li>
                 Try the
@@ -79,14 +88,15 @@
                   Target Visibility Calculator.
                 </a>
               </li>
-
-              <!-- TODO: Pass through observation type -->
-              <li v-show="observationType === 'RAPID_RESPONSE'">
+              <li v-show="requestgroup.observation_type === 'RAPID_RESPONSE'">
                 A start time cannot be selected for a Rapid Response observation. It will be scheduled as soon as possible.
               </li>
             </ul>
           </template>
+
           <template #configuration-help="slotProps">
+            {{ slotProps.data.position }}
+
             <ul>
               <li>
                 For more information on the different options, see the "Getting Started" guide in our
@@ -96,26 +106,27 @@
               </li>
             </ul>
 
-            {{ slotProps }}
-
             <!-- TODO: Do not show if calibrations have been created -->
 
             <!-- TODO: Implement generating calib frames from here -->
 
-            <!-- <b-row v-show="configuration.type === 'SPECTRUM'" class="p-2">
+            <b-row v-show="slotProps.data.configuration.type === 'SPECTRUM'" class="p-2">
               <b-col>
                 <h3>Calibration frames</h3>
                 <p>
                   We recommend that you schedule calibration frames with a spectrum type configuration. Click <em>'Create calibration frames'</em> to
                   add four calibration configurations to this request: one arc and one flat before and one arc and one flat after your spectrum.
                 </p>
-                <b-button variant="outline-primary" block @click="generateCalibs">
+                <!-- <b-button variant="outline-primary" block @click="generateCalibs">
                   Create calibration frames
-                </b-button>
+                </b-button> -->
               </b-col>
-            </b-row> -->
+            </b-row>
           </template>
-          <template #instrument-config-help>
+
+          <template #instrument-config-help="slotProps">
+            {{ slotProps.data.position }}
+
             <ul>
               <li>
                 Try the
@@ -125,12 +136,31 @@
               </li>
             </ul>
           </template>
-          <template #target-help="slotProps">
+
+          <template #target-name-field="slotProps">
             {{ slotProps }}
-            <!-- TODO -->
-            <!-- <archive v-if="target.ra && target.dec" :ra="target.ra" :dec="target.dec" /> -->
+            <custom-field
+              v-model="slotProps.data.target.name"
+              label="Name"
+              field="name"
+              :errors="slotProps.data.errors"
+              @input="doTargetLookup(slotProps.data.target)"
+            >
+              <div v-show="targetLookup.busy || targetLookup.failed" slot="extra-help-text">
+                <i v-show="targetLookup.busy" class="fa fa-spinner fa-spin fa-fw" /> {{ targetLookup.text }}
+              </div>
+            </custom-field>
           </template>
-          <template #constraints-help>
+
+          <template #target-help="slotProps">
+            {{ slotProps.data.position }}
+
+            <archive v-if="slotProps.data.target.ra && slotProps.data.target.dec" :ra="slotProps.data.target.ra" :dec="slotProps.data.target.dec" />
+          </template>
+
+          <template #constraints-help="slotProps">
+            {{ slotProps.data.position }}
+
             <ul>
               <li>
                 Advice on
@@ -257,16 +287,29 @@ import _ from 'lodash';
 import $ from 'jquery';
 import moment from 'moment';
 import Vue from 'vue';
+import { OCSUtil } from 'ocs-component-lib';
 
 import CustomAlert from '@/components/util/CustomAlert.vue';
 import Modal from '@/components/util/Modal.vue';
+import Archive from '@/components/Archive.vue';
+import CustomField from '@/components/util/CustomField.vue';
 import { siteToColor, siteCodeToName, tooltipConfig, julianToModifiedJulian } from '@/utils.js';
 
 export default {
   name: 'Compose',
   components: {
     CustomAlert,
-    Modal
+    CustomField,
+    Modal,
+    Archive
+  },
+  filters: {
+    generateDurationString: function(value) {
+      return OCSUtil.generateDurationString(value);
+    },
+    nameUpdated: function(value) {
+      return value;
+    }
   },
   data: function() {
     // TODO: If there is a requestgroupid in the url, get the requestgroup from the api and
@@ -282,10 +325,12 @@ export default {
       siteToColor: siteToColor,
       siteCodeToName: siteCodeToName,
       tooltipConfig: tooltipConfig,
-      lookingUP: false,
-      lookupFail: false,
-      lookupText: '',
-      lookupReq: undefined,
+      targetLookup: {
+        busy: false,
+        failed: false,
+        text: '',
+        request: undefined
+      },
       requestgroup: {
         name: '',
         proposal: '',
@@ -387,14 +432,24 @@ export default {
     $.ajax({
       url: `${this.observationPortalApiUrl}/api/instruments/`
     }).done(data => {
+      // Don't show commissioning instruments in the form
+      let keysToDelete = [];
+      for (let instrument in data) {
+        if (instrument.includes('COMMISSIONING')) {
+          keysToDelete.push(instrument);
+        }
+      }
+      for (let key of keysToDelete) {
+        delete data[key];
+      }
       this.instruments = data;
     });
   },
   methods: {
-    loadDraft: function(id) {
-      this.draftId = id;
+    loadDraft: function(draftId) {
+      this.draftId = draftId;
       this.tab = 1;
-      $.getJSON(this.observationPortalApiUrl + '/api/drafts/' + id + '/', data => {
+      $.getJSON(this.observationPortalApiUrl + '/api/drafts/' + draftId + '/', data => {
         // TODO: Load the draft into the form component
 
         this.requestgroup = {};
@@ -407,79 +462,113 @@ export default {
     closeEdPopup: function() {
       localStorage.setItem('hasVisited', 'true');
     },
-    onSaveDraftFailed: function(msg) {
-      console.log('onSaveDraftFailed', msg);
+    onSaveDraftFailed: function(errorMessage) {
+      if (!errorMessage) {
+        errorMessage = 'An unexpected error occured while saving draft, please wait a moment and try again.';
+      }
+      this.alerts.push({ class: 'danger', msg: errorMessage });
     },
-    onSaveDraftSucceeded: function(msg) {
-      console.log('onSaveDraftSucceeded', msg);
+    onSaveDraftSucceeded: function(draftId) {
+      this.alerts.push({ class: 'success', msg: 'Draft id: ' + draftId + ' saved successfully' });
     },
-    onRequestGroupSaved: function(msg) {
-      console.log('onRequestGroupSaved', msg);
-    }
-  },
-  watch: {
-    'target.name': _.debounce(function(name) {
-      // TODO
-
-      this.lookingUP = true;
-      this.lookupFail = false;
-      this.lookupText = 'Searching for coordinates...';
-      let that = this;
-      if (this.lookupReq) {
-        this.lookupReq.abort();
+    onRequestGroupSaved: function(requestGroupId) {
+      this.$router.push({ name: 'requestgroupDetail', params: { id: requestGroupId } });
+    },
+    doTargetLookup: _.debounce(function(target) {
+      this.targetLookup.busy = true;
+      this.targetLookup.failed = false;
+      this.targetLookup.text = 'Searching for coordinates...';
+      if (this.targetLookup.request) {
+        this.targetLookup.request.abort();
       }
       let target_type = 'SIDEREAL';
-      if (this.target.type === 'ORBITAL_ELEMENTS') {
+      if (target.type === 'ORBITAL_ELEMENTS') {
         target_type = 'NON_SIDEREAL';
       }
-      this.lookupReq = $.getJSON(
+      this.targetLookup.request = $.getJSON(
         this.simbadServiceUrl +
           '/' +
-          encodeURIComponent(name) +
+          encodeURIComponent(target.name) +
           '?target_type=' +
           encodeURIComponent(target_type) +
           '&scheme=' +
-          encodeURIComponent(this.target.scheme)
+          encodeURIComponent(target.scheme)
       )
-        .done(function(data) {
+        .done(data => {
           if (_.get(data, ['error'], null) === null) {
-            that.target.ra = _.get(data, ['ra_d'], null);
-            that.target.dec = _.get(data, ['dec_d'], null);
-            that.ra_display = _.get(data, ['ra_d'], null);
-            that.dec_display = _.get(data, ['dec_d'], null);
-            that.target.proper_motion_ra = _.get(data, ['pmra'], null);
-            that.target.proper_motion_dec = _.get(data, ['pmdec'], null);
-            that.target.parallax = _.get(data, ['plx_value'], null);
-            that.target.epochofel = julianToModifiedJulian(_.get(data, ['epoch_jd'], null));
-            that.target.orbinc = _.get(data, ['inclination'], null);
-            that.target.longascnode = _.get(data, ['ascending_node'], null);
-            that.target.argofperih = _.get(data, ['argument_of_perihelion'], null);
-            that.target.eccentricity = _.get(data, ['eccentricity'], null);
-            that.target.perihdist = _.get(data, ['perihelion_distance'], null);
-            that.target.epochofperih = julianToModifiedJulian(_.get(data, ['perihelion_date_jd'], null));
-            that.target.meandist = _.get(data, ['semimajor_axis'], null);
-            that.target.meananom = _.get(data, ['mean_anomaly'], null);
-            that.target.dailymot = _.get(data, ['mean_daily_motion'], null);
-            that.updateRA();
-            that.updateDec();
+            target.ra = _.get(data, ['ra_d'], null);
+            target.dec = _.get(data, ['dec_d'], null);
+            target.proper_motion_ra = _.get(data, ['pmra'], null);
+            target.proper_motion_dec = _.get(data, ['pmdec'], null);
+            target.parallax = _.get(data, ['plx_value'], null);
+            target.epochofel = julianToModifiedJulian(_.get(data, ['epoch_jd'], null));
+            target.orbinc = _.get(data, ['inclination'], null);
+            target.longascnode = _.get(data, ['ascending_node'], null);
+            target.argofperih = _.get(data, ['argument_of_perihelion'], null);
+            target.eccentricity = _.get(data, ['eccentricity'], null);
+            target.perihdist = _.get(data, ['perihelion_distance'], null);
+            target.epochofperih = julianToModifiedJulian(_.get(data, ['perihelion_date_jd'], null));
+            target.meandist = _.get(data, ['semimajor_axis'], null);
+            target.meananom = _.get(data, ['mean_anomaly'], null);
+            target.dailymot = _.get(data, ['mean_daily_motion'], null);
           } else {
-            that.lookupText = 'Could not find any matching objects';
-            that.lookupFail = true;
+            this.targetLookup.text = 'Could not find any matching objects';
+            this.targetLookup.failed = true;
           }
         })
-        .fail(function(_response, status) {
+        .fail((_response, status) => {
           if (status !== 'abort') {
-            that.lookupText = 'Could not find any matching objects';
-            that.lookupFail = true;
+            this.targetLookup.text = 'Could not find any matching objects';
+            this.targetLookup.failed = true;
           }
         })
-        .always(function(_response, status) {
+        .always((_response, status) => {
           if (status !== 'abort') {
-            that.lookingUP = false;
+            this.targetLookup.busy = false;
           }
-          that.update();
         });
     }, 500)
+    // generateCalibs: function(configuration_id) {
+    //   // TODO
+
+    //   let request = this.request;
+    //   let calibs = [{}, {}, {}, {}];
+    //   for (let c in calibs) {
+    //     calibs[c] = _.cloneDeep(request.configurations[configuration_id]);
+    //     for (let ic in calibs[c].instrument_configs) {
+    //       calibs[c].instrument_configs[ic].exposure_time = arcDefaultExposureTime(this.instrument_type);
+    //     }
+    //   }
+    //   calibs[0].type = 'LAMP_FLAT';
+    //   calibs[1].type = 'ARC';
+    //   calibs[0].guiding_config.optional = true;
+    //   calibs[1].guiding_config.optional = true;
+    //   calibs[0].guiding_config.mode = 'ON';
+    //   calibs[1].guiding_config.mode = 'ON';
+    //   for (let ic in calibs[0].instrument_configs) {
+    //     calibs[0].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
+    //       calibs[0].instrument_configs[ic].optical_elements.slit,
+    //       this.instrument_type,
+    //       calibs[0].instrument_configs[ic].mode
+    //     );
+    //   }
+    //   request.configurations.unshift(calibs[0], calibs[1]);
+    //   calibs[2].type = 'ARC';
+    //   calibs[3].type = 'LAMP_FLAT';
+    //   calibs[2].guiding_config.optional = true;
+    //   calibs[3].guiding_config.optional = true;
+    //   calibs[2].guiding_config.mode = 'ON';
+    //   calibs[3].guiding_config.mode = 'ON';
+    //   for (let ic in calibs[3].instrument_configs) {
+    //     calibs[3].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
+    //       calibs[3].instrument_configs[ic].optical_elements.slit,
+    //       this.instrument_type,
+    //       calibs[3].instrument_configs[ic].mode
+    //     );
+    //   }
+    //   request.configurations.push(calibs[2], calibs[3]);
+    //   this.update();
+    // }
   }
 };
 </script>
