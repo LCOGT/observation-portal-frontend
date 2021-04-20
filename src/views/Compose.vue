@@ -3,20 +3,18 @@
     <b-form-row>
       <b-col>
         <!-- TODO Add in LCO terms -->
-
-        <custom-alert v-show="!isMemberOfActiveProposals" alertclass="danger" :dismissible="false">
+        <ocs-custom-alert v-show="!isMemberOfActiveProposals" alertclass="danger" :dismissible="false">
           <p>
             You must be a member of a currently active proposal in order to create and submit observation requests. You can review the
             <a href="https://lco.global/files/User_Documentation/gettingstartedonthelconetwork.latest.pdf">getting started guide</a> or the
             <a href="https://lco.global/observatory/proposal/process/">proposal process documentation</a> to see how to become a member of a proposal.
           </p>
-        </custom-alert>
-
+        </ocs-custom-alert>
         <!-- TODO: If the same alert is brought up more than once, it will only display the
         first time. This applies to all alerts, not just this one -->
-        <custom-alert v-for="alert in alerts" :key="alert.msg" :alertclass="alert.class" :dismissible="true">
+        <ocs-custom-alert v-for="alert in alerts" :key="alert.msg" :alertclass="alert.class" :dismissible="true">
           {{ alert.msg }}
-        </custom-alert>
+        </ocs-custom-alert>
       </b-col>
     </b-form-row>
     <b-tabs id="tabs" fill>
@@ -31,16 +29,17 @@
           :profile="profile"
           :request-group="requestgroup"
           :instruments="instruments"
+          :instrument-category-to-name="instrumentCategoryToName"
           :site-code-to-color="siteToColor"
           :site-code-to-name="siteCodeToName"
           show-airmass-plot
+          :loaded-draft-id="draftId"
+          :field-help="fieldHelp"
           @save-draft-failed="onSaveDraftFailed"
           @save-draft-succeeded="onSaveDraftSucceeded"
           @request-group-saved="onRequestGroupSaved"
         >
           <template #request-group-help="slotProps">
-            {{ slotProps }}
-
             <h3>
               Duration of Observation Request:
               <sup
@@ -67,20 +66,7 @@
               </ul>
             </div>
           </template>
-
-          <template #request-help="slotProps">
-            {{ slotProps.data.position }}
-
-            <ul>
-              <li>
-                <a target="_blank" href="https://lco.global/observatory/instruments/">More information about LCO instruments.</a>
-              </li>
-            </ul>
-          </template>
-
-          <template #window-help="slotProps">
-            {{ slotProps.data.position }}
-
+          <template #window-help>
             <ul>
               <li>
                 Try the
@@ -93,11 +79,11 @@
               </li>
             </ul>
           </template>
-
           <template #configuration-help="slotProps">
-            {{ slotProps.data.position }}
-
             <ul>
+              <li>
+                <a target="_blank" href="https://lco.global/observatory/instruments/">More information about LCO instruments.</a>
+              </li>
               <li>
                 For more information on the different options, see the "Getting Started" guide in our
                 <a href="https://lco.global/documentation/" target="_blank">
@@ -105,11 +91,7 @@
                 </a>
               </li>
             </ul>
-
             <!-- TODO: Do not show if calibrations have been created -->
-
-            <!-- TODO: Implement generating calib frames from here -->
-
             <b-row v-show="slotProps.data.configuration.type === 'SPECTRUM'" class="p-2">
               <b-col>
                 <h3>Calibration frames</h3>
@@ -117,16 +99,17 @@
                   We recommend that you schedule calibration frames with a spectrum type configuration. Click <em>'Create calibration frames'</em> to
                   add four calibration configurations to this request: one arc and one flat before and one arc and one flat after your spectrum.
                 </p>
-                <!-- <b-button variant="outline-primary" block @click="generateCalibs">
+                <b-button
+                  variant="outline-primary"
+                  block
+                  @click="generateCalibs(slotProps.data.position.configurationIndex, slotProps.data.position.requestIndex)"
+                >
                   Create calibration frames
-                </b-button> -->
+                </b-button>
               </b-col>
             </b-row>
           </template>
-
-          <template #instrument-config-help="slotProps">
-            {{ slotProps.data.position }}
-
+          <template #instrument-config-help>
             <ul>
               <li>
                 Try the
@@ -136,31 +119,23 @@
               </li>
             </ul>
           </template>
-
           <template #target-name-field="slotProps">
-            {{ slotProps }}
-            <custom-field
+            <ocs-custom-field
               v-model="slotProps.data.target.name"
-              label="Name"
               field="name"
+              label="Name"
               :errors="slotProps.data.errors"
               @input="doTargetLookup(slotProps.data.target)"
             >
               <div v-show="targetLookup.busy || targetLookup.failed" slot="extra-help-text">
                 <i v-show="targetLookup.busy" class="fa fa-spinner fa-spin fa-fw" /> {{ targetLookup.text }}
               </div>
-            </custom-field>
+            </ocs-custom-field>
           </template>
-
           <template #target-help="slotProps">
-            {{ slotProps.data.position }}
-
             <archive v-if="slotProps.data.target.ra && slotProps.data.target.dec" :ra="slotProps.data.target.ra" :dec="slotProps.data.target.dec" />
           </template>
-
-          <template #constraints-help="slotProps">
-            {{ slotProps.data.position }}
-
+          <template #constraints-help>
             <ul>
               <li>
                 Advice on
@@ -263,7 +238,7 @@
         </b-container>
       </b-tab>
     </b-tabs>
-    <modal :show="showEdPopup" :show-cancel="false" @close="closeEdPopup" @submit="closeEdPopup">
+    <ocs-custom-modal :show="showEdPopup" :show-cancel="false" @close="closeEdPopup" @submit="closeEdPopup">
       <h3>Welcome to the LCO observation request page!</h3>
       <p>Using this form you can instruct the LCO telescope network to perform an astronomical observation on your behalf.</p>
       <p>
@@ -279,7 +254,7 @@
         instrument configuration twice so that there are three, and set the filters in each accordingly.
       </p>
       <p>Thanks for using Las Cumbres Observatory!</p>
-    </modal>
+    </ocs-custom-modal>
   </b-container>
 </template>
 <script>
@@ -289,32 +264,20 @@ import moment from 'moment';
 import Vue from 'vue';
 import { OCSUtil } from 'ocs-component-lib';
 
-import CustomAlert from '@/components/util/CustomAlert.vue';
-import Modal from '@/components/util/Modal.vue';
 import Archive from '@/components/Archive.vue';
-import CustomField from '@/components/util/CustomField.vue';
-import { siteToColor, siteCodeToName, tooltipConfig, julianToModifiedJulian } from '@/utils.js';
+import { siteToColor, siteCodeToName, tooltipConfig, julianToModifiedJulian, lampFlatDefaultExposureTime, arcDefaultExposureTime } from '@/utils.js';
 
 export default {
   name: 'Compose',
   components: {
-    CustomAlert,
-    CustomField,
-    Modal,
     Archive
   },
   filters: {
     generateDurationString: function(value) {
       return OCSUtil.generateDurationString(value);
-    },
-    nameUpdated: function(value) {
-      return value;
     }
   },
   data: function() {
-    // TODO: If there is a requestgroupid in the url, get the requestgroup from the api and
-    // use that as the requestgroup that is passed into the data
-
     let datetimeFormat = 'YYYY-MM-DD HH:mm:ss';
     let simpleInterface = this.$store.state.profile.profile.simple_interface;
     return {
@@ -325,11 +288,182 @@ export default {
       siteToColor: siteToColor,
       siteCodeToName: siteCodeToName,
       tooltipConfig: tooltipConfig,
+      draftId: -1,
       targetLookup: {
         busy: false,
         failed: false,
         text: '',
         request: undefined
+      },
+      instrumentCategoryToName: {
+        SPECTRA: 'Spectrum',
+        IMAGE: 'Image'
+      },
+      fieldHelp: {
+        requestGroup: {
+          observation_type: {
+            label: 'Mode',
+            desc: `Rapid Response (RR) requests bypass normal scheduling and are executed immediately. Time Critical (TC)
+            requests are given a large fixed priority that will beat any requests that use default queue scheduling.
+            These modes are only available if a  proposal was granted RR or TC time.`
+          },
+          ipp_value: {
+            desc: 'Provide an InterProposal Priority factor for this request. Acceptable values are between 0.5 and 2.0'
+          }
+        },
+        request: {
+          acceptability_threshold: {
+            desc: `The percentage of the observation that must be completed to mark the request as complete
+            and avert rescheduling. The percentage should be set to the lowest value for which the amount
+            of data is acceptable to meet the science goal of the request.`
+          }
+        },
+        configuration: {
+          instrument_category: {
+            label: 'Observation Type'
+          },
+          type: {
+            desc: `Normally, all Instrument Configurations are executed once, sequentially. If set to
+            'Exposure Sequence', 'Spectrum Sequence' or 'NRES Spectrum Sequence', all Instrument Configurations
+            are repeated in a loop for a specified duration.`
+          },
+          repeat_duration: {
+            desc: `Period (in seconds) over which to repeat Instrument Configurations. Clicking the 'Fill' button
+            increases the duration to the longest interval over which the target is visible in the observing window.
+            This button is disabled until the entire request has passed validation.`
+          }
+        },
+        instrumentConfig: {
+          exposure_time: {
+            desc: 'Seconds'
+          },
+          rotator_mode: {
+            desc: 'The slit position. At the parallactic slit angle, atmospheric dispersion is along the slit.'
+          },
+          rotator_angle: {
+            label: 'Rotator Angle',
+            desc: 'Position angle of the slit in degrees east of north.'
+          },
+          defocus: {
+            desc: `Observations may be defocused to prevent the CCD from saturating on bright targets. This term
+            describes the offset (in mm) of the secondary mirror from its default (focused) position. The limits are ± 3mm.`
+          },
+          exposure_mode: {
+            desc: `Exposure Mode. SYNCHRONOUS syncs the start time of exposures on all 4 cameras. ASYNCHRONOUS
+            takes exposures as quickly as possible on each camera`
+          },
+          exposure_time_g: {
+            desc: 'Exposure Time for the g-band camera in Seconds'
+          },
+          exposure_time_r: {
+            desc: 'Exposure Time for the r-band camera in Seconds'
+          },
+          exposure_time_i: {
+            desc: 'Exposure Time for the i-band camera in Seconds'
+          },
+          exposure_time_z: {
+            desc: 'Exposure Time for the z-band camera in Seconds'
+          }
+        },
+        guidingConfig: {
+          mode: {
+            label: 'Guiding',
+            desc: `Guiding keeps the field stable during long exposures. If set to Optional, then guiding is
+            attempted but observations are carried out even if guiding fails. If set to On, observations are
+            aborted if guiding fails.`
+          }
+        },
+        acquisitionConfig: {
+          mode: {
+            desc: `The method for positioning the slit or pinhole. If Brightest Object is selected, the slit/pinhole
+            is placed on the brightest object near the target coordinates.`
+          },
+          acquire_radius: {
+            label: 'Acquire Radius',
+            desc: 'The radius (in arcseconds) within which to search for the brightest object.'
+          }
+        },
+        target: {
+          ra: {
+            desc: 'Decimal degrees or HH:MM:SS.S'
+          },
+          dec: {
+            desc: 'Decimal degrees or DD:MM:SS.S'
+          },
+          proper_motion_ra: {
+            desc: 'Units are milliarcseconds per year. Max 20000.'
+          },
+          proper_motion_dec: {
+            desc: 'Units are milliarcseconds per year. Max 20000.'
+          },
+          epoch: {
+            desc: 'Julian Years. Max 2100.'
+          },
+          parallax: {
+            desc: '+0.45 mas. Max 2000.'
+          },
+          scheme: {
+            desc: 'The orbital elements scheme to use with this target'
+          },
+          epochofel: {
+            desc: 'The epoch of the orbital elements in MJD. MJD = JD - 2400000.5'
+          },
+          orbinc: {
+            desc: 'Angle in Degrees'
+          },
+          longascnode: {
+            desc: 'Angle in Degrees'
+          },
+          argofperih: {
+            desc: 'Angle in Degrees'
+          },
+          eccentricity: {
+            desc: '0 to 0.99'
+          },
+          meandist: {
+            desc: 'Astronomical Units (AU)'
+          },
+          meananom: {
+            desc: 'Angle in Degrees'
+          },
+          dailymot: {
+            desc: 'Degrees'
+          },
+          perihdist: {
+            desc: 'Astronomical Units (AU)'
+          },
+          epochofperih: {
+            desc: 'Modified Juian Days'
+          }
+        },
+        constraints: {
+          max_airmass: {
+            desc: `Maximum acceptable airmass at which the observation can be scheduled. A plane-parallel
+            atmosphere is assumed.`
+          },
+          min_lunar_distance: {
+            desc: 'Minimum acceptable angular separation (degrees) between the target and the moon.'
+          }
+        },
+        window: {
+          start: {
+            desc: 'UT time when the observing window opens'
+          },
+          end: {
+            desc: 'UT time when the observing window closes'
+          },
+          cadence: {
+            desc: `A cadence will replace your current observing window with a set of windows,
+            one for each cycle of the cadence.`
+          },
+          period: {
+            desc: 'Decimal hours'
+          },
+          jitter: {
+            desc: `Acceptable deviation from strict period (before or after) in decimal hours. Must
+            be long enough to contain one observation request, including overheads.`
+          }
+        }
       },
       requestgroup: {
         name: '',
@@ -429,38 +563,120 @@ export default {
     }
   },
   created: function() {
+    // Get instruments
     $.ajax({
       url: `${this.observationPortalApiUrl}/api/instruments/`
     }).done(data => {
-      // Don't show commissioning instruments in the form
-      let keysToDelete = [];
-      for (let instrument in data) {
-        if (instrument.includes('COMMISSIONING')) {
-          keysToDelete.push(instrument);
-        }
-      }
-      for (let key of keysToDelete) {
-        delete data[key];
-      }
-      this.instruments = data;
+      this.instruments = this.parseInstrumentsForForm(data);
     });
+    // Get existing requestgroup to initial data
+    let requestGroupId = this.getRequestGroupIdFromQueryString();
+    if (requestGroupId > 0) {
+      this.loadFromExistingRequestGroup(requestGroupId);
+    }
   },
   methods: {
+    getRequestGroupIdFromQueryString: function() {
+      let requestGroupId = -1;
+      if (this.$route.query.requestgroupid) {
+        let parsedRequestGroupId = _.parseInt(this.$route.query.requestgroupid);
+        if (!_.isNaN(parsedRequestGroupId)) {
+          requestGroupId = parsedRequestGroupId;
+        }
+      }
+      return requestGroupId;
+    },
     loadDraft: function(draftId) {
       this.draftId = draftId;
       this.tab = 1;
-      $.getJSON(this.observationPortalApiUrl + '/api/drafts/' + draftId + '/', data => {
-        // TODO: Load the draft into the form component
-
-        this.requestgroup = {};
-        Vue.nextTick(() => {
-          this.requestgroup = JSON.parse(data.content);
+      $.ajax({
+        url: `${this.observationPortalApiUrl}/api/drafts/${draftId}/`
+      })
+        .done(response => {
+          this.requestgroup = {};
+          Vue.nextTick(() => {
+            this.requestgroup = JSON.parse(response.content);
+            this.draftId = draftId;
+          });
+        })
+        .fail(() => {
+          this.alerts.push({ class: 'danger', msg: `Failed to load draft ${draftId}` });
         });
-        // this.validate();
-      });
+    },
+    loadFromExistingRequestGroup: function(requestGroupId) {
+      $.ajax({
+        url: `${this.observationPortalApiUrl}/api/requestgroups/${requestGroupId}/`
+      })
+        .done(response => {
+          this.requestgroup.requests = [];
+          Vue.nextTick(() => {
+            this.requestgroup.requests = response.requests;
+          });
+        })
+        .fail(() => {
+          this.alerts.push({ class: 'danger', msg: `Failed to load requestgroup ${requestGroupId}` });
+        });
     },
     closeEdPopup: function() {
       localStorage.setItem('hasVisited', 'true');
+    },
+    parseInstrumentsForForm: function(instrumentsData) {
+      // Update instrument data, returning only the instruments / instrument data that should be used in for form
+
+      let instrumentsToDelete = [];
+      for (let instrument in instrumentsData) {
+        // Leave out instruments that we don't want to show on the form
+        let isCommissioning = instrument.includes('COMMISSIONING');
+        let isSimpleInterfaceAndNotImager = this.simpleInterface && instrumentsData[instrument].type !== 'IMAGE';
+        let isExcludedInstrument = ['0M4-SCICAM-FLI', '2M0-SPECTRAL-AG'].indexOf(instrument) > -1;
+        if (isCommissioning || isSimpleInterfaceAndNotImager || isExcludedInstrument) {
+          instrumentsToDelete.push(instrument);
+        }
+      }
+      for (let key of instrumentsToDelete) {
+        delete instrumentsData[key];
+      }
+
+      // Do not have any acquisition modes other than 'OFF' for the simple interface.
+      if (this.simpleInterface) {
+        for (let instrument in instrumentsData) {
+          let acquisitionModes = _.get(instrumentsData[instrument], ['modes', 'acquisition', 'modes'], []);
+          _.remove(acquisitionModes, mode => {
+            return mode.code !== 'OFF';
+          });
+          _.set(instrumentsData, ['modes', 'acquisition', 'modes'], acquisitionModes);
+          _.set(instrumentsData, ['modes', 'acquisition', 'default'], 'OFF');
+        }
+      }
+
+      // Only display certain configuration types in the form
+      let formConfigurationTypes;
+      if (this.simpleInterface) {
+        formConfigurationTypes = ['EXPOSE'];
+      } else {
+        formConfigurationTypes = [
+          'EXPOSE',
+          'REPEAT_EXPOSE',
+          'ARC',
+          'LAMP_FLAT',
+          'REPEAT_SPECTRUM',
+          'SPECTRUM',
+          'REPEAT_NRES_SPECTRUM',
+          'NRES_SPECTRUM'
+        ];
+      }
+      for (let instrument in instrumentsData) {
+        let configurationTypesToDelete = [];
+        for (let configurationType in instrumentsData[instrument].configuration_types) {
+          if (formConfigurationTypes.indexOf(configurationType) < 0) {
+            configurationTypesToDelete.push(configurationType);
+          }
+        }
+        for (let key of configurationTypesToDelete) {
+          delete instrumentsData[instrument].configuration_types[key];
+        }
+      }
+      return instrumentsData;
     },
     onSaveDraftFailed: function(errorMessage) {
       if (!errorMessage) {
@@ -527,48 +743,45 @@ export default {
             this.targetLookup.busy = false;
           }
         });
-    }, 500)
-    // generateCalibs: function(configuration_id) {
-    //   // TODO
-
-    //   let request = this.request;
-    //   let calibs = [{}, {}, {}, {}];
-    //   for (let c in calibs) {
-    //     calibs[c] = _.cloneDeep(request.configurations[configuration_id]);
-    //     for (let ic in calibs[c].instrument_configs) {
-    //       calibs[c].instrument_configs[ic].exposure_time = arcDefaultExposureTime(this.instrument_type);
-    //     }
-    //   }
-    //   calibs[0].type = 'LAMP_FLAT';
-    //   calibs[1].type = 'ARC';
-    //   calibs[0].guiding_config.optional = true;
-    //   calibs[1].guiding_config.optional = true;
-    //   calibs[0].guiding_config.mode = 'ON';
-    //   calibs[1].guiding_config.mode = 'ON';
-    //   for (let ic in calibs[0].instrument_configs) {
-    //     calibs[0].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
-    //       calibs[0].instrument_configs[ic].optical_elements.slit,
-    //       this.instrument_type,
-    //       calibs[0].instrument_configs[ic].mode
-    //     );
-    //   }
-    //   request.configurations.unshift(calibs[0], calibs[1]);
-    //   calibs[2].type = 'ARC';
-    //   calibs[3].type = 'LAMP_FLAT';
-    //   calibs[2].guiding_config.optional = true;
-    //   calibs[3].guiding_config.optional = true;
-    //   calibs[2].guiding_config.mode = 'ON';
-    //   calibs[3].guiding_config.mode = 'ON';
-    //   for (let ic in calibs[3].instrument_configs) {
-    //     calibs[3].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
-    //       calibs[3].instrument_configs[ic].optical_elements.slit,
-    //       this.instrument_type,
-    //       calibs[3].instrument_configs[ic].mode
-    //     );
-    //   }
-    //   request.configurations.push(calibs[2], calibs[3]);
-    //   this.update();
-    // }
+    }, 500),
+    generateCalibs: function(configurationIndex, requestIndex) {
+      let request = this.requestgroup.requests[requestIndex];
+      let calibs = [{}, {}, {}, {}];
+      for (let c in calibs) {
+        calibs[c] = _.cloneDeep(request.configurations[configurationIndex]);
+        for (let ic in calibs[c].instrument_configs) {
+          calibs[c].instrument_configs[ic].exposure_time = arcDefaultExposureTime(this.instrument_type);
+        }
+      }
+      calibs[0].type = 'LAMP_FLAT';
+      calibs[1].type = 'ARC';
+      calibs[0].guiding_config.optional = true;
+      calibs[1].guiding_config.optional = true;
+      calibs[0].guiding_config.mode = 'ON';
+      calibs[1].guiding_config.mode = 'ON';
+      for (let ic in calibs[0].instrument_configs) {
+        calibs[0].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
+          calibs[0].instrument_configs[ic].optical_elements.slit,
+          this.instrument_type,
+          calibs[0].instrument_configs[ic].mode
+        );
+      }
+      request.configurations.unshift(calibs[0], calibs[1]);
+      calibs[2].type = 'ARC';
+      calibs[3].type = 'LAMP_FLAT';
+      calibs[2].guiding_config.optional = true;
+      calibs[3].guiding_config.optional = true;
+      calibs[2].guiding_config.mode = 'ON';
+      calibs[3].guiding_config.mode = 'ON';
+      for (let ic in calibs[3].instrument_configs) {
+        calibs[3].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
+          calibs[3].instrument_configs[ic].optical_elements.slit,
+          this.instrument_type,
+          calibs[3].instrument_configs[ic].mode
+        );
+      }
+      request.configurations.push(calibs[2], calibs[3]);
+    }
   }
 };
 </script>

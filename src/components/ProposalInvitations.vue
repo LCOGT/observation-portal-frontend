@@ -32,8 +32,6 @@
 import $ from 'jquery';
 import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { confirmMixin } from '@/components/util/utilMixins.js';
-
 export default {
   name: 'ProposalInvitations',
   filters: {
@@ -41,7 +39,7 @@ export default {
       return OCSUtil.formatDate(date);
     }
   },
-  mixins: [OCSMixin.getDataListWithCountMixin, confirmMixin],
+  mixins: [OCSMixin.getDataListWithCountMixin, OCSMixin.confirmMixin],
   props: {
     proposalId: {
       type: String,

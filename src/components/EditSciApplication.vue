@@ -424,7 +424,6 @@ import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
 import BasicCustomField from '@/components/util/BasicCustomField.vue';
 import NotFound from '@/components/NotFound.vue';
-import { confirmMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'CreateSciApplication',
@@ -443,7 +442,7 @@ export default {
       return _.lowerCase(value);
     }
   },
-  mixins: [OCSMixin.getDataMixin, confirmMixin],
+  mixins: [OCSMixin.getDataMixin, OCSMixin.confirmMixin],
   props: {
     callId: {
       type: [String, Number],
