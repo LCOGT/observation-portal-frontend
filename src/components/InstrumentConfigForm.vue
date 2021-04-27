@@ -184,7 +184,7 @@ export default {
       updateBinning,
       updateOpticalElement,
       updateInstrumentConfigExtraParam
-    } = OCSComposable.baseInstrumentConfigPanel(instrumentConfig, availableInstruments, selectedInstrument, context);
+    } = OCSComposable.baseInstrumentConfig(instrumentConfig, availableInstruments, selectedInstrument, context);
 
     return {
       // Data
