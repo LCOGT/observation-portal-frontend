@@ -9,7 +9,9 @@ import $ from 'jquery';
 import { getCookie, csrfSafeMethod } from '@/utils.js';
 import { OCSComponentLib } from 'ocs-component-lib';
 import 'ocs-component-lib/dist/ocs-component-lib.css';
+import VueCompositionAPI from '@vue/composition-api';
 
+Vue.use(VueCompositionAPI);
 Vue.use(BootstrapVue);
 Vue.use(OCSComponentLib);
 

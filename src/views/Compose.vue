@@ -23,11 +23,10 @@
           <span><i class="far fa-edit" /> Form</span>
         </template>
         <ocs-request-group-composition-form
-          class="p-4"
           :observation-portal-api-base-url="observationPortalApiUrl"
           :datetime-format="datetimeFormat"
           :profile="profile"
-          :request-group="requestgroup"
+          :request-group="requestGroup"
           :instruments="instruments"
           :instrument-category-to-name="instrumentCategoryToName"
           :site-code-to-color="siteToColor"
@@ -74,7 +73,7 @@
                   Target Visibility Calculator.
                 </a>
               </li>
-              <li v-show="requestgroup.observation_type === 'RAPID_RESPONSE'">
+              <li v-show="requestGroup.observation_type === 'RAPID_RESPONSE'">
                 A start time cannot be selected for a Rapid Response observation. It will be scheduled as soon as possible.
               </li>
             </ul>
@@ -109,6 +108,28 @@
               </b-col>
             </b-row>
           </template>
+
+          <template #instrument-config-form="slotProps">
+            <instrument-config-form
+              :instrument-config="slotProps.data.instrumentConfig"
+              :errors="slotProps.data.errors"
+              :show="slotProps.data.show"
+              :simple-interface="simpleInterface"
+              :available-instruments="instruments"
+              :selected-instrument="
+                selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].selectedInstrument
+              "
+              :selected-instrument-category="
+                selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].selectedInstrumentCategory
+              "
+              :configuration-type="
+                selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].configurationType
+              "
+              :field-help="fieldHelp"
+              @instrumentconfigupdate="$emit('instrumentconfigupdate', $event)"
+            />
+          </template>
+
           <template #instrument-config-help>
             <ul>
               <li>
@@ -156,7 +177,7 @@
             <b-col class="bg-light rounded">
               <ocs-request-group-api-display
                 class="p-4"
-                :request-group="requestgroup"
+                :request-group="requestGroup"
                 :extra-download-button-attrs="{ class: 'float-right', variant: 'primary' }"
               />
             </b-col>
@@ -265,12 +286,14 @@ import Vue from 'vue';
 import { OCSUtil } from 'ocs-component-lib';
 
 import Archive from '@/components/Archive.vue';
+import InstrumentConfigForm from '@/components/InstrumentConfigForm.vue';
 import { siteToColor, siteCodeToName, tooltipConfig, julianToModifiedJulian, lampFlatDefaultExposureTime, arcDefaultExposureTime } from '@/utils.js';
 
 export default {
   name: 'Compose',
   components: {
-    Archive
+    Archive,
+    InstrumentConfigForm
   },
   filters: {
     generateDurationString: function(value) {
@@ -465,7 +488,7 @@ export default {
           }
         }
       },
-      requestgroup: {
+      requestGroup: {
         name: '',
         proposal: '',
         ipp_value: 1.05,
@@ -560,6 +583,25 @@ export default {
         }
       }
       return nActiveProposals > 0 ? true : false;
+    },
+    selectedInstruments: function() {
+      // Return object where the first key is the requestIndex and the second is the configurationIndex
+      let _selectedInstruments = {};
+      for (let requestIndex in this.requestGroup.requests) {
+        _selectedInstruments[requestIndex] = {};
+        for (let configurationIndex in this.requestGroup.requests[requestIndex].configurations) {
+          let configuration = OCSUtil.getFromObject(this.requestGroup, ['requests', requestIndex, 'configurations', configurationIndex], {});
+          let selectedInstrument = OCSUtil.getFromObject(configuration,['instrument_type'], '');
+          // let selectedInstrumentCategory = OCSUtil.getFromObject(this.instruments, [selectedInstrument, 'type'], '');
+          // let configurationType = OCSUtil.getFromObject(configuration, ['type'], '');
+          _selectedInstruments[requestIndex][configurationIndex] = {
+            selectedInstrument: selectedInstrument,
+            selectedInstrumentCategory: OCSUtil.getFromObject(this.instruments, [selectedInstrument, 'type'], ''),
+            configurationType: OCSUtil.getFromObject(configuration, ['type'], '')
+          };
+        }
+      }
+      return _selectedInstruments;
     }
   },
   created: function() {
@@ -569,7 +611,7 @@ export default {
     }).done(data => {
       this.instruments = this.parseInstrumentsForForm(data);
     });
-    // Get existing requestgroup to initial data
+    // Get existing requestGroup to initial data
     let requestGroupId = this.getRequestGroupIdFromQueryString();
     if (requestGroupId > 0) {
       this.loadFromExistingRequestGroup(requestGroupId);
@@ -593,9 +635,9 @@ export default {
         url: `${this.observationPortalApiUrl}/api/drafts/${draftId}/`
       })
         .done(response => {
-          this.requestgroup = {};
+          this.requestGroup = {};
           Vue.nextTick(() => {
-            this.requestgroup = JSON.parse(response.content);
+            this.requestGroup = JSON.parse(response.content);
             this.draftId = draftId;
           });
         })
@@ -608,9 +650,9 @@ export default {
         url: `${this.observationPortalApiUrl}/api/requestgroups/${requestGroupId}/`
       })
         .done(response => {
-          this.requestgroup.requests = [];
+          this.requestGroup.requests = [];
           Vue.nextTick(() => {
-            this.requestgroup.requests = response.requests;
+            this.requestGroup.requests = response.requests;
           });
         })
         .fail(() => {
@@ -623,9 +665,9 @@ export default {
     parseInstrumentsForForm: function(instrumentsData) {
       // Update instrument data, returning only the instruments / instrument data that should be used in for form
 
+      // Leave out instruments that we don't want to show on the form
       let instrumentsToDelete = [];
       for (let instrument in instrumentsData) {
-        // Leave out instruments that we don't want to show on the form
         let isCommissioning = instrument.includes('COMMISSIONING');
         let isSimpleInterfaceAndNotImager = this.simpleInterface && instrumentsData[instrument].type !== 'IMAGE';
         let isExcludedInstrument = ['0M4-SCICAM-FLI', '2M0-SPECTRAL-AG'].indexOf(instrument) > -1;
@@ -637,15 +679,40 @@ export default {
         delete instrumentsData[key];
       }
 
-      // Do not have any acquisition modes other than 'OFF' for the simple interface.
+      // Update some instrument data for the simple interface
       if (this.simpleInterface) {
         for (let instrument in instrumentsData) {
+          // Do not have any acquisition modes other than 'OFF' for the simple interface
           let acquisitionModes = _.get(instrumentsData[instrument], ['modes', 'acquisition', 'modes'], []);
           _.remove(acquisitionModes, mode => {
             return mode.code !== 'OFF';
           });
           _.set(instrumentsData, ['modes', 'acquisition', 'modes'], acquisitionModes);
           _.set(instrumentsData, ['modes', 'acquisition', 'default'], 'OFF');
+
+          // Only show simple filters for the simple interface
+          instrumentsData[instrument].optical_elements = {
+            filters: [
+              {
+                name: 'Blue',
+                code: 'b',
+                schedulable: true,
+                default: true
+              },
+              {
+                name: 'Green',
+                code: 'v',
+                schedulable: true,
+                default: false
+              },
+              {
+                name: 'Red',
+                code: 'rp',
+                schedulable: true,
+                default: false
+              }
+            ]
+          };
         }
       }
 
@@ -745,7 +812,7 @@ export default {
         });
     }, 500),
     generateCalibs: function(configurationIndex, requestIndex) {
-      let request = this.requestgroup.requests[requestIndex];
+      let request = this.requestGroup.requests[requestIndex];
       let calibs = [{}, {}, {}, {}];
       for (let c in calibs) {
         calibs[c] = _.cloneDeep(request.configurations[configurationIndex]);
