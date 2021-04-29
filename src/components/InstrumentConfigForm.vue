@@ -3,17 +3,18 @@
     <ocs-custom-field
       v-model="instrumentConfig.exposure_count"
       field="exposure_count"
-      :label="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_count', 'label'], 'Exposure Count')"
-      :desc="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_count', 'desc'], '')"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_count', 'label'], 'Exposure Count')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_count', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_count', 'hide'], false)"
       type="number"
       :errors="errors.exposure_count"
     />
     <ocs-custom-field
-      v-if="selectedInstrument != '2M0-SCICAM-MUSCAT'"
       v-model="instrumentConfig.exposure_time"
       field="exposure_time"
-      :label="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_time', 'label'], 'Exposure Time')"
-      :desc="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_time', 'desc'], '')"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_time', 'label'], 'Exposure Time')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_time', 'hide'], selectedInstrument === '2M0-SCICAM-MUSCAT')"
       :errors="errors.exposure_time"
     >
       <div v-if="suggestedLampFlatSlitExposureTime" slot="extra-help-text">
@@ -24,56 +25,56 @@
         Suggested exposure time for an Arc is <strong>{{ suggestedArcExposureTime }} seconds</strong>
       </div>
     </ocs-custom-field>
-
     <!-- MUSCAT instrument specific fields -->
     <ocs-custom-select
-      v-if="selectedInstrument == '2M0-SCICAM-MUSCAT'"
       v-model="exposure_mode"
       field="exposure_mode"
-      :label="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_mode', 'label'], 'Exposure Mode')"
-      :desc="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_mode', 'desc'], '')"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_mode', 'label'], 'Exposure Mode')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_mode', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_mode', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
       :options="exposureModeOptions"
       :errors="null"
     />
     <ocs-custom-field
-      v-if="selectedInstrument == '2M0-SCICAM-MUSCAT'"
       v-model="exposure_time_g"
       field="exposure_time_g"
-      :label="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_time_g', 'label'], 'Exposure Time g')"
-      :desc="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_time_g', 'desc'], '')"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_g', 'label'], 'Exposure Time g')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_g', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_g', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
       :errors="null"
     />
     <ocs-custom-field
       v-if="selectedInstrument == '2M0-SCICAM-MUSCAT'"
       v-model="exposure_time_r"
       field="exposure_time_r"
-      :label="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_time_r', 'label'], 'Exposure Time r')"
-      :desc="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_time_r', 'desc'], '')"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_r', 'label'], 'Exposure Time r')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_r', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_r', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
       :errors="null"
     />
     <ocs-custom-field
-      v-if="selectedInstrument == '2M0-SCICAM-MUSCAT'"
       v-model="exposure_time_i"
       field="exposure_time_i"
-      :label="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_time_i', 'label'], 'Exposure Time i')"
-      :desc="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_time_i', 'desc'], '')"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_i', 'label'], 'Exposure Time i')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_i', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_i', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
       :errors="null"
     />
     <ocs-custom-field
-      v-if="selectedInstrument == '2M0-SCICAM-MUSCAT'"
       v-model="exposure_time_z"
       field="exposure_time_z"
-      :label="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_time_z', 'label'], 'Exposure Time z')"
-      :desc="getFromObject(fieldHelp, ['instrumentConfig', 'exposure_time_z', 'desc'], '')"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_z', 'label'], 'Exposure Time z')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_z', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_z', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
       :errors="null"
     />
-
+    <!-- End of MUSCAT instrument specific fields -->
     <ocs-custom-select
-      v-if="readoutModeOptions.length > 1"
       v-model="instrumentConfig.mode"
       field="readout_mode"
-      :label="getFromObject(fieldHelp, ['instrumentConfig', 'readout_mode', 'label'], 'Readout Mode')"
-      :desc="getFromObject(fieldHelp, ['instrumentConfig', 'readout_mode', 'desc'], '')"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'readout_mode', 'label'], 'Readout Mode')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'readout_mode', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'readout_mode', 'hide'], readoutModeOptions.length <= 1)"
       :options="readoutModeOptions"
       :errors="errors.mode"
     />
@@ -81,44 +82,42 @@
       <ocs-custom-select
         v-model="instrumentConfig.optical_elements[opticalElementGroup.type]"
         :field="opticalElementGroup.type"
-        :label="getFromObject(fieldHelp, ['instrumentConfig', opticalElementGroup.type, 'label'], opticalElementGroup.label)"
-        :desc="getFromObject(fieldHelp, ['instrumentConfig', opticalElementGroup.type, 'desc'], '')"
+        :label="getFromObject(formConfig, ['instrumentConfig', opticalElementGroup.type, 'label'], opticalElementGroup.label)"
+        :desc="getFromObject(formConfig, ['instrumentConfig', opticalElementGroup.type, 'desc'], '')"
+        :hide="getFromObject(formConfig, ['instrumentConfig', opticalElementGroup.type, 'hide'], false)"
         :options="opticalElementGroup.options"
         :lower-options="true"
         :errors="{}"
         @input="updateOpticalElement"
       />
     </div>
-    <div v-if="rotatorModeOptions.length > 0">
-      <ocs-custom-select
-        v-model="instrumentConfig.rotator_mode"
-        field="rotator_mode"
-        :label="getFromObject(fieldHelp, ['instrumentConfig', 'rotator_mode', 'label'], 'Rotator Mode')"
-        :desc="getFromObject(fieldHelp, ['instrumentConfig', 'rotator_mode', 'desc'], '')"
-        :errors="errors.rotator_mode"
-        :options="rotatorModeOptions"
-      />
-
-      <!-- TODO: Validate required field values -->
-      <ocs-custom-field
-        v-for="field in requiredRotatorModeFields"
-        :key="field"
-        v-model="instrumentConfig.extra_params[field]"
-        :label="getFromObject(fieldHelp, ['instrumentConfig', field, 'label'], field)"
-        :desc="getFromObject(fieldHelp, ['instrumentConfig', field, 'desc'], '')"
-        :errors="null"
-        @input="updateInstrumentConfigExtraParam($event, field)"
-      />
-    </div>
-
-    <!-- TODO: Validate to make sure this is a floating point number -->
-
+    <ocs-custom-select
+      v-model="instrumentConfig.rotator_mode"
+      field="rotator_mode"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'rotator_mode', 'label'], 'Rotator Mode')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'rotator_mode', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'rotator_mode', 'hide'], rotatorModeOptions.length <= 1)"
+      :errors="errors.rotator_mode"
+      :options="rotatorModeOptions"
+    />
+    <!-- TODO: Validate required field values -->
     <ocs-custom-field
-      v-if="selectedInstrumentCategory == 'IMAGE' && !simpleInterface"
+      v-for="field in requiredRotatorModeFields"
+      :key="field"
+      v-model="instrumentConfig.extra_params[field]"
+      :label="getFromObject(formConfig, ['instrumentConfig', field, 'label'], field)"
+      :desc="getFromObject(formConfig, ['instrumentConfig', field, 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', field, 'hide'], rotatorModeOptions.length <= 1)"
+      :errors="null"
+      @input="updateInstrumentConfigExtraParam($event, field)"
+    />
+    <!-- TODO: Validate to make sure this is a floating point number -->
+    <ocs-custom-field
       v-model="defocus"
       field="defocus"
-      :label="getFromObject(fieldHelp, ['instrumentConfig', 'defocus', 'label'], 'Defocus')"
-      :desc="getFromObject(fieldHelp, ['instrumentConfig', 'defocus', 'desc'], '')"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'defocus', 'label'], 'Defocus')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'defocus', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'defocus', 'hide'], selectedInstrumentCategory !== 'IMAGE' || simpleInterface)"
       :errors="null"
       type="number"
     />
@@ -163,7 +162,7 @@ export default {
     show: {
       type: Boolean
     },
-    fieldHelp: {
+    formConfig: {
       type: Object,
       default: () => {
         return {};

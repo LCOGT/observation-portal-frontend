@@ -33,7 +33,8 @@
           :site-code-to-name="siteCodeToName"
           show-airmass-plot
           :loaded-draft-id="draftId"
-          :field-help="fieldHelp"
+          :form-config="formConfig"
+          :tooltip-config="tooltipConfig"
           @save-draft-failed="onSaveDraftFailed"
           @save-draft-succeeded="onSaveDraftSucceeded"
           @request-group-saved="onRequestGroupSaved"
@@ -125,7 +126,7 @@
               :configuration-type="
                 selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].configurationType
               "
-              :field-help="fieldHelp"
+              :form-config="formConfig"
               @instrumentconfigupdate="$emit('instrumentconfigupdate', $event)"
             />
           </template>
@@ -322,20 +323,26 @@ export default {
         SPECTRA: 'Spectrum',
         IMAGE: 'Image'
       },
-      fieldHelp: {
+      formConfig: {
         requestGroup: {
+          panel: {
+            title: 'General Information'
+          },
           observation_type: {
             label: 'Mode',
+            hide: simpleInterface,
             desc: `Rapid Response (RR) requests bypass normal scheduling and are executed immediately. Time Critical (TC)
             requests are given a large fixed priority that will beat any requests that use default queue scheduling.
             These modes are only available if a  proposal was granted RR or TC time.`
           },
           ipp_value: {
+            hide: simpleInterface,
             desc: 'Provide an InterProposal Priority factor for this request. Acceptable values are between 0.5 and 2.0'
           }
         },
         request: {
           acceptability_threshold: {
+            hide: simpleInterface,
             desc: `The percentage of the observation that must be completed to mark the request as complete
             and avert rescheduling. The percentage should be set to the lowest value for which the amount
             of data is acceptable to meet the science goal of the request.`
@@ -346,6 +353,7 @@ export default {
             label: 'Observation Type'
           },
           type: {
+            hide: simpleInterface,
             desc: `Normally, all Instrument Configurations are executed once, sequentially. If set to
             'Exposure Sequence', 'Spectrum Sequence' or 'NRES Spectrum Sequence', all Instrument Configurations
             are repeated in a loop for a specified duration.`
@@ -391,6 +399,7 @@ export default {
         guidingConfig: {
           mode: {
             label: 'Guiding',
+            hide: simpleInterface,
             desc: `Guiding keeps the field stable during long exposures. If set to Optional, then guiding is
             attempted but observations are carried out even if guiding fails. If set to On, observations are
             aborted if guiding fails.`
@@ -398,15 +407,20 @@ export default {
         },
         acquisitionConfig: {
           mode: {
+            hide: simpleInterface,
             desc: `The method for positioning the slit or pinhole. If Brightest Object is selected, the slit/pinhole
             is placed on the brightest object near the target coordinates.`
           },
           acquire_radius: {
+            hide: simpleInterface,
             label: 'Acquire Radius',
             desc: 'The radius (in arcseconds) within which to search for the brightest object.'
           }
         },
         target: {
+          type: {
+            hide: simpleInterface
+          },
           ra: {
             desc: 'Decimal degrees or HH:MM:SS.S'
           },
@@ -414,15 +428,19 @@ export default {
             desc: 'Decimal degrees or DD:MM:SS.S'
           },
           proper_motion_ra: {
+            hide: simpleInterface,
             desc: 'Units are milliarcseconds per year. Max 20000.'
           },
           proper_motion_dec: {
+            hide: simpleInterface,
             desc: 'Units are milliarcseconds per year. Max 20000.'
           },
           epoch: {
+            hide: simpleInterface,
             desc: 'Julian Years. Max 2100.'
           },
           parallax: {
+            hide: simpleInterface,
             desc: '+0.45 mas. Max 2000.'
           },
           scheme: {
@@ -460,6 +478,9 @@ export default {
           }
         },
         constraints: {
+          panel: {
+            hide: simpleInterface
+          },
           max_airmass: {
             desc: `Maximum acceptable airmass at which the observation can be scheduled. A plane-parallel
             atmosphere is assumed.`
@@ -476,6 +497,7 @@ export default {
             desc: 'UT time when the observing window closes'
           },
           cadence: {
+            hide: simpleInterface,
             desc: `A cadence will replace your current observing window with a set of windows,
             one for each cycle of the cadence.`
           },
