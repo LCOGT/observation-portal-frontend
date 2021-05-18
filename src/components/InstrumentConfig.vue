@@ -115,7 +115,7 @@
             />
             <div v-for="opticalElementGroup in availableOpticalElementGroups" :key="opticalElementGroup.type">
               <custom-select
-                v-if="!simpleInterface || (simpleInterface && selectedinstrument !== '2M0-SCICAM-MUSCAT')"
+                v-if="!(simpleInterface && selectedinstrument == '2M0-SCICAM-MUSCAT')"
                 v-model="instrumentconfig.optical_elements[opticalElementGroup.type]"
                 :label="opticalElementGroup.label"
                 :field="opticalElementGroup.type"
@@ -281,23 +281,15 @@ export default {
         if (this.selectedinstrument === '2M0-SCICAM-MUSCAT') {
           return {
             diffuser_g_position: {
-              type: 'diffuser_g_position',
-              label: 'Diffuser g position',
               options: [{ value: 'out', text: 'Out of Beam', default: true }]
             },
             diffuser_r_position: {
-              type: 'diffuser_r_position',
-              label: 'Diffuser r position',
               options: [{ value: 'out', text: 'Out of Beam', default: true }]
             },
             diffuser_i_position: {
-              type: 'diffuser_i_position',
-              label: 'Diffuser i position',
               options: [{ value: 'out', text: 'Out of Beam', default: true }]
             },
             diffuser_z_position: {
-              type: 'diffuser_z_position',
-              label: 'Diffuser z position',
               options: [{ value: 'out', text: 'Out of Beam', default: true }]
             }
           };
