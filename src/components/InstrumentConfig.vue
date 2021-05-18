@@ -115,6 +115,7 @@
             />
             <div v-for="opticalElementGroup in availableOpticalElementGroups" :key="opticalElementGroup.type">
               <custom-select
+                v-if="!(simpleInterface && selectedinstrument == '2M0-SCICAM-MUSCAT')"
                 v-model="instrumentconfig.optical_elements[opticalElementGroup.type]"
                 :label="opticalElementGroup.label"
                 :field="opticalElementGroup.type"
@@ -277,17 +278,34 @@ export default {
     },
     availableOpticalElementGroups: function() {
       if (this.simpleInterface) {
-        return {
-          filters: {
-            type: 'filter',
-            label: 'Filter',
-            options: [
-              { value: 'b', text: 'Blue' },
-              { value: 'v', text: 'Green' },
-              { value: 'rp', text: 'Red' }
-            ]
-          }
-        };
+        if (this.selectedinstrument === '2M0-SCICAM-MUSCAT') {
+          return {
+            diffuser_g_position: {
+              options: [{ value: 'out', text: 'Out of Beam', default: true }]
+            },
+            diffuser_r_position: {
+              options: [{ value: 'out', text: 'Out of Beam', default: true }]
+            },
+            diffuser_i_position: {
+              options: [{ value: 'out', text: 'Out of Beam', default: true }]
+            },
+            diffuser_z_position: {
+              options: [{ value: 'out', text: 'Out of Beam', default: true }]
+            }
+          };
+        } else {
+          return {
+            filter: {
+              type: 'filter',
+              label: 'Filter',
+              options: [
+                { value: 'b', text: 'Blue', default: true },
+                { value: 'v', text: 'Green', default: false },
+                { value: 'rp', text: 'Red', default: false }
+              ]
+            }
+          };
+        }
       } else if (this.selectedinstrument in this.availableInstruments) {
         let oe_groups = {};
         for (let oe_group_type in this.availableInstruments[this.selectedinstrument].optical_elements) {
@@ -396,14 +414,10 @@ export default {
     availableOpticalElementGroups: function(value) {
       // TODO: Implement optical element history
       this.instrumentconfig.optical_elements = {};
-      if (this.simpleInterface) {
-        this.instrumentconfig.optical_elements.filter = 'b';
-      } else {
-        for (let oe_type in value) {
-          for (let oe_value_idx in value[oe_type]['options']) {
-            if (value[oe_type]['options'][oe_value_idx].default) {
-              this.instrumentconfig.optical_elements[oe_type] = value[oe_type]['options'][oe_value_idx].value;
-            }
+      for (let oe_type in value) {
+        for (let oe_value_idx in value[oe_type]['options']) {
+          if (value[oe_type]['options'][oe_value_idx].default) {
+            this.instrumentconfig.optical_elements[oe_type] = value[oe_type]['options'][oe_value_idx].value;
           }
         }
       }
