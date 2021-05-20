@@ -236,7 +236,8 @@
               <div class="help-block">
                 <template v-if="data.proposal_type === 'SCI'">
                   <p>
-                    For the remainder of your proposal, please upload a single pdf file that includes the following sections but <em>not</em> an author list:
+                    For the remainder of your proposal, please upload a single pdf file that includes the following sections but <em>not</em> an
+                    author list:
                   </p>
                   <ul>
                     <li>
@@ -255,7 +256,8 @@
                       identify them.
                     </li>
                     <li>
-                      <strong>Report of related programs on other telescopes.</strong> A concise account of other programs that relate to this proposal.
+                      <strong>Report of related programs on other telescopes.</strong> A concise account of other programs that relate to this
+                      proposal.
                     </li>
                     <li>
                       <strong>Report on use of LCO in the past 3 years.</strong> A concise account of LCO network time used in the past 3 years.
@@ -273,8 +275,9 @@
                 </template>
                 <template v-else-if="data.proposal_type === 'KEY'">
                   <p>
-                    For the remainder of your proposal, please upload a single pdf file that includes the sections listed below, but <em>not</em> an author list. Consult the Call for
-                    Key Projects for information on the sections (e.g. Plan for management) that are unique to key projects.
+                    For the remainder of your proposal, please upload a single pdf file that includes the sections listed below, but <em>not</em> an
+                    author list. Consult the Call for Key Projects for information on the sections (e.g. Plan for management) that are unique to key
+                    projects.
                   </p>
                   <ul>
                     <li>
@@ -305,7 +308,8 @@
                       additional time on the LCO network from their own institutions, computing resources, or scientist time.
                     </li>
                     <li>
-                      <strong>Report of related programs on other telescopes.</strong> A concise account of other programs that relate to this proposal.
+                      <strong>Report of related programs on other telescopes.</strong> A concise account of other programs that relate to this
+                      proposal.
                     </li>
                     <li>
                       <strong>Report on use of LCO in the past 3 years.</strong> A concise account of LCO network time used in the past 3 years.
