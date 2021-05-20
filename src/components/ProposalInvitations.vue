@@ -1,36 +1,50 @@
 <template>
   <b-container class="p-0">
     <template v-if="userIsPI">
-      <template v-if="!dataLoaded">
-        <div class="text-center my-2">
-          <i class="fa fa-spin fa-spinner" />
-        </div>
-      </template>
-      <template v-else-if="data.results.length > 0">
-        <b-list-group>
-          <b-list-group-item v-for="invitation in data.results" :key="invitation.id" class="px-2 py-1">
-            <a :href="'mailto:' + invitation.email">{{ invitation.email }}</a>
-            <b-link
-              href="#"
-              class="float-right"
-              :disabled="deleteInvite.isBusy"
-              @click="confirm(getDeleteInvitationConfirmationMessage(invitation.email), deleteInvitation, { invitationId: invitation.id })"
-            >
-              <span class="text-danger"><i class="far fa-trash-alt"></i></span>
-            </b-link>
-            <div class="small text-muted">Invited at {{ invitation.sent | formatDate }}</div>
-          </b-list-group-item>
-        </b-list-group>
-      </template>
-      <template v-else>
-        <p class="text-muted py-1">No pending invitations.</p>
-      </template>
+      <b-table
+        :id="tableId"
+        ref="invitationsTable"
+        :busy.sync="invitationsTable.isBusy"
+        :items="invitationsProvider"
+        :fields="invitationsTable.fields"
+        :per-page="invitationsTable.perPage"
+        :current-page="invitationsTable.currentPage"
+        show-empty
+      >
+        <template #empty>
+          <span class="text-muted">No pending invitations.</span>
+        </template>
+        <template #table-busy>
+          <div class="text-center my-2">
+            <i class="fa fa-spin fa-spinner" />
+          </div>
+        </template>
+        <template #cell(content)="data">
+          <a :href="'mailto:' + data.item.email">{{ data.item.email }}</a>
+          <b-link
+            href="#"
+            class="float-right"
+            :disabled="deleteInvite.isBusy"
+            @click="confirm(getDeleteInvitationConfirmationMessage(data.item.email), deleteInvitation, { invitationId: data.item.id })"
+          >
+            <span class="text-danger"><i class="far fa-trash-alt"></i></span>
+          </b-link>
+          <div class="small text-muted">Invited at {{ data.item.sent | formatDate }}</div>
+        </template>
+      </b-table>
+      <b-pagination
+        v-if="invitationsTable.totalRows > invitationsTable.perPage"
+        v-model="invitationsTable.currentPage"
+        :total-rows="invitationsTable.totalRows"
+        :per-page="invitationsTable.perPage"
+        :aria-controls="tableId"
+      />
     </template>
   </b-container>
 </template>
 <script>
 import $ from 'jquery';
-import { OCSUtil, OCSMixin } from 'ocs-component-lib';
+import { OCSUtil } from 'ocs-component-lib';
 
 import { confirmMixin } from '@/components/util/utilMixins.js';
 
@@ -41,7 +55,7 @@ export default {
       return OCSUtil.formatDate(date);
     }
   },
-  mixins: [OCSMixin.getDataListWithCountMixin, confirmMixin],
+  mixins: [confirmMixin],
   props: {
     proposalId: {
       type: String,
@@ -50,10 +64,27 @@ export default {
     userIsPI: {
       type: Boolean,
       required: true
+    },
+    tableId: {
+      type: String,
+      default: 'invitations-table'
     }
   },
   data: function() {
     return {
+      invitationsTable: {
+        isBusy: false,
+        perPage: 25,
+        currentPage: 1,
+        totalRows: 0,
+        fields: [
+          {
+            key: 'content',
+            tdClass: 'p-1',
+            thClass: 'd-none'
+          }
+        ]
+      },
       deleteInvite: {
         isBusy: false
       }
@@ -65,8 +96,24 @@ export default {
     }
   },
   methods: {
-    initializeDataEndpoint: function() {
-      return this.$store.state.urls.observationPortalApi + '/api/invitations/?pending=true&proposal=' + this.proposalId;
+    invitationsProvider: function(ctx, callback) {
+      // https://bootstrap-vue.org/docs/components/table#using-items-provider-functions
+      const limit = ctx.perPage;
+      const offset = (ctx.currentPage - 1) * limit;
+      const params = `?pending=true&proposal=${this.proposalId}&offset=${offset}&limit=${limit}`;
+      $.ajax({
+        url: `${this.observationPortalApiUrl}/api/invitations/${params}`
+      })
+        .done(response => {
+          this.invitationsTable.totalRows = response.count;
+          callback(response.results);
+        })
+        .fail(() => {
+          this.invitationsTable.totalRows = 0;
+          callback([]);
+        });
+      // Must return null or undefined to signal b-table that callback is being used
+      return null;
     },
     getDeleteInvitationConfirmationMessage: function(email) {
       return 'Are you sure you want to delete the invitation for ' + email + ' for this proposal?';
@@ -80,28 +127,28 @@ export default {
     deleteInvitation: function(args) {
       this.clearMessages();
       this.deleteInvite.isBusy = true;
-      let that = this;
       $.ajax({
         method: 'DELETE',
         url: this.observationPortalApiUrl + '/api/invitations/' + args.invitationId + '/'
       })
-        .done(function() {
-          that.addMessage('Invitation deleted', 'success');
-          that.getData();
+        .done(() => {
+          this.addMessage('Invitation deleted', 'success');
+          this.invitationsTable.currentPage = 1;
+          this.$refs.invitationsTable.refresh();
         })
-        .fail(function(response) {
+        .fail(response => {
           if (response.status === 404) {
             // The proposal invitation does not exist, maybe it was deleted while this page was open.
-            that.addMessage(
+            this.addMessage(
               'The invitation that you tried to delete does not exist, please try refreshing your page to get an updated list',
               'danger'
             );
           } else {
-            that.addMessage('There was a problem deleting the invitation, please try again', 'danger');
+            this.addMessage('There was a problem deleting the invitation, please try again', 'danger');
           }
         })
-        .always(function() {
-          that.deleteInvite.isBusy = false;
+        .always(() => {
+          this.deleteInvite.isBusy = false;
         });
     }
   }
