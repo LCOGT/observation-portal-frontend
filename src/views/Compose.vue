@@ -298,7 +298,7 @@ export default {
   },
   filters: {
     generateDurationString: function(value) {
-      return OCSUtil.generateDurationString(value);
+      return OCSUtil.generateDurationString(value.duration);
     }
   },
   data: function() {
@@ -614,8 +614,6 @@ export default {
         for (let configurationIndex in this.requestGroup.requests[requestIndex].configurations) {
           let configuration = OCSUtil.getFromObject(this.requestGroup, ['requests', requestIndex, 'configurations', configurationIndex], {});
           let selectedInstrument = OCSUtil.getFromObject(configuration,['instrument_type'], '');
-          // let selectedInstrumentCategory = OCSUtil.getFromObject(this.instruments, [selectedInstrument, 'type'], '');
-          // let configurationType = OCSUtil.getFromObject(configuration, ['type'], '');
           _selectedInstruments[requestIndex][configurationIndex] = {
             selectedInstrument: selectedInstrument,
             selectedInstrumentCategory: OCSUtil.getFromObject(this.instruments, [selectedInstrument, 'type'], ''),
