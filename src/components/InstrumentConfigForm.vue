@@ -8,6 +8,7 @@
       :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_count', 'hide'], false)"
       type="number"
       :errors="errors.exposure_count"
+      @input="update"
     />
     <ocs-custom-field
       v-model="instrumentConfig.exposure_time"
@@ -16,6 +17,7 @@
       :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time', 'desc'], '')"
       :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_time', 'hide'], selectedInstrument === '2M0-SCICAM-MUSCAT')"
       :errors="errors.exposure_time"
+      @input="update"
     >
       <div v-if="suggestedLampFlatSlitExposureTime" slot="extra-help-text">
         Suggested exposure time for a Lamp Flat with slit {{ instrumentConfig.optical_elements.slit }} and readout mode {{ instrumentConfig.mode }} is
@@ -34,6 +36,7 @@
       :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_mode', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
       :options="exposureModeOptions"
       :errors="null"
+      @input="update"
     />
     <ocs-custom-field
       v-model="exposure_time_g"
@@ -42,15 +45,16 @@
       :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_g', 'desc'], '')"
       :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_g', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
       :errors="null"
+      @input="update"
     />
     <ocs-custom-field
-      v-if="selectedInstrument == '2M0-SCICAM-MUSCAT'"
       v-model="exposure_time_r"
       field="exposure_time_r"
       :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_r', 'label'], 'Exposure Time r')"
       :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_r', 'desc'], '')"
       :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_r', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
       :errors="null"
+      @input="update"
     />
     <ocs-custom-field
       v-model="exposure_time_i"
@@ -59,6 +63,7 @@
       :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_i', 'desc'], '')"
       :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_i', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
       :errors="null"
+      @input="update"
     />
     <ocs-custom-field
       v-model="exposure_time_z"
@@ -67,6 +72,7 @@
       :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_z', 'desc'], '')"
       :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_z', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
       :errors="null"
+      @input="update"
     />
     <!-- End of MUSCAT instrument specific fields -->
     <ocs-custom-select
@@ -77,6 +83,7 @@
       :hide="getFromObject(formConfig, ['instrumentConfig', 'readout_mode', 'hide'], readoutModeOptions.length <= 1)"
       :options="readoutModeOptions"
       :errors="errors.mode"
+      @input="update"
     />
     <div v-for="opticalElementGroup in availableOpticalElementGroups" :key="opticalElementGroup.type">
       <ocs-custom-select
@@ -99,6 +106,7 @@
       :hide="getFromObject(formConfig, ['instrumentConfig', 'rotator_mode', 'hide'], rotatorModeOptions.length <= 1)"
       :errors="errors.rotator_mode"
       :options="rotatorModeOptions"
+      @input="update"
     />
     <!-- TODO: Validate required field values -->
     <ocs-custom-field
@@ -120,6 +128,7 @@
       :hide="getFromObject(formConfig, ['instrumentConfig', 'defocus', 'hide'], selectedInstrumentCategory !== 'IMAGE' || simpleInterface)"
       :errors="null"
       type="number"
+      @input="update"
     />
   </b-form>
 </template>
@@ -180,9 +189,10 @@ export default {
       rotatorModeOptions,
       requiredRotatorModeFields,
       availableOpticalElementGroups,
+      update,
       updateBinning,
       updateOpticalElement,
-      updateInstrumentConfigExtraParam
+      updateInstrumentConfigExtraParam,
     } = OCSComposable.baseInstrumentConfig(instrumentConfig, availableInstruments, selectedInstrument, context);
 
     return {
@@ -193,6 +203,7 @@ export default {
       requiredRotatorModeFields,
       availableOpticalElementGroups,
       // Methods
+      update,
       updateBinning,
       updateOpticalElement,
       updateInstrumentConfigExtraParam
@@ -209,12 +220,7 @@ export default {
       exposureModeOptions: [
         { value: 'SYNCHRONOUS', text: 'Synchronous' },
         { value: 'ASYNCHRONOUS', text: 'Asynchronous' }
-      ],
-      position: {
-        requestIndex: this.requestIndex,
-        configurationIndex: this.configurationIndex,
-        instrumentConfigIndex: this.index
-      }
+      ]
     };
   },
   computed: {
@@ -240,6 +246,7 @@ export default {
   watch: {
     defocus: function(value) {
       this.instrumentConfig.extra_params.defocus = value || undefined;
+      this.update();
     },
     exposure_time_g: function(value) {
       this.instrumentConfig.extra_params.exposure_time_g = value || undefined;
@@ -259,6 +266,7 @@ export default {
     },
     exposure_mode: function(value) {
       this.instrumentConfig.extra_params.exposure_mode = value || undefined;
+      this.update();
     },
     selectedInstrument: function(value) {
       if (value === '2M0-SCICAM-MUSCAT') {
@@ -281,6 +289,7 @@ export default {
       } else {
         this.instrumentConfig.extra_params.defocus = undefined;
       }
+      this.update();
     }
   },
   mounted: function() {
@@ -310,12 +319,15 @@ export default {
       return OCSUtil.getFromObject(obj, path, defaultValue);
     },
     updateExposureTime: function() {
+      // FIXME: Switching from Muscat to another instruments results in the exposure time being
+      // set to NaN
       this.instrumentConfig.exposure_time = Math.max(
         this.instrumentConfig.extra_params.exposure_time_g,
         this.instrumentConfig.extra_params.exposure_time_r,
         this.instrumentConfig.extra_params.exposure_time_i,
         this.instrumentConfig.extra_params.exposure_time_z
       );
+      this.update();
     }
   }
 };

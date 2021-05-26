@@ -127,7 +127,7 @@
                 selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].configurationType
               "
               :form-config="formConfig"
-              @instrumentconfigupdate="$emit('instrumentconfigupdate', $event)"
+              @instrument-config-update="slotProps.update"
             />
           </template>
 
