@@ -147,7 +147,7 @@
               field="name"
               label="Name"
               :errors="slotProps.data.errors"
-              @input="doTargetLookup(slotProps.data.target)"
+              @input="doTargetLookup(slotProps.data.target, slotProps.update)"
             >
               <div v-show="targetLookup.busy || targetLookup.failed" slot="extra-help-text">
                 <i v-show="targetLookup.busy" class="fa fa-spinner fa-spin fa-fw" /> {{ targetLookup.text }}
@@ -777,7 +777,7 @@ export default {
     onRequestGroupSaved: function(requestGroupId) {
       this.$router.push({ name: 'requestgroupDetail', params: { id: requestGroupId } });
     },
-    doTargetLookup: _.debounce(function(target) {
+    doTargetLookup: _.debounce(function(target, callback) {
       this.targetLookup.busy = true;
       this.targetLookup.failed = false;
       this.targetLookup.text = 'Searching for coordinates...';
@@ -829,6 +829,7 @@ export default {
           if (status !== 'abort') {
             this.targetLookup.busy = false;
           }
+          callback();
         });
     }, 500),
     generateCalibs: function(configurationIndex, requestIndex) {
