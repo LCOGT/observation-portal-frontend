@@ -350,6 +350,7 @@ export default {
         },
         configuration: {
           instrument_category: {
+            hide: simpleInterface,
             label: 'Observation Type'
           },
           type: {
@@ -394,6 +395,18 @@ export default {
           },
           exposure_time_z: {
             desc: 'Exposure Time for the z-band camera in Seconds'
+          },
+          diffuser_g_position: {
+            hide: simpleInterface
+          },
+          diffuser_r_position: {
+            hide: simpleInterface
+          },
+          diffuser_i_position: {
+            hide: simpleInterface
+          },
+          diffuser_z_position: {
+            hide: simpleInterface
           }
         },
         guidingConfig: {
@@ -710,29 +723,38 @@ export default {
           _.set(instrumentsData, ['modes', 'acquisition', 'modes'], acquisitionModes);
           _.set(instrumentsData, ['modes', 'acquisition', 'default'], 'OFF');
 
-          // Only show simple filters for the simple interface
-          instrumentsData[instrument].optical_elements = {
-            filters: [
-              {
-                name: 'Blue',
-                code: 'b',
-                schedulable: true,
-                default: true
-              },
-              {
-                name: 'Green',
-                code: 'v',
-                schedulable: true,
-                default: false
-              },
-              {
-                name: 'Red',
-                code: 'rp',
-                schedulable: true,
-                default: false
-              }
-            ]
-          };
+          // Only show simple optical elements for the simple interface
+          if (instrument === '2M0-SCICAM-MUSCAT') {
+            instrumentsData[instrument].optical_elements = {
+              diffuser_g_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }],
+              diffuser_r_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }],
+              diffuser_i_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }],
+              diffuser_z_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }]
+            };
+          } else {
+            instrumentsData[instrument].optical_elements = {
+              filters: [
+                {
+                  name: 'Blue',
+                  code: 'b',
+                  schedulable: true,
+                  default: true
+                },
+                {
+                  name: 'Green',
+                  code: 'v',
+                  schedulable: true,
+                  default: false
+                },
+                {
+                  name: 'Red',
+                  code: 'rp',
+                  schedulable: true,
+                  default: false
+                }
+              ]
+            };
+          }
         }
       }
 

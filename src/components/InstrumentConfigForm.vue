@@ -103,7 +103,7 @@
       field="rotator_mode"
       :label="getFromObject(formConfig, ['instrumentConfig', 'rotator_mode', 'label'], 'Rotator Mode')"
       :desc="getFromObject(formConfig, ['instrumentConfig', 'rotator_mode', 'desc'], '')"
-      :hide="getFromObject(formConfig, ['instrumentConfig', 'rotator_mode', 'hide'], rotatorModeOptions.length <= 1)"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'rotator_mode', 'hide'], rotatorModeOptions.length <= 0)"
       :errors="errors.rotator_mode"
       :options="rotatorModeOptions"
       @input="update"
@@ -115,7 +115,7 @@
       v-model="instrumentConfig.extra_params[field]"
       :label="getFromObject(formConfig, ['instrumentConfig', field, 'label'], field)"
       :desc="getFromObject(formConfig, ['instrumentConfig', field, 'desc'], '')"
-      :hide="getFromObject(formConfig, ['instrumentConfig', field, 'hide'], rotatorModeOptions.length <= 1)"
+      :hide="getFromObject(formConfig, ['instrumentConfig', field, 'hide'], rotatorModeOptions.length <= 0)"
       :errors="null"
       @input="updateInstrumentConfigExtraParam($event, field)"
     />
