@@ -22,152 +22,163 @@
         <template slot="title">
           <span><i class="far fa-edit" /> Form</span>
         </template>
-        <ocs-request-group-composition-form
-          :observation-portal-api-base-url="observationPortalApiUrl"
-          :datetime-format="datetimeFormat"
-          :profile="profile"
-          :request-group="requestGroup"
-          :instruments="instruments"
-          :instrument-category-to-name="instrumentCategoryToName"
-          :site-code-to-color="siteToColor"
-          :site-code-to-name="siteCodeToName"
-          show-airmass-plot
-          :loaded-draft-id="draftId"
-          :form-config="formConfig"
-          :tooltip-config="tooltipConfig"
-          @save-draft-failed="onSaveDraftFailed"
-          @save-draft-succeeded="onSaveDraftSucceeded"
-          @request-group-saved="onRequestGroupSaved"
-        >
-          <template #request-group-help="slotProps">
-            <h3>
-              Duration of Observation Request:
-              <sup
-                v-b-tooltip="tooltipConfig"
-                class="text-primary"
-                title="The time that will be deducted from your proposal when this request completes.
-                Includes exposure times, slew times, and instrument overheads."
-              >
-                ?
-              </sup>
-            </h3>
-            <h2>{{ slotProps.data.durationData | generateDurationString }}</h2>
-            <br />
-            <div v-if="!simpleInterface">
-              <ul>
-                <li>
-                  <a target="_blank" href="https://lco.global/documentation/special-scheduling-modes/">More information about Rapid Response mode.</a>
-                </li>
-                <li>
-                  <a target="_blank" href=" https://lco.global/documents/20/the_new_priority_factor.pdf">
-                    More information about IntraProprosal Priority (IPP).
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </template>
-          <template #window-help>
-            <ul>
-              <li>
-                Try the
-                <a href="https://lco.global/observatory/visibility/" title="Target Visibilty Calculator" target="_blank">
-                  Target Visibility Calculator.
-                </a>
-              </li>
-              <li v-show="requestGroup.observation_type === 'RAPID_RESPONSE'">
-                A start time cannot be selected for a Rapid Response observation. It will be scheduled as soon as possible.
-              </li>
-            </ul>
-          </template>
-          <template #configuration-help="slotProps">
-            <ul>
-              <li>
-                <a target="_blank" href="https://lco.global/observatory/instruments/">More information about LCO instruments.</a>
-              </li>
-              <li>
-                For more information on the different options, see the "Getting Started" guide in our
-                <a href="https://lco.global/documentation/" target="_blank">
-                  Documentation section.
-                </a>
-              </li>
-            </ul>
-            <!-- TODO: Do not show if calibrations have been created -->
-            <b-row v-show="slotProps.data.configuration.type === 'SPECTRUM'" class="p-2">
-              <b-col>
-                <h3>Calibration frames</h3>
-                <p>
-                  We recommend that you schedule calibration frames with a spectrum type configuration. Click <em>'Create calibration frames'</em> to
-                  add four calibration configurations to this request: one arc and one flat before and one arc and one flat after your spectrum.
-                </p>
-                <b-button
-                  variant="outline-primary"
-                  block
-                  @click="generateCalibs(slotProps.data.position.configurationIndex, slotProps.data.position.requestIndex)"
-                >
-                  Create calibration frames
-                </b-button>
-              </b-col>
-            </b-row>
-          </template>
-
-          <template #instrument-config-form="slotProps">
-            <instrument-config-form
-              :instrument-config="slotProps.data.instrumentConfig"
-              :errors="slotProps.data.errors"
-              :show="slotProps.data.show"
-              :simple-interface="simpleInterface"
-              :available-instruments="instruments"
-              :selected-instrument="
-                selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].selectedInstrument
-              "
-              :selected-instrument-category="
-                selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].selectedInstrumentCategory
-              "
-              :configuration-type="
-                selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].configurationType
-              "
+        <b-container class="p-0 mt-2">
+          <b-col>
+            <ocs-request-group-composition-form
+              :observation-portal-api-base-url="observationPortalApiUrl"
+              :datetime-format="datetimeFormat"
+              :profile="profile"
+              :request-group="requestGroup"
+              :instruments="instruments"
+              :instrument-category-to-name="instrumentCategoryToName"
+              :site-code-to-color="siteToColor"
+              :site-code-to-name="siteCodeToName"
+              show-airmass-plot
+              :loaded-draft-id="draftId"
               :form-config="formConfig"
-              @instrument-config-update="slotProps.update"
-            />
-          </template>
-
-          <template #instrument-config-help>
-            <ul>
-              <li>
-                Try the
-                <a href=" https://exposure-time-calculator.lco.global/" target="_blank">
-                  online Exposure Time Calculator.
-                </a>
-              </li>
-            </ul>
-          </template>
-          <template #target-name-field="slotProps">
-            <ocs-custom-field
-              v-model="slotProps.data.target.name"
-              field="name"
-              label="Name"
-              :errors="slotProps.data.errors"
-              @input="doTargetLookup(slotProps.data.target, slotProps.update)"
+              :tooltip-config="tooltipConfig"
+              @save-draft-failed="onSaveDraftFailed"
+              @save-draft-succeeded="onSaveDraftSucceeded"
+              @request-group-saved="onRequestGroupSaved"
             >
-              <div v-show="targetLookup.busy || targetLookup.failed" slot="extra-help-text">
-                <i v-show="targetLookup.busy" class="fa fa-spinner fa-spin fa-fw" /> {{ targetLookup.text }}
-              </div>
-            </ocs-custom-field>
-          </template>
-          <template #target-help="slotProps">
-            <archive v-if="slotProps.data.target.ra && slotProps.data.target.dec" :ra="slotProps.data.target.ra" :dec="slotProps.data.target.dec" />
-          </template>
-          <template #constraints-help>
-            <ul>
-              <li>
-                Advice on
-                <a href="https://lco.global/documentation/airmass-limit" target="_blank">
-                  setting the airmass limit.
-                </a>
-              </li>
-            </ul>
-          </template>
-        </ocs-request-group-composition-form>
+              <template #request-group-help="slotProps">
+                <h3>
+                  Duration of Observation Request:
+                  <sup
+                    v-b-tooltip="tooltipConfig"
+                    class="text-primary"
+                    title="The time that will be deducted from your proposal when this request completes.
+                Includes exposure times, slew times, and instrument overheads."
+                  >
+                    ?
+                  </sup>
+                </h3>
+                <h2>{{ slotProps.data.durationData | generateDurationString }}</h2>
+                <br />
+                <div v-if="!simpleInterface">
+                  <ul>
+                    <li>
+                      <a target="_blank" href="https://lco.global/documentation/special-scheduling-modes/"
+                        >More information about Rapid Response mode.</a
+                      >
+                    </li>
+                    <li>
+                      <a target="_blank" href=" https://lco.global/documents/20/the_new_priority_factor.pdf">
+                        More information about IntraProprosal Priority (IPP).
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </template>
+              <template #window-help>
+                <ul>
+                  <li>
+                    Try the
+                    <a href="https://lco.global/observatory/visibility/" title="Target Visibilty Calculator" target="_blank">
+                      Target Visibility Calculator.
+                    </a>
+                  </li>
+                  <li v-show="requestGroup.observation_type === 'RAPID_RESPONSE'">
+                    A start time cannot be selected for a Rapid Response observation. It will be scheduled as soon as possible.
+                  </li>
+                </ul>
+              </template>
+              <template #configuration-help="slotProps">
+                <ul>
+                  <li>
+                    <a target="_blank" href="https://lco.global/observatory/instruments/">More information about LCO instruments.</a>
+                  </li>
+                  <li>
+                    For more information on the different options, see the "Getting Started" guide in our
+                    <a href="https://lco.global/documentation/" target="_blank">
+                      Documentation section.
+                    </a>
+                  </li>
+                </ul>
+                <!-- TODO: Do not show if calibrations have been created -->
+                <b-row v-show="slotProps.data.configuration.type === 'SPECTRUM'" class="p-2">
+                  <b-col>
+                    <h3>Calibration frames</h3>
+                    <p>
+                      We recommend that you schedule calibration frames with a spectrum type configuration. Click
+                      <em>'Create calibration frames'</em> to add four calibration configurations to this request: one arc and one flat before and one
+                      arc and one flat after your spectrum.
+                    </p>
+                    <b-button
+                      variant="outline-primary"
+                      block
+                      @click="generateCalibs(slotProps.data.position.configurationIndex, slotProps.data.position.requestIndex)"
+                    >
+                      Create calibration frames
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </template>
+
+              <template #instrument-config-form="slotProps">
+                <instrument-config-form
+                  :instrument-config="slotProps.data.instrumentConfig"
+                  :errors="slotProps.data.errors"
+                  :show="slotProps.data.show"
+                  :simple-interface="simpleInterface"
+                  :available-instruments="instruments"
+                  :selected-instrument="
+                    selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].selectedInstrument
+                  "
+                  :selected-instrument-category="
+                    selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].selectedInstrumentCategory
+                  "
+                  :configuration-type="
+                    selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].configurationType
+                  "
+                  :form-config="formConfig"
+                  @instrument-config-update="slotProps.update"
+                />
+              </template>
+
+              <template #instrument-config-help>
+                <ul>
+                  <li>
+                    Try the
+                    <a href=" https://exposure-time-calculator.lco.global/" target="_blank">
+                      online Exposure Time Calculator.
+                    </a>
+                  </li>
+                </ul>
+              </template>
+              <template #target-name-field="slotProps">
+                <ocs-custom-field
+                  v-model="slotProps.data.target.name"
+                  field="name"
+                  label="Name"
+                  :errors="slotProps.data.errors"
+                  @input="doTargetLookup(slotProps.data.target, slotProps.update)"
+                >
+                  <div v-show="targetLookup.busy || targetLookup.failed" slot="extra-help-text">
+                    <i v-show="targetLookup.busy" class="fa fa-spinner fa-spin fa-fw" /> {{ targetLookup.text }}
+                  </div>
+                </ocs-custom-field>
+              </template>
+              <template #target-help="slotProps">
+                <archive
+                  v-if="slotProps.data.target.ra && slotProps.data.target.dec"
+                  :ra="slotProps.data.target.ra"
+                  :dec="slotProps.data.target.dec"
+                />
+              </template>
+              <template #constraints-help>
+                <ul>
+                  <li>
+                    Advice on
+                    <a href="https://lco.global/documentation/airmass-limit" target="_blank">
+                      setting the airmass limit.
+                    </a>
+                  </li>
+                </ul>
+              </template>
+            </ocs-request-group-composition-form>
+          </b-col>
+        </b-container>
       </b-tab>
       <b-tab :active="tab == 2" @click="tab = 2">
         <template slot="title">
@@ -624,7 +635,7 @@ export default {
         _selectedInstruments[requestIndex] = {};
         for (let configurationIndex in this.requestGroup.requests[requestIndex].configurations) {
           let configuration = OCSUtil.getFromObject(this.requestGroup, ['requests', requestIndex, 'configurations', configurationIndex], {});
-          let selectedInstrument = OCSUtil.getFromObject(configuration,['instrument_type'], '');
+          let selectedInstrument = OCSUtil.getFromObject(configuration, ['instrument_type'], '');
           _selectedInstruments[requestIndex][configurationIndex] = {
             selectedInstrument: selectedInstrument,
             selectedInstrumentCategory: OCSUtil.getFromObject(this.instruments, [selectedInstrument, 'type'], ''),

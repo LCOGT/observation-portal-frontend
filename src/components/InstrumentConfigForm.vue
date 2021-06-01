@@ -191,7 +191,7 @@ export default {
       availableOpticalElementGroups,
       update,
       updateOpticalElement,
-      updateInstrumentConfigExtraParam,
+      updateInstrumentConfigExtraParam
     } = OCSComposable.baseInstrumentConfig(instrumentConfig, availableInstruments, selectedInstrument, context);
 
     return {
