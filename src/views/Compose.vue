@@ -869,6 +869,10 @@ export default {
       calibs[1].guiding_config.optional = true;
       calibs[0].guiding_config.mode = 'ON';
       calibs[1].guiding_config.mode = 'ON';
+      calibs[0].acquisition_config.extra_params = {};
+      calibs[1].acquisition_config.extra_params = {};
+      calibs[0].acquisition_config.mode = 'OFF';
+      calibs[1].acquisition_config.mode = 'OFF';
       for (let ic in calibs[0].instrument_configs) {
         calibs[0].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
           calibs[0].instrument_configs[ic].optical_elements.slit,
@@ -883,6 +887,10 @@ export default {
       calibs[3].guiding_config.optional = true;
       calibs[2].guiding_config.mode = 'ON';
       calibs[3].guiding_config.mode = 'ON';
+      calibs[2].acquisition_config.extra_params = {};
+      calibs[3].acquisition_config.extra_params = {};
+      calibs[2].acquisition_config.mode = 'OFF';
+      calibs[3].acquisition_config.mode = 'OFF';
       for (let ic in calibs[3].instrument_configs) {
         calibs[3].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
           calibs[3].instrument_configs[ic].optical_elements.slit,
