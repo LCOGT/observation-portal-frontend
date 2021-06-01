@@ -190,7 +190,6 @@ export default {
       requiredRotatorModeFields,
       availableOpticalElementGroups,
       update,
-      updateBinning,
       updateOpticalElement,
       updateInstrumentConfigExtraParam,
     } = OCSComposable.baseInstrumentConfig(instrumentConfig, availableInstruments, selectedInstrument, context);
@@ -204,7 +203,6 @@ export default {
       availableOpticalElementGroups,
       // Methods
       update,
-      updateBinning,
       updateOpticalElement,
       updateInstrumentConfigExtraParam
     };

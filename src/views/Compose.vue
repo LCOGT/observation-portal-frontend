@@ -538,8 +538,6 @@ export default {
                 instrument_type: '',
                 instrument_configs: [
                   {
-                    bin_x: '',
-                    bin_y: '',
                     exposure_count: 1,
                     exposure_time: '',
                     mode: '',
