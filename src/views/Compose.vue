@@ -705,9 +705,9 @@ export default {
       localStorage.setItem('hasVisited', 'true');
     },
     parseInstrumentsForForm: function(instrumentsData) {
-      // Update instrument data, returning only the instruments / instrument data that should be used in for form
+      // Parse instrument data, returning only the instruments / instrument data that should be used in the form.
 
-      // Leave out instruments that we don't want to show on the form
+      // Leave out instruments that we don't want to show on the form.
       let instrumentsToDelete = [];
       for (let instrument in instrumentsData) {
         let isCommissioning = instrument.includes('COMMISSIONING');
