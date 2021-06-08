@@ -554,6 +554,8 @@ export default {
                     mode: '',
                     rotator_mode: '',
                     extra_params: {
+                      offset_ra: 0,
+                      offset_dec: 0,
                       defocus: 0
                     },
                     optical_elements: {}
