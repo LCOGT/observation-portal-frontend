@@ -29,17 +29,17 @@
     </ocs-custom-field>
     <!-- MUSCAT instrument specific fields -->
     <ocs-custom-select
-      v-model="exposure_mode"
+      v-model="muscat.exposure_mode"
       field="exposure_mode"
       :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_mode', 'label'], 'Exposure Mode')"
       :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_mode', 'desc'], '')"
       :hide="getFromObject(formConfig, ['instrumentConfig', 'exposure_mode', 'hide'], selectedInstrument !== '2M0-SCICAM-MUSCAT')"
-      :options="exposureModeOptions"
+      :options="muscat.exposureModeOptions"
       :errors="null"
       @input="update"
     />
     <ocs-custom-field
-      v-model="exposure_time_g"
+      v-model="muscat.exposure_time_g"
       field="exposure_time_g"
       :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_g', 'label'], 'Exposure Time g')"
       :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_g', 'desc'], '')"
@@ -48,7 +48,7 @@
       @input="update"
     />
     <ocs-custom-field
-      v-model="exposure_time_r"
+      v-model="muscat.exposure_time_r"
       field="exposure_time_r"
       :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_r', 'label'], 'Exposure Time r')"
       :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_r', 'desc'], '')"
@@ -57,7 +57,7 @@
       @input="update"
     />
     <ocs-custom-field
-      v-model="exposure_time_i"
+      v-model="muscat.exposure_time_i"
       field="exposure_time_i"
       :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_i', 'label'], 'Exposure Time i')"
       :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_i', 'desc'], '')"
@@ -66,7 +66,7 @@
       @input="update"
     />
     <ocs-custom-field
-      v-model="exposure_time_z"
+      v-model="muscat.exposure_time_z"
       field="exposure_time_z"
       :label="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_z', 'label'], 'Exposure Time z')"
       :desc="getFromObject(formConfig, ['instrumentConfig', 'exposure_time_z', 'desc'], '')"
@@ -232,15 +232,18 @@ export default {
   data: function() {
     return {
       defocus: 0,
-      exposure_time_g: 0,
-      exposure_time_r: 0,
-      exposure_time_i: 0,
-      exposure_time_z: 0,
-      exposure_mode: 'SYNCHRONOUS',
-      exposureModeOptions: [
-        { value: 'SYNCHRONOUS', text: 'Synchronous' },
-        { value: 'ASYNCHRONOUS', text: 'Asynchronous' }
-      ]
+      // Fields used for the muscat instrument
+      muscat: {
+        exposure_time_g: 0,
+        exposure_time_r: 0,
+        exposure_time_i: 0,
+        exposure_time_z: 0,
+        exposure_mode: 'SYNCHRONOUS',
+        exposureModeOptions: [
+          { value: 'SYNCHRONOUS', text: 'Synchronous' },
+          { value: 'ASYNCHRONOUS', text: 'Asynchronous' }
+        ]
+      }
     };
   },
   computed: {
@@ -268,33 +271,33 @@ export default {
       this.instrumentConfig.extra_params.defocus = value || undefined;
       this.update();
     },
-    exposure_time_g: function(value) {
+    'muscat.exposure_time_g': function(value) {
       this.instrumentConfig.extra_params.exposure_time_g = value || undefined;
       this.updateExposureTime();
     },
-    exposure_time_r: function(value) {
+    'muscat.exposure_time_r': function(value) {
       this.instrumentConfig.extra_params.exposure_time_r = value || undefined;
       this.updateExposureTime();
     },
-    exposure_time_i: function(value) {
+    'muscat.exposure_time_i': function(value) {
       this.instrumentConfig.extra_params.exposure_time_i = value || undefined;
       this.updateExposureTime();
     },
-    exposure_time_z: function(value) {
+    'muscat.exposure_time_z': function(value) {
       this.instrumentConfig.extra_params.exposure_time_z = value || undefined;
       this.updateExposureTime();
     },
-    exposure_mode: function(value) {
+    'muscat.exposure_mode': function(value) {
       this.instrumentConfig.extra_params.exposure_mode = value || undefined;
       this.update();
     },
     selectedInstrument: function(value) {
       if (value === '2M0-SCICAM-MUSCAT') {
-        this.instrumentConfig.extra_params.exposure_time_g = this.exposure_time_g = this.instrumentConfig.exposure_time;
-        this.instrumentConfig.extra_params.exposure_time_r = this.exposure_time_r = this.instrumentConfig.exposure_time;
-        this.instrumentConfig.extra_params.exposure_time_i = this.exposure_time_i = this.instrumentConfig.exposure_time;
-        this.instrumentConfig.extra_params.exposure_time_z = this.exposure_time_z = this.instrumentConfig.exposure_time;
-        this.instrumentConfig.extra_params.exposure_mode = this.exposure_mode = 'SYNCHRONOUS';
+        this.instrumentConfig.extra_params.exposure_time_g = this.muscat.exposure_time_g = this.instrumentConfig.exposure_time;
+        this.instrumentConfig.extra_params.exposure_time_r = this.muscat.exposure_time_r = this.instrumentConfig.exposure_time;
+        this.instrumentConfig.extra_params.exposure_time_i = this.muscat.exposure_time_i = this.instrumentConfig.exposure_time;
+        this.instrumentConfig.extra_params.exposure_time_z = this.muscat.exposure_time_z = this.instrumentConfig.exposure_time;
+        this.instrumentConfig.extra_params.exposure_mode = this.muscat.exposure_mode = 'SYNCHRONOUS';
       } else {
         this.instrumentConfig.extra_params.exposure_time_g = undefined;
         this.instrumentConfig.extra_params.exposure_time_r = undefined;
@@ -319,19 +322,19 @@ export default {
       this.defocus = this.instrumentConfig.extra_params.defocus;
     }
     if (this.instrumentConfig.extra_params.exposure_time_g) {
-      this.exposure_time_g = this.instrumentConfig.extra_params.exposure_time_g;
+      this.muscat.exposure_time_g = this.instrumentConfig.extra_params.exposure_time_g;
     }
     if (this.instrumentConfig.extra_params.exposure_time_r) {
-      this.exposure_time_r = this.instrumentConfig.extra_params.exposure_time_r;
+      this.muscat.exposure_time_r = this.instrumentConfig.extra_params.exposure_time_r;
     }
     if (this.instrumentConfig.extra_params.exposure_time_i) {
-      this.exposure_time_i = this.instrumentConfig.extra_params.exposure_time_i;
+      this.muscat.exposure_time_i = this.instrumentConfig.extra_params.exposure_time_i;
     }
     if (this.instrumentConfig.extra_params.exposure_time_z) {
-      this.exposure_time_z = this.instrumentConfig.extra_params.exposure_time_z;
+      this.muscat.exposure_time_z = this.instrumentConfig.extra_params.exposure_time_z;
     }
     if (this.instrumentConfig.extra_params.exposure_mode) {
-      this.exposure_mode = this.instrumentConfig.extra_params.exposure_mode;
+      this.muscat.exposure_mode = this.instrumentConfig.extra_params.exposure_mode;
     }
   },
   methods: {
