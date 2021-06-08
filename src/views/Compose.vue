@@ -3,7 +3,7 @@
     <b-form-row>
       <b-col>
         <!-- TODO Add in LCO terms -->
-        <ocs-custom-alert v-show="!isMemberOfActiveProposals" alertclass="danger" :dismissible="false">
+        <ocs-custom-alert v-show="!isMemberOfActiveProposals" alert-class="danger" :dismissible="false">
           <p>
             You must be a member of a currently active proposal in order to create and submit observation requests. You can review the
             <a href="https://lco.global/files/User_Documentation/gettingstartedonthelconetwork.latest.pdf">getting started guide</a> or the
@@ -12,7 +12,7 @@
         </ocs-custom-alert>
         <!-- TODO: If the same alert is brought up more than once, it will only display the
         first time. This applies to all alerts, not just this one -->
-        <ocs-custom-alert v-for="alert in alerts" :key="alert.msg" :alertclass="alert.class" :dismissible="true">
+        <ocs-custom-alert v-for="alert in alerts" :key="alert.msg" :alert-class="alert.class" :dismissible="true">
           {{ alert.msg }}
         </ocs-custom-alert>
       </b-col>
