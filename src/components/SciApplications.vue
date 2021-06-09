@@ -184,7 +184,7 @@ export default {
     getTimeRequested: function(sciApp, telescopeName) {
       let timeRequested = 0;
       for (let timeRequest of _.get(sciApp, 'timerequest_set', [])) {
-        if (timeRequest.telescope_name === telescopeName) {
+        if (timeRequest.telescope_names.includes(telescopeName)) {
           timeRequested += timeRequest.std_time;
           timeRequested += timeRequest.rr_time;
           timeRequested += timeRequest.tc_time;

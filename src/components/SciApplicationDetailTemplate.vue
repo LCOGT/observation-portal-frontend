@@ -42,7 +42,7 @@
             </tr>
             <tr v-for="(timeRequest, index) in timeRequestGroup" :key="semester + '-' + index">
               <td v-if="isKeyApplication"></td>
-              <td>{{ timeRequest.instrument_name }}</td>
+              <td>{{ timeRequest.instrument_names.join() }}</td>
               <td class="centered-text">{{ timeRequest.std_time }}</td>
               <td class="centered-text">{{ timeRequest.rr_time }}</td>
               <td class="centered-text">{{ timeRequest.tc_time }}</td>
