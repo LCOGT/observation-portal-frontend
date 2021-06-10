@@ -96,8 +96,6 @@ import $ from 'jquery';
 import _ from 'lodash';
 import { OCSUtil, OCSMixin } from 'ocs-component-lib';
 
-import { confirmMixin } from '@/components/util/utilMixins.js';
-
 export default {
   name: 'SciApplications',
   filters: {
@@ -109,7 +107,7 @@ export default {
       }
     }
   },
-  mixins: [OCSMixin.getDataListWithCountMixin, confirmMixin],
+  mixins: [OCSMixin.getDataListWithCountMixin, OCSMixin.confirmMixin],
   props: {
     isSciCollab: {
       type: Boolean,
