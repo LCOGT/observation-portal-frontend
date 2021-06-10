@@ -37,138 +37,11 @@ function arcDefaultExposureTime(instrumentType) {
   }
 }
 
-function semesterStart(datetime) {
-  if (datetime.month() < 3) {
-    return datetime
-      .subtract(1, 'years')
-      .month(9)
-      .date(1);
-  } else if (datetime.month() < 9) {
-    return datetime.month(3).date(1);
-  } else {
-    return datetime.month(9).date(1);
-  }
-}
-
-function semesterEnd(datetime) {
-  if (datetime.month() < 3) {
-    return datetime
-      .month(3)
-      .date(1)
-      .subtract(1, 'days');
-  } else if (datetime.month() < 9) {
-    return datetime
-      .month(9)
-      .date(1)
-      .subtract(1, 'days');
-  } else {
-    return datetime
-      .add(1, 'years')
-      .month(3)
-      .date(1)
-      .subtract(1, 'days');
-  }
-}
-
-function sexagesimalRaToDecimal(ra) {
-  // algorithm: ra_decimal = 15 * ( hh + mm/60 + ss/(60 * 60) )
-  /*                 (    hh     ):(     mm            ):  (   ss  ) */
-  if (typeof ra === 'string') {
-    let m = ra.match('^([0-9]?[0-9])[: ]([0-5]?[0-9][.0-9]*)[: ]?([.0-9]+)?$');
-    if (m) {
-      let hh = parseInt(m[1], 10);
-      let mm = parseFloat(m[2]);
-      let ss = m[3] ? parseFloat(m[3]) : 0.0;
-      if (hh >= 0 && hh <= 23 && mm >= 0 && mm < 60 && ss >= 0 && ss < 60) {
-        ra = (15.0 * (hh + mm / 60.0 + ss / 3600.0)).toFixed(10);
-      }
-    }
-  }
-  return ra;
-}
-
-function sexagesimalDecToDecimal(dec) {
-  // algorithm: dec_decimal = sign * ( dd + mm/60 + ss/(60 * 60) )
-  /*                  ( +/-   ) (    dd     ):(     mm            ): (   ss   ) */
-  if (typeof dec === 'string') {
-    let m = dec.match('^([+-])?([0-9]?[0-9])[: ]([0-5]?[0-9][.0-9]*)[: ]?([.0-9]+)?$');
-    if (m) {
-      let sign = m[1] === '-' ? -1 : 1;
-      let dd = parseInt(m[2], 10);
-      let mm = parseFloat(m[3]);
-      let ss = m[4] ? parseFloat(m[4]) : 0.0;
-      if (dd >= 0 && dd <= 90 && mm >= 0 && mm <= 59 && ss >= 0 && ss < 60) {
-        dec = (sign * (dd + mm / 60.0 + ss / 3600.0)).toFixed(10);
-      }
-    }
-  }
-  return dec;
-}
-
-function QueryString() {
-  let qString = {};
-  let query = window.location.search.substring(1);
-  let vars = query.split('&');
-  for (let i = 0; i < vars.length; i++) {
-    let pair = vars[i].split('=');
-    if (typeof qString[pair[0]] === 'undefined') {
-      qString[pair[0]] = decodeURIComponent(pair[1]);
-    } else if (typeof qString[pair[0]] === 'string') {
-      let arr = [qString[pair[0]], decodeURIComponent(pair[1])];
-      qString[pair[0]] = arr;
-    } else {
-      qString[pair[0]].push(decodeURIComponent(pair[1]));
-    }
-  }
-  return qString;
-}
-
 function julianToModifiedJulian(jd) {
   if (jd && jd >= 2400000.5) {
     let precision = (jd + '').split('.')[1].length;
     return Number((parseFloat(jd) - 2400000.5).toFixed(precision));
   }
-}
-
-let apiFieldToReadable = {
-  group_id: {
-    humanReadable: 'Title',
-    description: ''
-  },
-  rotator_angle: {
-    humanReadable: 'Rotator Angle',
-    description: 'Position angle of the slit in degrees east of north.'
-  },
-  acquire_radius: {
-    humanReadable: 'Acquire Radius',
-    description: 'The radius (in arcseconds) within which to search for the brightest object.'
-  },
-  ra: {
-    humanReadable: 'RA',
-    description: ''
-  }
-};
-
-function getFieldDescription(value) {
-  if (value in apiFieldToReadable) {
-    return apiFieldToReadable[value]['description'];
-  } else {
-    return '';
-  }
-}
-
-function extractTopLevelErrors(errors) {
-  let topLevelErrors = [];
-  if (_.isString(errors)) {
-    // The error will be a string if a validate_xxx method of the parent serializer
-    // returned an error, for example the validate_instrument_configs method on the
-    // ConfigurationSerializer. These should be displayed at the top of a section.
-    topLevelErrors = _.concat(topLevelErrors, [errors]);
-  }
-  if (errors.non_field_errors) {
-    topLevelErrors = _.concat(topLevelErrors, errors.non_field_errors);
-  }
-  return topLevelErrors;
 }
 
 function getCookie(name) {
@@ -200,14 +73,6 @@ const tooltipConfig = {
     hide: 100
   },
   trigger: 'hover'
-};
-
-let collapseMixin = {
-  watch: {
-    parentshow: function(value) {
-      this.show = value;
-    }
-  }
 };
 
 let siteToColor = {
@@ -383,14 +248,7 @@ let colorPalette = [
 ];
 
 export {
-  semesterStart,
-  semesterEnd,
-  sexagesimalRaToDecimal,
-  sexagesimalDecToDecimal,
-  QueryString,
-  apiFieldToReadable,
   datetimeFormat,
-  collapseMixin,
   siteToColor,
   siteCodeToName,
   arcDefaultExposureTime,
@@ -399,9 +257,7 @@ export {
   telescopeCodeToName,
   colorPalette,
   julianToModifiedJulian,
-  getFieldDescription,
   tooltipConfig,
   getCookie,
-  csrfSafeMethod,
-  extractTopLevelErrors
+  csrfSafeMethod
 };

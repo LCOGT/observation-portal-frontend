@@ -1,3 +1,7 @@
+// Loads in polyfills for targeted environment
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+// Load other dependencies
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
@@ -9,7 +13,9 @@ import $ from 'jquery';
 import { getCookie, csrfSafeMethod } from '@/utils.js';
 import { OCSComponentLib } from 'ocs-component-lib';
 import 'ocs-component-lib/dist/ocs-component-lib.css';
+import VueCompositionAPI from '@vue/composition-api';
 
+Vue.use(VueCompositionAPI);
 Vue.use(BootstrapVue);
 Vue.use(OCSComponentLib);
 

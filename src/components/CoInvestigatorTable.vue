@@ -117,7 +117,7 @@
 import $ from 'jquery';
 import { OCSMixin, OCSUtil } from 'ocs-component-lib';
 
-import { confirmMixin, clearAndSetErrorsMixin } from '@/components/util/utilMixins.js';
+import { clearAndSetErrorsMixin } from '@/components/util/utilMixins.js';
 
 export default {
   name: 'CoInvestigatorTable',
@@ -126,7 +126,7 @@ export default {
       return OCSUtil.formatFloat(value, precision);
     }
   },
-  mixins: [OCSMixin.paginationAndFilteringMixin, confirmMixin, clearAndSetErrorsMixin],
+  mixins: [OCSMixin.paginationAndFilteringMixin, OCSMixin.confirmMixin, clearAndSetErrorsMixin],
   props: {
     proposalId: {
       type: String,
