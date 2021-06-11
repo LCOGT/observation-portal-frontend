@@ -654,12 +654,12 @@ export default {
       url: `${this.observationPortalApiUrl}/api/instruments/`
     }).done(data => {
       this.instruments = this.parseInstrumentsForForm(data);
+      // Get existing requestGroup to initialize data
+      let requestGroupId = this.getRequestGroupIdFromQueryString();
+      if (requestGroupId > 0) {
+        this.loadFromExistingRequestGroup(requestGroupId);
+      }
     });
-    // Get existing requestGroup to initial data
-    let requestGroupId = this.getRequestGroupIdFromQueryString();
-    if (requestGroupId > 0) {
-      this.loadFromExistingRequestGroup(requestGroupId);
-    }
   },
   methods: {
     getRequestGroupIdFromQueryString: function() {
@@ -867,11 +867,12 @@ export default {
     }, 500),
     generateCalibs: function(configurationIndex, requestIndex) {
       let request = this.requestGroup.requests[requestIndex];
+      let instrumentType = _.get(request, ['configurations', configurationIndex, 'instrument_type'], '');
       let calibs = [{}, {}, {}, {}];
       for (let c in calibs) {
         calibs[c] = _.cloneDeep(request.configurations[configurationIndex]);
         for (let ic in calibs[c].instrument_configs) {
-          calibs[c].instrument_configs[ic].exposure_time = arcDefaultExposureTime(this.instrument_type);
+          calibs[c].instrument_configs[ic].exposure_time = arcDefaultExposureTime(instrumentType);
         }
       }
       calibs[0].type = 'LAMP_FLAT';
@@ -887,7 +888,7 @@ export default {
       for (let ic in calibs[0].instrument_configs) {
         calibs[0].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
           calibs[0].instrument_configs[ic].optical_elements.slit,
-          this.instrument_type,
+          instrumentType,
           calibs[0].instrument_configs[ic].mode
         );
       }
@@ -905,7 +906,7 @@ export default {
       for (let ic in calibs[3].instrument_configs) {
         calibs[3].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
           calibs[3].instrument_configs[ic].optical_elements.slit,
-          this.instrument_type,
+          instrumentType,
           calibs[3].instrument_configs[ic].mode
         );
       }
