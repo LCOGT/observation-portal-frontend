@@ -161,7 +161,7 @@
                 <template v-for="(timeallocation, idx) in timeallocations">
                   <tr :key="semester + '-instrument-types-' + idx">
                     <td></td>
-                    <td>{{ timeallocation.instrument_types.join() }}</td>
+                    <td>{{ timeallocation.instrument_types.join(', ') }}</td>
                     <td colspan="2"></td>
                   </tr>
                   <tr :key="semester + '-std-time-' + idx">
