@@ -27,6 +27,13 @@
         <b-alert v-for="error in apiValidationErrors.non_field_errors" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
         <b-alert v-for="error in apiValidationErrors.call_id" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
         <b-form>
+          <basic-custom-field
+            v-model="isStudent"
+            field-type="checkbox"
+            field="is-student-tag"
+            :errors="apiValidationErrors.tags"
+            label="Is student application"
+          ></basic-custom-field>
           <basic-custom-field v-model="sciApp.title" :errors="apiValidationErrors.title" label="Title" placeholder="Title"></basic-custom-field>
           <basic-custom-field
             v-model="sciApp.abstract"
@@ -467,6 +474,7 @@ export default {
     return {
       sciApp: sciAppData.sciApp,
       pdfPath: sciAppData.pdfPath,
+      isStudent: sciAppData.isStudent,
       clearPdf: false,
       userTableFields: ['email', 'firstName', 'lastName', 'institution'],
       timeRequestFields: [{ key: 'semester', class: 'd-none' }, 'instrument', 'standardTime', 'rapidResponse', 'timeCritical'],
@@ -579,8 +587,15 @@ export default {
         pi_institution: initialSciApp.pi_institution || '',
         coinvestigator_set: initialSciApp.coinvestigator_set || [],
         timerequest_set: initialSciApp.timerequest_set || [],
+        tags: initialSciApp.tags || [],
         pdf: null
       };
+
+      let isStudent = false;
+      if (sciApp.tags.indexOf('student') >= 0) {
+        isStudent = true;
+      }
+
       if (_.get(sciApp, 'timerequest_set', []).length === 0) {
         sciApp.timerequest_set = [this.getEmptyTimeRequest()];
       }
@@ -590,7 +605,7 @@ export default {
       // `pdfPath` will either be null for a new science application or
       // for an application to be updated where no pdf has been uploaded yet,
       // or it will be the path to an uploaded pdf.
-      return { sciApp: sciApp, pdfPath: initialSciApp.pdf || null };
+      return { sciApp: sciApp, pdfPath: initialSciApp.pdf || null, isStudent: isStudent };
     },
     getEmptyTimeRequest: function() {
       return { semester: '', instrument: '', std_time: 0, rr_time: 0, tc_time: 0 };
@@ -738,6 +753,16 @@ export default {
         formData.append('coinvestigator_set[' + i + ']last_name', coInvestigators[i].last_name || '');
         formData.append('coinvestigator_set[' + i + ']institution', coInvestigators[i].institution || '');
       }
+
+      // TODO: Handle case where the sciapp might already have other tags besides "student" set. If it does,
+      // we don't want to delete those tags
+      if (this.isStudent) {
+        formData.append('tags', ['student']);
+      } else {
+        // This empty list needs to be represented as a string otherwise the value sent to the backend is null
+        formData.append('tags', '[]');
+      }
+
       if (this.sciApp.pdf) {
         formData.append('pdf', this.sciApp.pdf);
       }

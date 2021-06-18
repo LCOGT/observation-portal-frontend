@@ -31,6 +31,8 @@
     <b-row>
       <b-col>
         <b-form inline @submit="onSubmit">
+          <label class="mr-sm-2" for="input-proposal-tag">Proposal tag:</label>
+          <b-form-input id="input-proposal-tag" v-model="queryParams.tag" />
           <label class="mr-sm-2" for="input-proposal-active">Proposal is active:</label>
           <b-form-select id="input-proposal-active" v-model="queryParams.active" :options="proposalActiveOptions" />
           <label class="m-sm-2" for="input-proposal-semester">Semester:</label>

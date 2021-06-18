@@ -31,6 +31,17 @@
         @input="input($event)"
         @blur="blur($event)"
       ></b-form-file>
+      <b-form-checkbox
+        v-else-if="fieldType === 'checkbox'"
+        :id="fieldId"
+        :checked="value"
+        :state="validationState"
+        :aria-describedby="helpId + ' ' + feedbackId"
+        v-bind="$attrs"
+        @input="input($event)"
+        @blur="blur($event)"
+      >
+      </b-form-checkbox>
       <b-form-input
         v-else
         :id="fieldId"
@@ -61,13 +72,20 @@ export default {
   props: {
     fieldType: {
       validator: function(value) {
-        return value === 'textarea' || value === 'select' || value === 'file' || value === 'input';
+        return value === 'textarea' || value === 'select' || value === 'file' || value === 'input' || value === 'checkbox';
       },
       default: 'input'
     },
     value: {
       validator: function(value) {
-        return value === null || value === undefined || typeof value === 'string' || typeof value === 'number' || typeof value === 'object';
+        return (
+          value === null ||
+          value === undefined ||
+          typeof value === 'string' ||
+          typeof value === 'number' ||
+          typeof value === 'object' ||
+          typeof value === 'boolean'
+        );
       },
       required: true
     },

@@ -10,6 +10,7 @@
             <h3>
               {{ data.id }} <small>{{ data.title }}</small>
             </h3>
+            <p>Tags: {{ data.tags }}</p>
             <p>{{ data.abstract }}</p>
             <template v-if="principleInvestigators.length === 1">
               <span class="font-weight-bolder">
