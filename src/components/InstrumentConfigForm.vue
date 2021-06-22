@@ -135,7 +135,7 @@
       field="offset-ra"
       :label="getFromObject(formConfig, ['instrumentConfig', 'offset_ra', 'label'], 'Offset RA')"
       :desc="getFromObject(formConfig, ['instrumentConfig', 'offset_ra', 'desc'], '')"
-      :hide="getFromObject(formConfig, ['instrumentConfig', 'offset_ra', 'hide'])"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'offset_ra', 'hide'], !ditheringIsAllowed)"
       :errors="null"
       @input="update"
     />
@@ -144,7 +144,7 @@
       field="offset-dec"
       :label="getFromObject(formConfig, ['instrumentConfig', 'offset_dec', 'label'], 'Offset Dec')"
       :desc="getFromObject(formConfig, ['instrumentConfig', 'offset_dec', 'desc'], '')"
-      :hide="getFromObject(formConfig, ['instrumentConfig', 'offset_dec', 'hide'])"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'offset_dec', 'hide'], !ditheringIsAllowed)"
       :errors="null"
       @input="update"
     />
@@ -185,6 +185,9 @@ export default {
     instrumentConfig: {
       type: Object,
       required: true
+    },
+    ditheringIsAllowed: {
+      type: Boolean
     },
     show: {
       type: Boolean

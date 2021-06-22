@@ -34,6 +34,7 @@
               :site-code-to-color="siteToColor"
               :site-code-to-name="siteCodeToName"
               show-airmass-plot
+              :dithering-allowed="ditheringAllowed"
               :loaded-draft-id="draftId"
               :form-config="formConfig"
               :tooltip-config="tooltipConfig"
@@ -122,6 +123,7 @@
                   :show="slotProps.data.show"
                   :simple-interface="simpleInterface"
                   :available-instruments="instruments"
+                  :dithering-is-allowed="slotProps.data.ditheringIsAllowed"
                   :selected-instrument="
                     selectedInstruments[slotProps.data.position.requestIndex][slotProps.data.position.configurationIndex].selectedInstrument
                   "
@@ -662,6 +664,10 @@ export default {
     });
   },
   methods: {
+    ditheringAllowed: function(configuration) {
+      let instrumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
+      return instrumentCategory === 'IMAGE';
+    },
     getRequestGroupIdFromQueryString: function() {
       let requestGroupId = -1;
       if (this.$route.query.requestgroupid) {
