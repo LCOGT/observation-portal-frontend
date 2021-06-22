@@ -1,5 +1,5 @@
 <template>
-  <b-form>
+  <b-form :id="id">
     <ocs-custom-field
       v-model="instrumentConfig.exposure_count"
       field="exposure_count"
@@ -159,6 +159,10 @@ import { lampFlatDefaultExposureTime, arcDefaultExposureTime } from '@/utils';
 export default {
   name: 'InstrumentConfigForm',
   props: {
+    id: {
+      type: String,
+      required: true
+    },
     errors: {
       type: Object,
       required: true

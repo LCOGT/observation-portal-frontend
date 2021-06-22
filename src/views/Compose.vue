@@ -118,6 +118,7 @@
 
               <template #instrument-config-form="slotProps">
                 <instrument-config-form
+                  :id="'instrument-config-form' + slotProps.data.position.requestIndex + slotProps.data.position.configurationIndex + slotProps.data.position.instrumentConfigIndex"
                   :instrument-config="slotProps.data.instrumentConfig"
                   :errors="slotProps.data.errors"
                   :show="slotProps.data.show"
