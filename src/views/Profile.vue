@@ -45,7 +45,7 @@
           description="Hide advanced fields on the request composition page."
         >
           <b-form-checkbox id="checkbox-simple-interface" v-model="formData.profile.simple_interface" :state="getValidState('simple_interface')">
-            Simple interface
+            Use Basic Mode
           </b-form-checkbox>
         </b-form-group>
         <b-form-group id="checkbox-group-notifications-enabled" label-for="checkbox-notifications-enabled">
