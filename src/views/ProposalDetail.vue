@@ -10,7 +10,6 @@
             <h3>
               {{ data.id }} <small>{{ data.title }}</small>
             </h3>
-            <p>Tags: {{ data.tags }}</p>
             <p>{{ data.abstract }}</p>
             <template v-if="principleInvestigators.length === 1">
               <span class="font-weight-bolder">
@@ -33,13 +32,19 @@
             </template>
           </b-col>
           <b-col md="4" cols="12">
-            <span class="font-weight-bolder"> Email Notifications </span
-            ><sup
+            <template v-if="data.tags.length > 0">
+              <span class="font-weight-bolder">Proposal Tags</span>
+              <div><b-badge v-for="tag in data.tags" :key="tag" variant="primary" class="mr-1">{{ tag }}</b-badge></div>
+              <br />
+            </template>
+            <span class="font-weight-bolder"> Email Notifications </span>
+            <sup
               v-b-tooltip="tooltipConfig"
               class="text-primary"
               title="If notifications are enabled, you will receive notifications whenever a requested observation on this proposal is completed."
-              >?</sup
             >
+              ?
+            </sup>
             <b-form @submit="updateProposalNotification">
               <b-form-group id="checkbox-group-proposal-notification" label-for="checkbox-proposal-notification">
                 <b-form-checkbox id="checkbox-proposal-notification" v-model="proposalNotification.enabled">

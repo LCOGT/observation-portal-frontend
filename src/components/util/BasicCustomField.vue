@@ -1,6 +1,12 @@
 <template>
   <span>
-    <b-form-group :id="field + '-fieldgroup'" :label-for="fieldId" :label="label" :label-sr-only="labelSrOnly">
+    <b-form-group
+      :id="field + '-fieldgroup'"
+      :label-for="fieldId"
+      :label="label"
+      :label-sr-only="labelSrOnly"
+      :description="description"
+    >
       <b-form-textarea
         v-if="fieldType === 'textarea'"
         :id="fieldId"
@@ -41,6 +47,7 @@
         @input="input($event)"
         @blur="blur($event)"
       >
+        {{ checkboxOptionLabel }}
       </b-form-checkbox>
       <b-form-input
         v-else
@@ -92,6 +99,14 @@ export default {
     label: {
       type: String,
       required: true
+    },
+    description: {
+      type: String,
+      default: ''
+    },
+    checkboxOptionLabel: {
+      type: String,
+      default: ''
     },
     field: {
       type: String,

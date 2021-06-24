@@ -27,13 +27,6 @@
         <b-alert v-for="error in apiValidationErrors.non_field_errors" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
         <b-alert v-for="error in apiValidationErrors.call_id" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
         <b-form>
-          <basic-custom-field
-            v-model="isStudent"
-            field-type="checkbox"
-            field="is-student-tag"
-            :errors="apiValidationErrors.tags"
-            label="Is student application"
-          ></basic-custom-field>
           <basic-custom-field v-model="sciApp.title" :errors="apiValidationErrors.title" label="Title" placeholder="Title"></basic-custom-field>
           <basic-custom-field
             v-model="sciApp.abstract"
@@ -43,6 +36,14 @@
             field="abstract"
             field-type="textarea"
             rows="8"
+          ></basic-custom-field>
+          <basic-custom-field
+            v-model="isStudent"
+            field-type="checkbox"
+            field="is-student-tag"
+            :label="''"
+            :errors="apiValidationErrors.tags"
+            checkbox-option-label="The data will be an important component of a PhD thesis"
           ></basic-custom-field>
           <template v-if="data.proposal_type === 'COLAB'">
             <basic-custom-field
@@ -590,12 +591,10 @@ export default {
         tags: initialSciApp.tags || [],
         pdf: null
       };
-
       let isStudent = false;
       if (sciApp.tags.indexOf('student') >= 0) {
         isStudent = true;
       }
-
       if (_.get(sciApp, 'timerequest_set', []).length === 0) {
         sciApp.timerequest_set = [this.getEmptyTimeRequest()];
       }
@@ -754,13 +753,18 @@ export default {
         formData.append('coinvestigator_set[' + i + ']institution', coInvestigators[i].institution || '');
       }
 
-      // TODO: Handle case where the sciapp might already have other tags besides "student" set. If it does,
-      // we don't want to delete those tags
+      let tags = _.remove(_.get(this.sciApp, ['tags'], []), function(i) {
+        return i !== 'student';
+      });
+
       if (this.isStudent) {
-        formData.append('tags', ['student']);
+        tags.push('student')
+      }
+      if (tags.length === 0) {
+        // TODO: Figure out how to pass through an empty list. This results in a 400 from the backend
+        formData.append('tags', []);
       } else {
-        // This empty list needs to be represented as a string otherwise the value sent to the backend is null
-        formData.append('tags', '[]');
+        formData.append('tags', tags);
       }
 
       if (this.sciApp.pdf) {
