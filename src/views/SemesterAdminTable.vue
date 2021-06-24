@@ -195,8 +195,8 @@ export default {
           }
         },
         {
-          key: 'instrument_type',
-          label: 'Class',
+          key: 'instrument_types',
+          label: 'Instrument Types',
           sortable: true
         },
 

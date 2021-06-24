@@ -21,6 +21,17 @@
         @input="input($event)"
         @blur="blur($event)"
       ></b-form-select>
+      <b-form-select
+        v-else-if="fieldType === 'multiselect'"
+        :id="fieldId"
+        multiple
+        :value="value"
+        :state="validationState"
+        :aria-describedby="helpId + ' ' + feedbackId"
+        v-bind="$attrs"
+        @input="input($event)"
+        @blur="blur($event)"
+      ></b-form-select>
       <b-form-file
         v-else-if="fieldType === 'file'"
         :id="fieldId"
@@ -61,7 +72,7 @@ export default {
   props: {
     fieldType: {
       validator: function(value) {
-        return value === 'textarea' || value === 'select' || value === 'file' || value === 'input';
+        return value === 'textarea' || value === 'select' || value === 'file' || value === 'input' || value === 'multiselect';
       },
       default: 'input'
     },
