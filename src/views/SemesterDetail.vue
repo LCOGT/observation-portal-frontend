@@ -14,14 +14,10 @@
           <colgroup>
             <col style="width: 15%" />
             <col style="width: 15%" />
-            <col style="width: 35%" />
+            <col style="width: 30%" />
+            <col style="width: 5%" />
+            <col style="width: 25%" />
             <col style="width: 10%" />
-            <col style="width: 5%" />
-            <col style="width: 5%" />
-            <col style="width: 5%" />
-            <col style="width: 5%" />
-            <col style="width: 5%" />
-            <col style="width: 5%" />
           </colgroup>
           <thead>
             <tr>
@@ -29,14 +25,8 @@
               <th>PI Institution</th>
               <th>Title</th>
               <th>Semesters</th>
-              <th>FLOYDS (2m)</th>
-              <th>Spectral (2m)</th>
-              <th>Muscat (2m)</th>
-              <th>NRES (1m)</th>
-              <th>Sinistro (1m)</th>
-              <th>SBIG (0.4m)</th>
-              <th>GHTS REDCAM (4.0m)</th>
-              <th>GHTS REDCAM IMAGER (4.0m)</th>
+              <th>Instrument Types</th>
+              <th>Total {{ id }} Hours</th>
             </tr>
           </thead>
           <tbody>
@@ -65,28 +55,12 @@
                 </div>
               </td>
               <td>
-                {{ getAllocationForInstrument(proposal.allocation, '2M0FLOYDSSCICAM') | formatFloat(0) }}
+                <div v-for="instrument_type in getInstrumentTypes(proposal)" :key="instrument_type">
+                  {{ instrument_type }}
+                </div>
               </td>
               <td>
-                {{ getAllocationForInstrument(proposal.allocation, '2M0SCICAMSPECTRAL') | formatFloat(0) }}
-              </td>
-              <td>
-                {{ getAllocationForInstrument(proposal.allocation, '2M0SCICAMMUSCAT') | formatFloat(0) }}
-              </td>
-              <td>
-                {{ getAllocationForInstrument(proposal.allocation, '1M0NRESSCICAM') | formatFloat(0) }}
-              </td>
-              <td>
-                {{ getAllocationForInstrument(proposal.allocation, '1M0SCICAMSINISTRO') | formatFloat(0) }}
-              </td>
-              <td>
-                {{ getAllocationForInstrument(proposal.allocation, '0M4SCICAMSBIG') | formatFloat(0) }}
-              </td>
-              <td>
-                {{ getAllocationForInstrument(proposal.allocation, 'SOAR_GHTS_REDCAM') | formatFloat(0) }}
-              </td>
-              <td>
-                {{ getAllocationForInstrument(proposal.allocation, 'SOAR_GHTS_REDCAM_IMAGER') | formatFloat(0) }}
+                {{ getTotalAllocationForProposal(proposal) | formatFloat(0) }}
               </td>
             </tr>
           </tbody>
@@ -130,12 +104,22 @@ export default {
     initializeDataEndpoint: function() {
       return this.$store.state.urls.observationPortalApi + '/api/semesters/' + this.id + '/proposals/';
     },
-    getAllocationForInstrument: function(allocation, instrumentType) {
+    getInstrumentTypes: function(proposal) {
+      let instrumentTypesSet = new Set();
+      for (let instrumentTypes in proposal['allocation']) {
+        let instrumentTypesArray = instrumentTypes.split(',');
+        for (let i in instrumentTypesArray) {
+          instrumentTypesSet.add(instrumentTypesArray[i]);
+        }
+      }
+      return instrumentTypesSet;
+    },
+    getTotalAllocationForProposal: function(proposal) {
       let hours = 0;
-      if (instrumentType in allocation) {
-        hours += allocation[instrumentType].std;
-        hours += allocation[instrumentType].tc;
-        hours += allocation[instrumentType].rr;
+      for (let instrumentTypes in proposal['allocation']) {
+        hours += proposal['allocation'][instrumentTypes].std;
+        hours += proposal['allocation'][instrumentTypes].tc;
+        hours += proposal['allocation'][instrumentTypes].rr;
       }
       return hours;
     },

@@ -154,7 +154,7 @@
             <thead>
               <tr>
                 <th>Semester</th>
-                <th>Telescope Class</th>
+                <th>Instrument Types</th>
                 <th>Hours</th>
                 <th>Used/Allocated</th>
               </tr>
@@ -165,9 +165,9 @@
                   <td colspan="4">{{ semester }}</td>
                 </tr>
                 <template v-for="(timeallocation, idx) in timeallocations">
-                  <tr :key="semester + '-instrument-type-' + idx">
+                  <tr :key="semester + '-instrument-types-' + idx">
                     <td></td>
-                    <td>{{ timeallocation.instrument_type }}</td>
+                    <td>{{ timeallocation.instrument_types.join(', ') }}</td>
                     <td colspan="2"></td>
                   </tr>
                   <tr :key="semester + '-std-time-' + idx">
