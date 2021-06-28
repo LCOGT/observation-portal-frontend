@@ -752,21 +752,17 @@ export default {
         formData.append('coinvestigator_set[' + i + ']last_name', coInvestigators[i].last_name || '');
         formData.append('coinvestigator_set[' + i + ']institution', coInvestigators[i].institution || '');
       }
-
-      let tags = _.remove(_.get(this.sciApp, ['tags'], []), function(i) {
+      // Add tags onto the form data if there are any
+      let tags = _.remove(_.get(this.sciApp, ['tags'], []), i => {
         return i !== 'student';
       });
-
       if (this.isStudent) {
-        tags.push('student')
+        tags.push('student');
       }
-      if (tags.length === 0) {
-        // TODO: Figure out how to pass through an empty list. This results in a 400 from the backend
-        formData.append('tags', []);
-      } else {
-        formData.append('tags', tags);
+      for (let tag of tags) {
+        formData.append('tags', tag);
       }
-
+      // Add pdf fields
       if (this.sciApp.pdf) {
         formData.append('pdf', this.sciApp.pdf);
       }
