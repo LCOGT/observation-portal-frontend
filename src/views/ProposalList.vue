@@ -100,7 +100,7 @@ export default {
         { value: 'False', text: 'False' },
         { value: 'True', text: 'True' }
       ],
-      tagOptions: [{value: '', text: '-----'}],
+      tagOptions: [{ value: '', text: '-----' }],
       proposalsFilters: {
         active: '',
         semester: ''
@@ -157,9 +157,9 @@ export default {
       $.ajax({
         url: this.observationPortalApiUrl + '/api/proposals/tags/'
       }).done(response => {
-        let options = [{value: '', text: '-----'}];
+        let options = [{ value: '', text: '-----' }];
         for (let tag of response) {
-          options.push({value: tag, text: tag});
+          options.push({ value: tag, text: tag });
         }
         this.tagOptions = options;
       });

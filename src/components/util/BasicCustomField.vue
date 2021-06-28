@@ -1,12 +1,6 @@
 <template>
   <span>
-    <b-form-group
-      :id="field + '-fieldgroup'"
-      :label-for="fieldId"
-      :label="label"
-      :label-sr-only="labelSrOnly"
-      :description="description"
-    >
+    <b-form-group :id="field + '-fieldgroup'" :label-for="fieldId" :label="label" :label-sr-only="labelSrOnly" :description="description">
       <b-form-textarea
         v-if="fieldType === 'textarea'"
         :id="fieldId"
