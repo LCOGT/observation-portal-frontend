@@ -180,13 +180,13 @@
                   label-sr-only
                 ></basic-custom-field>
               </template>
-              <template #cell(instrument)="data">
+              <template #cell(instrumentTypes)="data">
                 <basic-custom-field
-                  v-model="sciApp.timerequest_set[data.index].instrument"
-                  :errors="getApiValidationError(['timerequest_set', data.index, 'instrument'])"
+                  v-model="sciApp.timerequest_set[data.index].instrument_types"
+                  :errors="getApiValidationError(['timerequest_set', data.index, 'instrument_types'])"
                   label="Instrument"
-                  :field="'timerequest-instrument-' + data.index"
-                  field-type="select"
+                  :field="'timerequest-instrument-types-' + data.index"
+                  field-type="multiselect"
                   :options="instrumentOptions"
                   label-sr-only
                 ></basic-custom-field>
@@ -469,7 +469,7 @@ export default {
       pdfPath: sciAppData.pdfPath,
       clearPdf: false,
       userTableFields: ['email', 'firstName', 'lastName', 'institution'],
-      timeRequestFields: [{ key: 'semester', class: 'd-none' }, 'instrument', 'standardTime', 'rapidResponse', 'timeCritical'],
+      timeRequestFields: [{ key: 'semester', class: 'd-none' }, 'instrumentTypes', 'standardTime', 'rapidResponse', 'timeCritical'],
       confirmSubmitMessage: 'Submit this application? You will no longer be able to edit it.',
       confirmDeleteMessage: 'Are you sure you want to delete "' + _.get(this.initialSciApp, 'title', 'this application') + '"?',
       isBusyPostingApplication: false,
@@ -593,7 +593,7 @@ export default {
       return { sciApp: sciApp, pdfPath: initialSciApp.pdf || null };
     },
     getEmptyTimeRequest: function() {
-      return { semester: '', instrument: '', std_time: 0, rr_time: 0, tc_time: 0 };
+      return { semester: '', instrument_types: [], std_time: 0, rr_time: 0, tc_time: 0 };
     },
     getEmptyCoInvestigator: function() {
       return { email: '', first_name: '', last_name: '', institution: '' };
@@ -692,7 +692,7 @@ export default {
       // be able to update that field anyway - in this case, automatically set the semester
       // since there is only one viable option.
       let emptyValues = ['0'];
-      let checkFieldsForData = ['instrument', 'std_time', 'rr_time', 'tc_time'];
+      let checkFieldsForData = ['instrument_types', 'std_time', 'rr_time', 'tc_time'];
       if (this.numberOfEligibleSemesters > 1) {
         checkFieldsForData.push('semester');
       }
@@ -725,7 +725,7 @@ export default {
       let coInvestigators = this.getCoInvestigatorsForSubmissionBody();
       let timeRequests = this.getTimeRequestsForSubmissionBody();
       for (let i in timeRequests) {
-        formData.append('timerequest_set[' + i + ']instrument', timeRequests[i].instrument);
+        formData.append('timerequest_set[' + i + ']instrument_types', timeRequests[i].instrument_types);
         formData.append('timerequest_set[' + i + ']semester', timeRequests[i].semester);
         formData.append('timerequest_set[' + i + ']std_time', timeRequests[i].std_time);
         formData.append('timerequest_set[' + i + ']rr_time', timeRequests[i].rr_time);
