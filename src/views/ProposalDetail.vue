@@ -32,7 +32,7 @@
             </template>
           </b-col>
           <b-col md="4" cols="12">
-            <template v-if="data.tags.length > 0">
+            <template v-if="data.tags && data.tags.length > 0">
               <span class="font-weight-bolder">Proposal Tags</span>
               <div>
                 <b-badge v-for="tag in data.tags" :key="tag" variant="primary" class="mr-1">{{ tag }}</b-badge>
