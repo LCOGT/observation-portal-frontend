@@ -43,7 +43,7 @@
             field="is-student-tag"
             :label="''"
             :errors="apiValidationErrors.tags"
-            checkbox-option-label="The data will be an important component of a PhD thesis"
+            checkbox-option-label="Data from this proposal will be an important component of a PhD thesis"
           ></basic-custom-field>
           <template v-if="data.proposal_type === 'COLAB'">
             <basic-custom-field
@@ -592,7 +592,7 @@ export default {
         pdf: null
       };
       let isStudent = false;
-      if (sciApp.tags.indexOf('student') >= 0) {
+      if (sciApp.tags.includes('student')) {
         isStudent = true;
       }
       if (_.get(sciApp, 'timerequest_set', []).length === 0) {
