@@ -672,7 +672,7 @@ export default {
   methods: {
     ditheringAllowed: function(configuration) {
       let instrumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
-      return instrumentCategory === 'IMAGE';
+      return this.$store.state.profile.is_staff && instrumentCategory === 'IMAGE';
     },
     getRequestGroupIdFromQueryString: function() {
       let requestGroupId = -1;
