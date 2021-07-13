@@ -103,14 +103,8 @@ export default {
           title: 'Reduction',
           sortable: 'true',
           formatter: function(value) {
-            switch (value) {
-              case 0:
-                return 'raw';
-              case 11:
-                return 'quicklook';
-              case 91:
-                return 'reduced';
-            }
+            let reductionString = value === 0 ? 'raw' : 'reduced';
+            return reductionString;
           }
         }
       ]
