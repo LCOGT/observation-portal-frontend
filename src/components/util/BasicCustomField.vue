@@ -1,6 +1,6 @@
 <template>
   <span>
-    <b-form-group :id="field + '-fieldgroup'" :label-for="fieldId" :label="label" :label-sr-only="labelSrOnly">
+    <b-form-group :id="field + '-fieldgroup'" :label-for="fieldId" :label="label" :label-sr-only="labelSrOnly" :description="description">
       <b-form-textarea
         v-if="fieldType === 'textarea'"
         :id="fieldId"
@@ -42,6 +42,18 @@
         @input="input($event)"
         @blur="blur($event)"
       ></b-form-file>
+      <b-form-checkbox
+        v-else-if="fieldType === 'checkbox'"
+        :id="fieldId"
+        :checked="value"
+        :state="validationState"
+        :aria-describedby="helpId + ' ' + feedbackId"
+        v-bind="$attrs"
+        @input="input($event)"
+        @blur="blur($event)"
+      >
+        {{ checkboxOptionLabel }}
+      </b-form-checkbox>
       <b-form-input
         v-else
         :id="fieldId"
@@ -72,19 +84,34 @@ export default {
   props: {
     fieldType: {
       validator: function(value) {
-        return value === 'textarea' || value === 'select' || value === 'file' || value === 'input' || value === 'multiselect';
+        return value === 'textarea' || value === 'select' || value === 'file' || value === 'input' || value === 'multiselect' || value === 'checkbox';
       },
       default: 'input'
     },
     value: {
       validator: function(value) {
-        return value === null || value === undefined || typeof value === 'string' || typeof value === 'number' || typeof value === 'object';
+        return (
+          value === null ||
+          value === undefined ||
+          typeof value === 'string' ||
+          typeof value === 'number' ||
+          typeof value === 'object' ||
+          typeof value === 'boolean'
+        );
       },
       required: true
     },
     label: {
       type: String,
       required: true
+    },
+    description: {
+      type: String,
+      default: ''
+    },
+    checkboxOptionLabel: {
+      type: String,
+      default: ''
     },
     field: {
       type: String,

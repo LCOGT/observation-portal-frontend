@@ -37,6 +37,14 @@
             field-type="textarea"
             rows="8"
           ></basic-custom-field>
+          <basic-custom-field
+            v-model="isStudent"
+            field-type="checkbox"
+            field="is-student-tag"
+            :label="''"
+            :errors="apiValidationErrors.tags"
+            checkbox-option-label="Data from this proposal will be an important component of a PhD thesis"
+          ></basic-custom-field>
           <template v-if="data.proposal_type === 'COLAB'">
             <basic-custom-field
               v-model="sciApp.tac_rank"
@@ -467,6 +475,7 @@ export default {
     return {
       sciApp: sciAppData.sciApp,
       pdfPath: sciAppData.pdfPath,
+      isStudent: sciAppData.isStudent,
       clearPdf: false,
       userTableFields: ['email', 'firstName', 'lastName', 'institution'],
       timeRequestFields: [{ key: 'semester', class: 'd-none' }, 'instrumentTypes', 'standardTime', 'rapidResponse', 'timeCritical'],
@@ -579,8 +588,13 @@ export default {
         pi_institution: initialSciApp.pi_institution || '',
         coinvestigator_set: initialSciApp.coinvestigator_set || [],
         timerequest_set: initialSciApp.timerequest_set || [],
+        tags: initialSciApp.tags || [],
         pdf: null
       };
+      let isStudent = false;
+      if (sciApp.tags.includes('student')) {
+        isStudent = true;
+      }
       if (_.get(sciApp, 'timerequest_set', []).length === 0) {
         sciApp.timerequest_set = [this.getEmptyTimeRequest()];
       }
@@ -590,7 +604,7 @@ export default {
       // `pdfPath` will either be null for a new science application or
       // for an application to be updated where no pdf has been uploaded yet,
       // or it will be the path to an uploaded pdf.
-      return { sciApp: sciApp, pdfPath: initialSciApp.pdf || null };
+      return { sciApp: sciApp, pdfPath: initialSciApp.pdf || null, isStudent: isStudent };
     },
     getEmptyTimeRequest: function() {
       return { semester: '', instrument_types: [], std_time: 0, rr_time: 0, tc_time: 0 };
@@ -738,6 +752,17 @@ export default {
         formData.append('coinvestigator_set[' + i + ']last_name', coInvestigators[i].last_name || '');
         formData.append('coinvestigator_set[' + i + ']institution', coInvestigators[i].institution || '');
       }
+      // Add tags onto the form data if there are any
+      let tags = _.remove(_.get(this.sciApp, ['tags'], []), i => {
+        return i !== 'student';
+      });
+      if (this.isStudent) {
+        tags.push('student');
+      }
+      for (let tag of tags) {
+        formData.append('tags', tag);
+      }
+      // Add pdf fields
       if (this.sciApp.pdf) {
         formData.append('pdf', this.sciApp.pdf);
       }

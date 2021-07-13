@@ -30,12 +30,24 @@
     </b-row>
     <b-row>
       <b-col>
-        <b-form inline @submit="onSubmit">
-          <label class="mr-sm-2" for="input-proposal-active">Proposal is active:</label>
-          <b-form-select id="input-proposal-active" v-model="queryParams.active" :options="proposalActiveOptions" />
-          <label class="m-sm-2" for="input-proposal-semester">Semester:</label>
-          <b-form-select id="input-proposal-semester" v-model="queryParams.semester" :options="semesterOptions"></b-form-select>
-          <b-button type="submit" class="m-sm-1" variant="outline-primary" :disabled="isBusy">Filter</b-button>
+        <b-form inline class="p-1" @submit="onSubmit">
+          <b-form-group id="input-group-proposal-active" label="Proposal is active:" label-for="input-proposal-active">
+            <b-form-select id="input-proposal-active" v-model="queryParams.active" class="mx-1" :options="proposalActiveOptions" />
+          </b-form-group>
+          <b-form-group id="input-group-proposal-semester" label="Semester:" label-for="input-proposal-semester">
+            <b-form-select id="input-proposal-semester" v-model="queryParams.semester" class="mx-1" :options="semesterOptions"></b-form-select>
+          </b-form-group>
+          <b-form-group id="input-group-proposal-tags" label="Tags:" label-for="input-proposal-tags">
+            <b-form-select
+              id="select-proposal-tags"
+              v-model="selectedTags"
+              class="mx-1"
+              :options="tagOptions"
+              multiple
+              :select-size="tagsSelectSize"
+            />
+          </b-form-group>
+          <b-button type="submit" class="mx-1" variant="outline-primary" :disabled="isBusy">Filter</b-button>
         </b-form>
         <b-table id="proposals-table" :items="data.results" :fields="fields" :busy="isBusy" show-empty striped responsive>
           <template v-slot:table-busy>
@@ -98,6 +110,7 @@ export default {
         { value: 'False', text: 'False' },
         { value: 'True', text: 'True' }
       ],
+      tagOptions: [{ value: '', text: '-----' }],
       proposalsFilters: {
         active: '',
         semester: ''
@@ -129,11 +142,25 @@ export default {
     },
     userProposals: function() {
       return this.$store.state.profile.proposals;
+    },
+    selectedTags: {
+      // The multi select represents the tags as strings in an array, but the observation portal
+      // API expects a string with a commas separated list of tags
+      get: function() {
+        return _.split(this.queryParams.tags, ',');
+      },
+      set: function(newValue) {
+        this.queryParams.tags = _.join(newValue, ',');
+      }
+    },
+    tagsSelectSize: function() {
+      return Math.min(this.tagOptions.length, 2);
     }
   },
   created: function() {
     this.getSemesters();
     this.getCalls();
+    this.getTagOptions();
   },
   methods: {
     initializeDataEndpoint: function() {
@@ -143,10 +170,22 @@ export default {
       const defaultQueryParams = {
         active: 'True',
         semester: '',
+        tags: '',
         limit: 50,
         offset: 0
       };
       return defaultQueryParams;
+    },
+    getTagOptions: function() {
+      $.ajax({
+        url: this.observationPortalApiUrl + '/api/proposals/tags/'
+      }).done(response => {
+        let options = [{ value: '', text: '-----' }];
+        for (let tag of response) {
+          options.push({ value: tag, text: tag });
+        }
+        this.tagOptions = options;
+      });
     },
     getSemesters: function() {
       let that = this;
