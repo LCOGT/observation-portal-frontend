@@ -30,27 +30,22 @@
     </b-row>
     <b-row>
       <b-col>
-        <b-form inline @submit="onSubmit" class="p-1">
-          <b-form-group
-            id="input-group-proposal-active"
-            label="Proposal is active:"
-            label-for="input-proposal-active"
-          >
-            <b-form-select class="mx-1" id="input-proposal-active" v-model="queryParams.active" :options="proposalActiveOptions" />
+        <b-form inline class="p-1" @submit="onSubmit">
+          <b-form-group id="input-group-proposal-active" label="Proposal is active:" label-for="input-proposal-active">
+            <b-form-select id="input-proposal-active" v-model="queryParams.active" class="mx-1" :options="proposalActiveOptions" />
           </b-form-group>
-          <b-form-group
-            id="input-group-proposal-semester"
-            label="Semester:"
-            label-for="input-proposal-semester"
-          >
-            <b-form-select class="mx-1" id="input-proposal-semester" v-model="queryParams.semester" :options="semesterOptions"></b-form-select>
+          <b-form-group id="input-group-proposal-semester" label="Semester:" label-for="input-proposal-semester">
+            <b-form-select id="input-proposal-semester" v-model="queryParams.semester" class="mx-1" :options="semesterOptions"></b-form-select>
           </b-form-group>
-          <b-form-group
-            id="input-group-proposal-tags"
-            label="Tags:"
-            label-for="input-proposal-tags"
-          >
-            <b-form-select class="mx-1" id="select-proposal-tags" v-model="selectedTags" :options="tagOptions" multiple :select-size="3" />
+          <b-form-group id="input-group-proposal-tags" label="Tags:" label-for="input-proposal-tags">
+            <b-form-select
+              id="select-proposal-tags"
+              v-model="selectedTags"
+              class="mx-1"
+              :options="tagOptions"
+              multiple
+              :select-size="tagsSelectSize"
+            />
           </b-form-group>
           <b-button type="submit" class="mx-1" variant="outline-primary" :disabled="isBusy">Filter</b-button>
         </b-form>
@@ -157,6 +152,9 @@ export default {
       set: function(newValue) {
         this.queryParams.tags = _.join(newValue, ',');
       }
+    },
+    tagsSelectSize: function() {
+      return Math.min(this.tagOptions.length, 2);
     }
   },
   created: function() {
