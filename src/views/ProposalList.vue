@@ -30,14 +30,29 @@
     </b-row>
     <b-row>
       <b-col>
-        <b-form inline @submit="onSubmit">
-          <label class="mr-1" for="input-proposal-active">Proposal is active:</label>
-          <b-form-select id="input-proposal-active" v-model="queryParams.active" :options="proposalActiveOptions" />
-          <label class="m-1" for="input-proposal-semester">Semester:</label>
-          <b-form-select id="input-proposal-semester" v-model="queryParams.semester" :options="semesterOptions"></b-form-select>
-          <label for="select-proposal-tag" class="m-1">Proposal tag:</label>
-          <b-form-select id="select-proposal-tag" v-model="queryParams.tag" :options="tagOptions" />
-          <b-button type="submit" class="m-1" variant="outline-primary" :disabled="isBusy">Filter</b-button>
+        <b-form inline @submit="onSubmit" class="p-1">
+          <b-form-group
+            id="input-group-proposal-active"
+            label="Proposal is active:"
+            label-for="input-proposal-active"
+          >
+            <b-form-select class="mx-1" id="input-proposal-active" v-model="queryParams.active" :options="proposalActiveOptions" />
+          </b-form-group>
+          <b-form-group
+            id="input-group-proposal-semester"
+            label="Semester:"
+            label-for="input-proposal-semester"
+          >
+            <b-form-select class="mx-1" id="input-proposal-semester" v-model="queryParams.semester" :options="semesterOptions"></b-form-select>
+          </b-form-group>
+          <b-form-group
+            id="input-group-proposal-tags"
+            label="Tags:"
+            label-for="input-proposal-tags"
+          >
+            <b-form-select class="mx-1" id="select-proposal-tags" v-model="selectedTags" :options="tagOptions" multiple :select-size="3" />
+          </b-form-group>
+          <b-button type="submit" class="mx-1" variant="outline-primary" :disabled="isBusy">Filter</b-button>
         </b-form>
         <b-table id="proposals-table" :items="data.results" :fields="fields" :busy="isBusy" show-empty striped responsive>
           <template v-slot:table-busy>
@@ -132,6 +147,16 @@ export default {
     },
     userProposals: function() {
       return this.$store.state.profile.proposals;
+    },
+    selectedTags: {
+      // The multi select represents the tags as strings in an array, but the observation portal
+      // API expects a string with a commas separated list of tags
+      get: function() {
+        return _.split(this.queryParams.tags, ',');
+      },
+      set: function(newValue) {
+        this.queryParams.tags = _.join(newValue, ',');
+      }
     }
   },
   created: function() {
@@ -147,7 +172,7 @@ export default {
       const defaultQueryParams = {
         active: 'True',
         semester: '',
-        tag: '',
+        tags: '',
         limit: 50,
         offset: 0
       };
