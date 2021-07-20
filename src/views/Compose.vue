@@ -382,6 +382,11 @@ export default {
             desc: `Period (in seconds) over which to repeat Instrument Configurations. Clicking the 'Fill' button
             increases the duration to the longest interval over which the target is visible in the observing window.
             This button is disabled until the entire request has passed validation.`
+          },
+          dither: {
+            desc: `Optionally select a dither pattern. After selecting a pattern, clicking the 'Generate Dither' button
+            will generate and display the dither pattern which can then be either accepted or rejected. If accepted, the
+            configuration will be updated to include dither offsets.`
           }
         },
         instrumentConfig: {
@@ -672,8 +677,8 @@ export default {
   methods: {
     ditheringAllowed: function(configuration) {
       let instrumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
-      // TODO: To release dithering, update the line below to be `return instrumentCategory === 'IMAGE';`
-      return this.$store.state.profile.is_staff && instrumentCategory === 'IMAGE';
+      // TODO: To release dithering, update the line below to remove the is_staff check;`
+      return this.$store.state.profile.is_staff && !this.simpleInterface && instrumentCategory === 'IMAGE';
     },
     getRequestGroupIdFromQueryString: function() {
       let requestGroupId = -1;
