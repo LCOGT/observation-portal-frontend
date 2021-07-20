@@ -1,5 +1,5 @@
 <template>
-  <b-form>
+  <b-form :id="id">
     <ocs-custom-field
       v-model="instrumentConfig.exposure_count"
       field="exposure_count"
@@ -130,6 +130,24 @@
       type="number"
       @input="update"
     />
+    <ocs-custom-field
+      v-model="offsetRA"
+      field="offset-ra"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'offset_ra', 'label'], 'Offset RA')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'offset_ra', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'offset_ra', 'hide'], !ditheringIsAllowed)"
+      :errors="null"
+      @input="update"
+    />
+    <ocs-custom-field
+      v-model="offsetDec"
+      field="offset-dec"
+      :label="getFromObject(formConfig, ['instrumentConfig', 'offset_dec', 'label'], 'Offset Dec')"
+      :desc="getFromObject(formConfig, ['instrumentConfig', 'offset_dec', 'desc'], '')"
+      :hide="getFromObject(formConfig, ['instrumentConfig', 'offset_dec', 'hide'], !ditheringIsAllowed)"
+      :errors="null"
+      @input="update"
+    />
   </b-form>
 </template>
 <script>
@@ -141,6 +159,10 @@ import { lampFlatDefaultExposureTime, arcDefaultExposureTime } from '@/utils';
 export default {
   name: 'InstrumentConfigForm',
   props: {
+    id: {
+      type: String,
+      required: true
+    },
     errors: {
       type: Object,
       required: true
@@ -168,6 +190,9 @@ export default {
       type: Object,
       required: true
     },
+    ditheringIsAllowed: {
+      type: Boolean
+    },
     show: {
       type: Boolean
     },
@@ -184,6 +209,8 @@ export default {
     const selectedInstrument = toRef(props, 'selectedInstrument');
 
     const {
+      offsetRA,
+      offsetDec,
       opticalElementUpdates,
       readoutModeOptions,
       rotatorModeOptions,
@@ -196,6 +223,8 @@ export default {
 
     return {
       // Data
+      offsetRA,
+      offsetDec,
       opticalElementUpdates,
       readoutModeOptions,
       rotatorModeOptions,
