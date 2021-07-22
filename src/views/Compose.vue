@@ -455,12 +455,12 @@ export default {
           },
           offset_ra: {
             label: 'Offset Right Ascension',
-            desc: `For this instrument config, offset the pointing in right ascension from the configuration\'s
+            desc: `For this instrument config, offset the pointing in right ascension from the configuration's
             target (in arcseconds). Used for dithering.`
           },
           offset_dec: {
             label: 'Offset Declination',
-            desc: `For this instrument config, offset the pointing in declination from the configuration\'s
+            desc: `For this instrument config, offset the pointing in declination from the configuration's
             target (in arcseconds). Used for dithering.`
           }
         },
