@@ -387,6 +387,27 @@ export default {
             desc: `Optionally select a dither pattern. After selecting a pattern, clicking the 'Generate Dither' button
             will generate and display the dither pattern which can then be either accepted or rejected. If accepted, the
             configuration will be updated to include dither offsets.`
+          },
+          ditherPointSpacing: {
+            desc: 'Horizontal spacing between points in the pattern in arcseconds'
+          },
+          ditherLineSpacing: {
+            desc: 'Vertical spacing between points in the pattern in arcseconds'
+          },
+          ditherOrientation: {
+            desc: 'Rotation of the pattern in degrees east of north'
+          },
+          ditherNumRows: {
+            desc: 'Number of rows in the pattern'
+          },
+          ditherNumColumns: {
+            desc: 'Number of columns in the pattern'
+          },
+          ditherCenter: {
+            desc: 'Center the dither pattern on the target'
+          },
+          ditherNumPoints: {
+            desc: 'Number of points in the pattern'
           }
         },
         instrumentConfig: {
@@ -431,6 +452,16 @@ export default {
           },
           diffuser_z_position: {
             hide: simpleInterface
+          },
+          offset_ra: {
+            label: 'Offset Right Ascension',
+            desc: `For this instrument config, offset the pointing in right ascension from the configuration\'s
+            target (in arcseconds). Used for dithering.`
+          },
+          offset_dec: {
+            label: 'Offset Declination',
+            desc: `For this instrument config, offset the pointing in declination from the configuration\'s
+            target (in arcseconds). Used for dithering.`
           }
         },
         guidingConfig: {
