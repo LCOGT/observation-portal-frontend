@@ -389,10 +389,10 @@ export default {
             configuration will be updated to include dither offsets.`
           },
           ditherPointSpacing: {
-            desc: 'Horizontal spacing between points in the pattern in arcseconds'
+            desc: 'Horizontal spacing between points in the pattern in arcseconds, where the horizontal axis is directed north-south'
           },
           ditherLineSpacing: {
-            desc: 'Vertical spacing between points in the pattern in arcseconds'
+            desc: 'Vertical spacing between points in the pattern in arcseconds, where the vertical axis is directed east-west'
           },
           ditherOrientation: {
             desc: 'Rotation of the pattern in degrees east of north'
