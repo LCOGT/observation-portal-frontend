@@ -35,6 +35,8 @@
               :site-code-to-name="siteCodeToName"
               show-airmass-plot
               :dithering-allowed="ditheringAllowed"
+              :mosaic-allowed="mosaicAllowed"
+              :mosaic-extra-rotation="extraMosaicRotation"
               :loaded-draft-id="draftId"
               :form-config="formConfig"
               :tooltip-config="tooltipConfig"
@@ -388,25 +390,25 @@ export default {
             will generate and display the dither pattern which can then be either accepted or rejected. If accepted, the
             configuration will be updated to include dither offsets.`
           },
-          ditherPointSpacing: {
+          dither_point_spacing: {
             desc: 'Horizontal spacing between points in the pattern in arcseconds, where the horizontal axis is directed north-south'
           },
-          ditherLineSpacing: {
+          dither_line_spacing: {
             desc: 'Vertical spacing between points in the pattern in arcseconds, where the vertical axis is directed east-west'
           },
-          ditherOrientation: {
+          dither_orientation: {
             desc: 'Rotation of the pattern in degrees east of north'
           },
-          ditherNumRows: {
+          dither_num_rows: {
             desc: 'Number of rows in the pattern'
           },
-          ditherNumColumns: {
+          dither_num_columns: {
             desc: 'Number of columns in the pattern'
           },
-          ditherCenter: {
+          dither_center: {
             desc: 'Center the dither pattern on the target'
           },
-          ditherNumPoints: {
+          dither_num_points: {
             desc: 'Number of points in the pattern'
           }
         },
@@ -710,6 +712,22 @@ export default {
       let instrumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
       // TODO: To release dithering, update the line below to remove the is_staff check;`
       return this.$store.state.profile.is_staff && !this.simpleInterface && instrumentCategory === 'IMAGE';
+    },
+    mosaicAllowed: function(request) {
+      let nonImagers = [];
+      let instumentCategory;
+      for (let configuration of request.configurations) {
+        instumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
+        if (instumentCategory !== 'IMAGE') {
+          nonImagers.push(instumentCategory);
+        }
+      }
+      // TODO: To release mosaicing, update the line below to remove the is_staff check`
+      return this.$store.state.profile.is_staff && !this.simpleInterface && nonImagers.length === 0;
+    },
+    extraMosaicRotation: function(configuration) {
+      // TODO: Fill in to handle rotator mode for SOAR
+      return 0;
     },
     getRequestGroupIdFromQueryString: function() {
       let requestGroupId = -1;
