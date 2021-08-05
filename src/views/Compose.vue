@@ -727,8 +727,13 @@ export default {
       return this.$store.state.profile.is_staff && !this.simpleInterface;
     },
     extraMosaicRotation: function(configuration) {
-      // TODO: Fill in to handle rotator mode for SOAR
-      return 0;
+      let rotatorAngle = 0;
+      for (let instConfigIndex in configuration.instrument_configs) {
+        if ('extra_params' in configuration.instrument_configs[instConfigIndex]) {
+          rotatorAngle = configuration.instrument_configs[instConfigIndex].extra_params.rotator_angle || 0;
+        }
+      }
+      return rotatorAngle;
     },
     getRequestGroupIdFromQueryString: function() {
       let requestGroupId = -1;
