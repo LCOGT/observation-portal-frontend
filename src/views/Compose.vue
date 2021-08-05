@@ -714,16 +714,17 @@ export default {
       return this.$store.state.profile.is_staff && !this.simpleInterface && instrumentCategory === 'IMAGE';
     },
     mosaicAllowed: function(request) {
-      let nonImagers = [];
-      let instumentCategory;
-      for (let configuration of request.configurations) {
-        instumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
-        if (instumentCategory !== 'IMAGE') {
-          nonImagers.push(instumentCategory);
-        }
+      if (request.configurations.length !== 1){
+        return false;
+      }
+      else if (_.get(this.instruments, [request.configurations[0].instrument_type, 'type']) !== 'IMAGE') {
+        return false;
+      }
+      else if (request.configurations[0].target.type !== 'ICRS') {
+        return false;
       }
       // TODO: To release mosaicing, update the line below to remove the is_staff check`
-      return this.$store.state.profile.is_staff && !this.simpleInterface && nonImagers.length === 0;
+      return this.$store.state.profile.is_staff && !this.simpleInterface;
     },
     extraMosaicRotation: function(configuration) {
       // TODO: Fill in to handle rotator mode for SOAR
