@@ -97,6 +97,9 @@
                       Documentation section.
                     </a>
                   </li>
+                  <li>
+                    Dithered observations should be specified either by setting pattern parameters here or by manually setting RA / DEC Offsets within the Instrumentation Configuration section.
+                  </li>
                 </ul>
                 <!-- TODO: Do not show if calibrations have been created -->
                 <b-row v-show="slotProps.data.configuration.type === 'SPECTRUM'" class="p-2">
@@ -384,29 +387,6 @@ export default {
             desc: `Period (in seconds) over which to repeat Instrument Configurations. Clicking the 'Fill' button
             increases the duration to the longest interval over which the target is visible in the observing window.
             This button is disabled until the entire request has passed validation.`
-          },
-          dither: {
-            desc: `Optionally select a dither pattern. After selecting a pattern, clicking the 'Generate Dither' button
-            will generate and display the dither pattern which can then be either accepted or rejected. If accepted, the
-            configuration will be updated to include dither offsets.`
-          },
-          dither_point_spacing: {
-            desc: 'Horizontal spacing between points in the pattern in arcseconds, where the horizontal axis is directed north-south'
-          },
-          dither_line_spacing: {
-            desc: 'Vertical spacing between points in the pattern in arcseconds, where the vertical axis is directed east-west'
-          },
-          dither_orientation: {
-            desc: 'Rotation of the pattern in degrees east of north'
-          },
-          dither_num_rows: {
-            desc: 'Number of rows in the pattern'
-          },
-          dither_num_columns: {
-            desc: 'Number of columns in the pattern'
-          },
-          dither_center: {
-            desc: 'Center the dither pattern on the target'
           },
           dither_num_points: {
             desc: 'Number of points in the pattern'
