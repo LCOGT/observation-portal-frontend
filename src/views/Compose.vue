@@ -98,7 +98,8 @@
                     </a>
                   </li>
                   <li>
-                    Dithered observations should be specified either by setting pattern parameters here or by manually setting RA / DEC Offsets within the Instrumentation Configuration section.
+                    Dithered observations should be specified either by setting pattern parameters here or by manually setting RA and Declination
+                    Offsets within the Instrumentation Configuration section.
                   </li>
                 </ul>
                 <!-- TODO: Do not show if calibrations have been created -->
@@ -694,13 +695,11 @@ export default {
       return this.$store.state.profile.is_staff && !this.simpleInterface && instrumentCategory === 'IMAGE';
     },
     mosaicAllowed: function(request) {
-      if (request.configurations.length !== 1){
+      if (request.configurations.length !== 1) {
         return false;
-      }
-      else if (_.get(this.instruments, [request.configurations[0].instrument_type, 'type']) !== 'IMAGE') {
+      } else if (_.get(this.instruments, [request.configurations[0].instrument_type, 'type']) !== 'IMAGE') {
         return false;
-      }
-      else if (request.configurations[0].target.type !== 'ICRS') {
+      } else if (request.configurations[0].target.type !== 'ICRS') {
         return false;
       }
       // TODO: To release mosaicing, update the line below to remove the is_staff check`
