@@ -36,7 +36,7 @@
               show-airmass-plot
               :dithering-allowed="ditheringAllowed"
               :mosaic-allowed="mosaicAllowed"
-              :mosaic-extra-rotation="extraMosaicRotation"
+              :mosaic-extra-instrument-rotation="extraMosaicInstrumentRotation"
               :loaded-draft-id="draftId"
               :form-config="formConfig"
               :tooltip-config="tooltipConfig"
@@ -97,8 +97,8 @@
                       Documentation section.
                     </a>
                   </li>
-                  <li>
-                    Dithered observations should be specified either by setting pattern parameters here or by manually setting RA and Declination
+                  <li v-if=ditheringAllowed(slotProps.data.configuration)>
+                    Dithered observations should be specified either by setting pattern parameters here or by manually setting Right ascension and Declination
                     Offsets within the Instrumentation Configuration section.
                   </li>
                 </ul>
@@ -705,11 +705,11 @@ export default {
       // TODO: To release mosaicing, update the line below to remove the is_staff check`
       return this.$store.state.profile.is_staff && !this.simpleInterface;
     },
-    extraMosaicRotation: function(configuration) {
+    extraMosaicInstrumentRotation: function(configuration) {
       let rotatorAngle = 0;
-      for (let instConfigIndex in configuration.instrument_configs) {
-        if ('extra_params' in configuration.instrument_configs[instConfigIndex]) {
-          rotatorAngle = configuration.instrument_configs[instConfigIndex].extra_params.rotator_angle || 0;
+      for (let instrumentConfig of configuration.instrument_configs) {
+        if (instrumentConfig.rotator_mode === 'SKY') {
+          rotatorAngle = _.get(instrumentConfig, ['extra_params', 'rotator_angle'], 0);
         }
       }
       return rotatorAngle;
