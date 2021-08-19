@@ -35,6 +35,8 @@
               :site-code-to-name="siteCodeToName"
               show-airmass-plot
               :dithering-allowed="ditheringAllowed"
+              :mosaic-allowed="mosaicAllowed"
+              :mosaic-extra-instrument-rotation="extraMosaicInstrumentRotation"
               :loaded-draft-id="draftId"
               :form-config="formConfig"
               :tooltip-config="tooltipConfig"
@@ -94,6 +96,10 @@
                     <a href="https://lco.global/documentation/" target="_blank">
                       Documentation section.
                     </a>
+                  </li>
+                  <li v-if="ditheringAllowed(slotProps.data.configuration)">
+                    Dithered observations should be specified either by setting pattern parameters here or by manually setting Right ascension and
+                    Declination Offsets within the Instrumentation Configuration section.
                   </li>
                 </ul>
                 <!-- TODO: Do not show if calibrations have been created -->
@@ -383,10 +389,8 @@ export default {
             increases the duration to the longest interval over which the target is visible in the observing window.
             This button is disabled until the entire request has passed validation.`
           },
-          dither: {
-            desc: `Optionally select a dither pattern. After selecting a pattern, clicking the 'Generate Dither' button
-            will generate and display the dither pattern which can then be either accepted or rejected. If accepted, the
-            configuration will be updated to include dither offsets.`
+          dither_num_points: {
+            desc: 'Number of points in the pattern'
           }
         },
         instrumentConfig: {
@@ -431,6 +435,16 @@ export default {
           },
           diffuser_z_position: {
             hide: simpleInterface
+          },
+          offset_ra: {
+            label: 'Offset Right Ascension',
+            desc: `For this instrument config, offset the pointing in right ascension from the configuration's
+            target (in arcseconds). Used for dithering.`
+          },
+          offset_dec: {
+            label: 'Offset Declination',
+            desc: `For this instrument config, offset the pointing in declination from the configuration's
+            target (in arcseconds). Used for dithering.`
           }
         },
         guidingConfig: {
@@ -677,8 +691,27 @@ export default {
   methods: {
     ditheringAllowed: function(configuration) {
       let instrumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
-      // TODO: To release dithering, update the line below to remove the is_staff check;`
-      return this.$store.state.profile.is_staff && !this.simpleInterface && instrumentCategory === 'IMAGE';
+      return !this.simpleInterface && instrumentCategory === 'IMAGE';
+    },
+    mosaicAllowed: function(request) {
+      if (request.configurations.length !== 1) {
+        return false;
+      } else if (_.get(this.instruments, [request.configurations[0].instrument_type, 'type']) !== 'IMAGE') {
+        return false;
+      } else if (request.configurations[0].target.type !== 'ICRS') {
+        return false;
+      }
+      // TODO: To release mosaicing, update the line below to remove the is_staff check`
+      return this.$store.state.profile.is_staff && !this.simpleInterface;
+    },
+    extraMosaicInstrumentRotation: function(configuration) {
+      let rotatorAngle = 0;
+      for (let instrumentConfig of configuration.instrument_configs) {
+        if (instrumentConfig.rotator_mode === 'SKY') {
+          rotatorAngle = _.get(instrumentConfig, ['extra_params', 'rotator_angle'], 0);
+        }
+      }
+      return rotatorAngle;
     },
     getRequestGroupIdFromQueryString: function() {
       let requestGroupId = -1;
