@@ -97,9 +97,9 @@
                       Documentation section.
                     </a>
                   </li>
-                  <li v-if=ditheringAllowed(slotProps.data.configuration)>
-                    Dithered observations should be specified either by setting pattern parameters here or by manually setting Right ascension and Declination
-                    Offsets within the Instrumentation Configuration section.
+                  <li v-if="ditheringAllowed(slotProps.data.configuration)">
+                    Dithered observations should be specified either by setting pattern parameters here or by manually setting Right ascension and
+                    Declination Offsets within the Instrumentation Configuration section.
                   </li>
                 </ul>
                 <!-- TODO: Do not show if calibrations have been created -->
@@ -691,8 +691,7 @@ export default {
   methods: {
     ditheringAllowed: function(configuration) {
       let instrumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
-      // TODO: To release dithering, update the line below to remove the is_staff check;`
-      return this.$store.state.profile.is_staff && !this.simpleInterface && instrumentCategory === 'IMAGE';
+      return !this.simpleInterface && instrumentCategory === 'IMAGE';
     },
     mosaicAllowed: function(request) {
       if (request.configurations.length !== 1) {
