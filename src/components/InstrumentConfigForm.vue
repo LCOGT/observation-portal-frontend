@@ -85,7 +85,7 @@
       :errors="errors.mode"
       @input="update"
     />
-    <div v-for="opticalElementGroup in availableOpticalElementGroups" :key="opticalElementGroup.type">
+    <div v-for="opticalElementGroup in availableOpticalElementGroups" :key="opticalElementGroup.type" class="d-inline">
       <ocs-custom-select
         v-model="instrumentConfig.optical_elements[opticalElementGroup.type]"
         :field="opticalElementGroup.type"

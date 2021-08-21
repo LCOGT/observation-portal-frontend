@@ -37,6 +37,7 @@
               :dithering-allowed="ditheringAllowed"
               :mosaic-allowed="mosaicAllowed"
               :mosaic-extra-instrument-rotation="extraMosaicInstrumentRotation"
+              :mosaic-max-num-pointings="mosaicMaxNumPointings"
               :loaded-draft-id="draftId"
               :form-config="formConfig"
               :tooltip-config="tooltipConfig"
@@ -329,6 +330,7 @@ export default {
   data: function() {
     let datetimeFormat = 'YYYY-MM-DD HH:mm:ss';
     let simpleInterface = this.$store.state.profile.profile.simple_interface;
+    let mosaicMaxNumPointings = 100;
     return {
       tab: 1,
       alerts: [],
@@ -337,6 +339,7 @@ export default {
       siteToColor: siteToColor,
       siteCodeToName: siteCodeToName,
       tooltipConfig: tooltipConfig,
+      mosaicMaxNumPointings: mosaicMaxNumPointings,
       draftId: -1,
       targetLookup: {
         busy: false,
@@ -371,6 +374,11 @@ export default {
             desc: `The percentage of the observation that must be completed to mark the request as complete
             and avert rescheduling. The percentage should be set to the lowest value for which the amount
             of data is acceptable to meet the science goal of the request.`
+          },
+          mosaic: {
+            invalid_parameters_feedback: `The limit to the number of mosaic pointings that can be generated is ${mosaicMaxNumPointings}.
+            Please update your parameters before generating a mosaic. To generate a mosaic with more pointings, you can use the API
+            directly.`
           }
         },
         configuration: {
