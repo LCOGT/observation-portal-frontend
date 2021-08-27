@@ -41,7 +41,7 @@
       </ul>
       <p>
         If you are a new user of this Observation Portal, we strongly recommend that you read the
-        <a href="https://lco.global/documents/713/GettingStartedontheLCONetwork.latest.pdf"
+        <a href="https://lco.global/documents/1142/GettingStartedontheLCONetwork.latest.pdf"
           >"Getting Started on the LCO Global Telescope Network" Guide.</a
         >
       </p>
