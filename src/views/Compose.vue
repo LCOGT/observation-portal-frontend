@@ -376,7 +376,7 @@ export default {
             of data is acceptable to meet the science goal of the request.`
           },
           mosaic: {
-            invalid_parameters_feedback: `The limit to the number of mosaic pointings that can be generated is ${mosaicMaxNumPointings}.
+            invalid_parameters_feedback: `The limit to the number of mosaic pointings that can be generated in the frontend is ${mosaicMaxNumPointings}.
             Please update your parameters before generating a mosaic. To generate a mosaic with more pointings, you can use the API
             directly.`
           }
