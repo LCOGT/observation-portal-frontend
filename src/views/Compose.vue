@@ -121,7 +121,6 @@
                   </b-col>
                 </b-row>
               </template>
-
               <template #instrument-config-form="slotProps">
                 <instrument-config-form
                   :id="
@@ -149,7 +148,6 @@
                   @instrument-config-update="slotProps.update"
                 />
               </template>
-
               <template #instrument-config-help>
                 <ul>
                   <li>
@@ -538,6 +536,15 @@ export default {
           },
           min_lunar_distance: {
             desc: 'Minimum acceptable angular separation (degrees) between the target and the moon.'
+          },
+          max_lunar_phase: {
+            hide: true
+          },
+          max_seeing: {
+            hide: true
+          },
+          min_transparency: {
+            hide: true
           }
         },
         window: {
