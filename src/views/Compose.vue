@@ -716,8 +716,7 @@ export default {
       } else if (request.configurations[0].target.type !== 'ICRS') {
         return false;
       }
-      // TODO: To release mosaicing, update the line below to remove the is_staff check`
-      return this.$store.state.profile.is_staff && !this.simpleInterface;
+      return !this.simpleInterface;
     },
     extraMosaicInstrumentRotation: function(configuration) {
       let rotatorAngle = 0;
