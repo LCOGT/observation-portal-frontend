@@ -8,7 +8,7 @@
         <b-row>
           <b-col md="8" cols="12">
             <h3>
-              {{ data.id }} <small>{{ data.title }}</small>
+              {{ data.id }} <small class="text-muted">{{ data.title }}</small>
             </h3>
             <p>{{ data.abstract }}</p>
             <template v-if="principleInvestigators.length === 1">
@@ -152,68 +152,81 @@
       <b-col>
         <h4>Time Allocation</h4>
         <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Semester</th>
-                <th>Instrument Types</th>
-                <th>Hours</th>
-                <th>Used/Allocated</th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="(timeallocations, semester) in timeallocationsBySemester">
-                <tr :key="semester">
-                  <td colspan="4">{{ semester }}</td>
-                </tr>
-                <template v-for="(timeallocation, idx) in timeallocations">
-                  <tr :key="semester + '-instrument-types-' + idx">
-                    <td></td>
-                    <td>{{ timeallocation.instrument_types.join(', ') }}</td>
-                    <td colspan="2"></td>
-                  </tr>
-                  <tr :key="semester + '-std-time-' + idx">
-                    <td colspan="2"></td>
-                    <td>Standard</td>
-                    <td>
-                      <b-progress :max="timeallocation.std_allocation">
-                        <b-progress-bar :value="timeallocation.std_time_used" class="progress-style">
-                          <span>{{ timeallocation.std_time_used | formatFloat(1) }}/{{ timeallocation.std_allocation | formatFloat(1) }}</span>
-                        </b-progress-bar>
-                      </b-progress>
-                    </td>
-                  </tr>
-                  <tr :key="semester + '-tc-time-' + idx">
-                    <td colspan="2"></td>
-                    <td>Time Critical</td>
-                    <td>
-                      <b-progress class="progress-text" :max="timeallocation.tc_allocation">
-                        <b-progress-bar :value="timeallocation.tc_time_used" class="progress-style">
-                          <span>{{ timeallocation.tc_time_used | formatFloat(1) }}/{{ timeallocation.tc_allocation | formatFloat(1) }}</span>
-                        </b-progress-bar>
-                      </b-progress>
-                    </td>
-                  </tr>
-                  <tr :key="semester + '-rr-time-' + idx">
-                    <td colspan="2"></td>
-                    <td>Rapid Response</td>
-                    <td>
-                      <b-progress :max="timeallocation.rr_allocation">
-                        <b-progress-bar :value="timeallocation.rr_time_used" class="progress-style">
-                          <span>{{ timeallocation.rr_time_used | formatFloat(1) }}/{{ timeallocation.rr_allocation | formatFloat(1) }}</span>
-                        </b-progress-bar>
-                      </b-progress>
-                    </td>
-                  </tr>
-                  <tr :key="semester + '-ipp-' + idx">
-                    <td colspan="2"></td>
-                    <td>IPP</td>
-                    <td>Available: {{ timeallocation.ipp_time_available | formatFloat(1) }} Limit: {{ timeallocation.ipp_limit }}</td>
-                  </tr>
-                </template>
-              </template>
-            </tbody>
-          </table>
+          <b-table id="time-allocation-table" :fields="['semester']" :items="timeAllocationsBySemesterAsList" responsive show-empty>
+            <template #cell(semester)="row">
+              <h5>
+                <b-link v-if="row.detailsShowing" @click="row.toggleDetails">
+                  <i class="fas fa-minus"></i>
+                </b-link>
+                <b-link v-else @click="row.toggleDetails">
+                  <i class="fas fa-plus"></i>
+                </b-link>
+                {{ row.item.semester }}
+              </h5>
+            </template>
+            <template #empty>
+              No time is allocated for this proposal.
+            </template>
+            <template #row-details="data">
+              <b-row class="pb-3">
+                <b-col md="1"></b-col>
+                <b-col md="3">
+                  <h6>Instrument Types</h6>
+                </b-col>
+                <b-col md="2">
+                  <h6>Allocation Type</h6>
+                </b-col>
+                <b-col md="6">
+                  <h6>Hours Used / Allocated</h6>
+                </b-col>
+              </b-row>
+              <div v-for="timeallocation in data.item.data" :key="timeallocation.id">
+                <b-row>
+                  <b-col md="1"></b-col>
+                  <b-col md="3">
+                    <b-row class="py-1">
+                      <b-col>{{ timeallocation.instrument_types.join(', ') }}</b-col>
+                    </b-row>
+                  </b-col>
+                  <b-col md="8">
+                    <b-row class="py-1">
+                      <b-col md="3">Standard</b-col>
+                      <b-col md="9">
+                        <span>{{ timeallocation.std_time_used | formatFloat(1) }} / {{ timeallocation.std_allocation | formatFloat(1) }}</span>
+                        <b-progress :max="timeallocation.std_allocation">
+                          <b-progress-bar :value="timeallocation.std_time_used"> </b-progress-bar>
+                        </b-progress>
+                      </b-col>
+                    </b-row>
+                    <b-row class="py-1">
+                      <b-col md="3">Time Critical</b-col>
+                      <b-col md="9">
+                        <span>{{ timeallocation.tc_time_used | formatFloat(1) }} / {{ timeallocation.tc_allocation | formatFloat(1) }}</span>
+                        <b-progress class="progress-text" :max="timeallocation.tc_allocation">
+                          <b-progress-bar :value="timeallocation.tc_time_used"> </b-progress-bar>
+                        </b-progress>
+                      </b-col>
+                    </b-row>
+                    <b-row class="py-1">
+                      <b-col md="3">Rapid Response</b-col>
+                      <b-col md="9">
+                        <span>{{ timeallocation.rr_time_used | formatFloat(1) }} / {{ timeallocation.rr_allocation | formatFloat(1) }}</span>
+                        <b-progress :max="timeallocation.rr_allocation">
+                          <b-progress-bar :value="timeallocation.rr_time_used"> </b-progress-bar>
+                        </b-progress>
+                      </b-col>
+                    </b-row>
+                    <b-row class="py-1 mb-5">
+                      <b-col md="3">IPP</b-col>
+                      <b-col md="9">
+                        <span>Available: {{ timeallocation.ipp_time_available | formatFloat(1) }} Limit: {{ timeallocation.ipp_limit }}</span>
+                      </b-col>
+                    </b-row>
+                  </b-col>
+                </b-row>
+              </div>
+            </template>
+          </b-table>
         </div>
       </b-col>
     </b-row>
@@ -291,8 +304,20 @@ export default {
       }
       return false;
     },
-    timeallocationsBySemester: function() {
-      return _.groupBy(this.data.timeallocation_set, 'semester');
+    timeAllocationsBySemesterAsList: function() {
+      let groupedTimeAllocationsBySemester = _.groupBy(this.data.timeallocation_set, 'semester');
+      let groupedTimeAllocationsBySemesterAsList = [];
+      for (let semester in groupedTimeAllocationsBySemester) {
+        groupedTimeAllocationsBySemesterAsList.push({
+          semester: semester,
+          data: groupedTimeAllocationsBySemester[semester]
+        });
+      }
+      // The time allocations of the first semester displayed should initially be expanded
+      if (groupedTimeAllocationsBySemesterAsList.length > 0) {
+        groupedTimeAllocationsBySemesterAsList[0]['_showDetails'] = true;
+      }
+      return groupedTimeAllocationsBySemesterAsList;
     }
   },
   created: function() {
@@ -385,9 +410,6 @@ export default {
 .not-collapsed > .when-closed {
   display: none;
 }
-.progress-style {
-  min-width: 3em;
-}
 h4 {
   padding-top: 0.7em;
   padding-bottom: 0.4em;
@@ -400,5 +422,10 @@ li {
 }
 li.observation-requests-links::before {
   content: '\00BB';
+}
+</style>
+<style>
+#time-allocation-table > thead {
+  display: none;
 }
 </style>
