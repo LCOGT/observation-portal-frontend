@@ -154,15 +154,15 @@
         <div class="table-responsive">
           <b-table id="time-allocation-table" :fields="['semester']" :items="timeAllocationsBySemesterAsList" responsive show-empty>
             <template #cell(semester)="row">
-              <div class="font-weight-bold">
-                <b-link v-if="row.detailsShowing" @click="row.toggleDetails">
-                  <i class="fas fa-minus"></i>
+              <span class="font-weight-bold">Semester {{ row.item.semester }}</span>
+              <span class="float-right">
+                <b-link v-if="row.detailsShowing" @click="row.toggleDetails" class="px-1">
+                  <i class="fas fa-angle-double-up fa-lg"></i>
                 </b-link>
-                <b-link v-else @click="row.toggleDetails">
-                  <i class="fas fa-plus"></i>
+                <b-link v-else @click="row.toggleDetails" class="px-1">
+                  <i class="fas fa-angle-double-down fa-lg"></i>
                 </b-link>
-                Semester {{ row.item.semester }}
-              </div>
+              </span>
             </template>
             <template #empty>
               No time is allocated for this proposal.
