@@ -154,93 +154,83 @@
         <div class="table-responsive">
           <b-table id="time-allocation-table" :fields="['semester']" :items="timeAllocationsBySemesterAsList" responsive show-empty>
             <template #cell(semester)="row">
-              <h5>
+              <div class="font-weight-bold">
                 <b-link v-if="row.detailsShowing" @click="row.toggleDetails">
                   <i class="fas fa-minus"></i>
                 </b-link>
                 <b-link v-else @click="row.toggleDetails">
                   <i class="fas fa-plus"></i>
                 </b-link>
-                {{ row.item.semester }}
-              </h5>
+                Semester {{ row.item.semester }}
+              </div>
             </template>
             <template #empty>
               No time is allocated for this proposal.
             </template>
             <template #row-details="data">
-              <b-row class="pb-3">
-                <b-col md="3">
-                  <h6>Instrument Types</h6>
-                </b-col>
-                <b-col md="3">
-                  <h6>Allocation Type</h6>
-                </b-col>
-                <b-col md="6">
-                  <h6>Used / Allocated</h6>
-                </b-col>
-              </b-row>
               <div v-for="timeallocation in data.item.data" :key="timeallocation.id">
-                <b-row>
-                  <b-col md="3">
-                    <b-row class="py-1">
-                      <b-col>{{ timeallocation.instrument_types.join(', ') }}</b-col>
-                    </b-row>
-                  </b-col>
-                  <b-col md="9">
-                    <b-row v-if="timeallocation.std_allocation > 0" class="py-1">
-                      <b-col md="4">Standard</b-col>
-                      <b-col md="8">
-                        <span>
-                          {{ timeallocation.std_time_used | formatFloat(1) }} / {{ timeallocation.std_allocation | formatFloat(1) }}
-                          {{ getAllocationUnitDisplay(timeallocation.std_allocation) }}
-                        </span>
-                        <b-progress :max="timeallocation.std_allocation">
-                          <b-progress-bar :value="timeallocation.std_time_used" />
-                        </b-progress>
-                      </b-col>
-                    </b-row>
-                    <b-row v-if="timeallocation.tc_allocation > 0" class="py-1">
-                      <b-col md="4">Time Critical</b-col>
-                      <b-col md="8">
-                        <span>
-                          {{ timeallocation.tc_time_used | formatFloat(1) }} / {{ timeallocation.tc_allocation | formatFloat(1) }}
-                          {{ getAllocationUnitDisplay(timeallocation.tc_allocation) }}
-                        </span>
-                        <b-progress class="progress-text" :max="timeallocation.tc_allocation">
-                          <b-progress-bar :value="timeallocation.tc_time_used" />
-                        </b-progress>
-                      </b-col>
-                    </b-row>
-                    <b-row v-if="timeallocation.rr_allocation > 0" class="py-1">
-                      <b-col md="4">Rapid Response</b-col>
-                      <b-col md="8">
-                        <span>
-                          {{ timeallocation.rr_time_used | formatFloat(1) }} / {{ timeallocation.rr_allocation | formatFloat(1) }}
-                          {{ getAllocationUnitDisplay(timeallocation.rr_allocation) }}
-                        </span>
-                        <b-progress :max="timeallocation.rr_allocation">
-                          <b-progress-bar :value="timeallocation.rr_time_used" />
-                        </b-progress>
-                      </b-col>
-                    </b-row>
-                    <b-row class="py-1 mb-5">
-                      <b-col md="4">IPP</b-col>
-                      <b-col md="8">
-                        <span>
-                          {{ (timeallocation.ipp_limit - timeallocation.ipp_time_available) | formatFloat(1) }} /
-                          {{ timeallocation.ipp_limit | formatFloat(1) }}
-                        </span>
-                        <span class="text-muted">
-                          (Available: {{ timeallocation.ipp_time_available | formatFloat(1) }}, Limit:
-                          {{ timeallocation.ipp_limit | formatFloat(1) }})
-                        </span>
-                        <b-progress :max="timeallocation.ipp_limit">
-                          <b-progress-bar :value="timeallocation.ipp_limit - timeallocation.ipp_time_available" />
-                        </b-progress>
-                      </b-col>
-                    </b-row>
-                  </b-col>
-                </b-row>
+                <b-card header-tag="header" class="border-0">
+                  <template #header>
+                    <div>
+                      <span class="font-weight-bold">
+                        Instrument Type{{ timeallocation.instrument_types.length > 1 ? 's' : '' }}
+                        {{ timeallocation.instrument_types.join(', ') }}
+                      </span>
+                    </div>
+                  </template>
+                  <b-list-group flush>
+                    <b-list-group-item v-if="timeallocation.std_allocation > 0">
+                      <b-row v-if="timeallocation.std_allocation > 0">
+                        <b-col md="3">Standard Hours</b-col>
+                        <b-col md="9">
+                          <span>
+                            {{ timeallocation.std_time_used | formatFloat(1) }} used / {{ timeallocation.std_allocation | formatFloat(1) }} allocated
+                          </span>
+                          <b-progress :max="timeallocation.std_allocation">
+                            <b-progress-bar :value="timeallocation.std_time_used" />
+                          </b-progress>
+                        </b-col>
+                      </b-row>
+                    </b-list-group-item>
+                    <b-list-group-item v-if="timeallocation.tc_allocation > 0">
+                      <b-row v-if="timeallocation.tc_allocation > 0">
+                        <b-col md="3">Time Critical Hours</b-col>
+                        <b-col md="9">
+                          <span>
+                            {{ timeallocation.tc_time_used | formatFloat(1) }} used / {{ timeallocation.tc_allocation | formatFloat(1) }} allocated
+                          </span>
+                          <b-progress class="progress-text" :max="timeallocation.tc_allocation">
+                            <b-progress-bar :value="timeallocation.tc_time_used" />
+                          </b-progress>
+                        </b-col>
+                      </b-row>
+                    </b-list-group-item>
+                    <b-list-group-item v-if="timeallocation.rr_allocation > 0">
+                      <b-row v-if="timeallocation.rr_allocation > 0">
+                        <b-col md="3">Rapid Response Hours</b-col>
+                        <b-col md="9">
+                          <span>
+                            {{ timeallocation.rr_time_used | formatFloat(1) }} used / {{ timeallocation.rr_allocation | formatFloat(1) }} allocated
+                          </span>
+                          <b-progress :max="timeallocation.rr_allocation">
+                            <b-progress-bar :value="timeallocation.rr_time_used" />
+                          </b-progress>
+                        </b-col>
+                      </b-row>
+                    </b-list-group-item>
+                    <b-list-group-item>
+                      <b-row>
+                        <b-col md="3">IPP</b-col>
+                        <b-col md="9">
+                          <span>
+                            Available: {{ timeallocation.ipp_time_available | formatFloat(1) }}, Limit:
+                            {{ timeallocation.ipp_limit | formatFloat(1) }}
+                          </span>
+                        </b-col>
+                      </b-row>
+                    </b-list-group-item>
+                  </b-list-group>
+                </b-card>
               </div>
             </template>
           </b-table>
@@ -345,10 +335,6 @@ export default {
   methods: {
     initializeDataEndpoint: function() {
       return this.$store.state.urls.observationPortalApi + '/api/proposals/' + this.id + '/';
-    },
-    getAllocationUnitDisplay: function(numHours) {
-      if (numHours === 1) return 'hour';
-      return 'hours';
     },
     clearMessages: function() {
       this.$store.commit('clearAllMessages');
