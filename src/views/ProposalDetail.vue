@@ -169,14 +169,12 @@
             </template>
             <template #row-details="data">
               <div v-for="timeallocation in data.item.data" :key="timeallocation.id">
-                <b-card header-tag="header" class="border-0">
+                <b-card header-tag="header" border-variant="light">
                   <template #header>
-                    <div>
-                      <span class="font-weight-bold">
-                        Instrument Type{{ timeallocation.instrument_types.length > 1 ? 's' : '' }}
-                        {{ timeallocation.instrument_types.join(', ') }}
-                      </span>
-                    </div>
+                    <span>
+                      Instrument Type{{ timeallocation.instrument_types.length > 1 ? 's' : '' }}
+                      {{ timeallocation.instrument_types.join(', ') }}
+                    </span>
                   </template>
                   <b-list-group flush>
                     <b-list-group-item v-if="timeallocation.std_allocation > 0">
