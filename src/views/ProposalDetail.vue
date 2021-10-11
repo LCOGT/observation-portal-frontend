@@ -176,7 +176,7 @@
                   <h6>Allocation Type</h6>
                 </b-col>
                 <b-col md="6">
-                  <h6>Hours Used / Allocated</h6>
+                  <h6>Used / Allocated</h6>
                 </b-col>
               </b-row>
               <div v-for="timeallocation in data.item.data" :key="timeallocation.id">
@@ -187,37 +187,56 @@
                     </b-row>
                   </b-col>
                   <b-col md="9">
-                    <b-row class="py-1">
+                    <b-row v-if="timeallocation.std_allocation > 0" class="py-1">
                       <b-col md="4">Standard</b-col>
                       <b-col md="8">
-                        <span>{{ timeallocation.std_time_used | formatFloat(1) }} / {{ timeallocation.std_allocation | formatFloat(1) }}</span>
+                        <span>
+                          {{ timeallocation.std_time_used | formatFloat(1) }} / {{ timeallocation.std_allocation | formatFloat(1) }}
+                          {{ getAllocationUnitDisplay(timeallocation.std_allocation) }}
+                        </span>
                         <b-progress :max="timeallocation.std_allocation">
-                          <b-progress-bar :value="timeallocation.std_time_used"> </b-progress-bar>
+                          <b-progress-bar :value="timeallocation.std_time_used" />
                         </b-progress>
                       </b-col>
                     </b-row>
-                    <b-row class="py-1">
+                    <b-row v-if="timeallocation.tc_allocation > 0" class="py-1">
                       <b-col md="4">Time Critical</b-col>
                       <b-col md="8">
-                        <span>{{ timeallocation.tc_time_used | formatFloat(1) }} / {{ timeallocation.tc_allocation | formatFloat(1) }}</span>
+                        <span>
+                          {{ timeallocation.tc_time_used | formatFloat(1) }} / {{ timeallocation.tc_allocation | formatFloat(1) }}
+                          {{ getAllocationUnitDisplay(timeallocation.tc_allocation) }}
+                        </span>
                         <b-progress class="progress-text" :max="timeallocation.tc_allocation">
-                          <b-progress-bar :value="timeallocation.tc_time_used"> </b-progress-bar>
+                          <b-progress-bar :value="timeallocation.tc_time_used" />
                         </b-progress>
                       </b-col>
                     </b-row>
-                    <b-row class="py-1">
+                    <b-row v-if="timeallocation.rr_allocation > 0" class="py-1">
                       <b-col md="4">Rapid Response</b-col>
                       <b-col md="8">
-                        <span>{{ timeallocation.rr_time_used | formatFloat(1) }} / {{ timeallocation.rr_allocation | formatFloat(1) }}</span>
+                        <span>
+                          {{ timeallocation.rr_time_used | formatFloat(1) }} / {{ timeallocation.rr_allocation | formatFloat(1) }}
+                          {{ getAllocationUnitDisplay(timeallocation.rr_allocation) }}
+                        </span>
                         <b-progress :max="timeallocation.rr_allocation">
-                          <b-progress-bar :value="timeallocation.rr_time_used"> </b-progress-bar>
+                          <b-progress-bar :value="timeallocation.rr_time_used" />
                         </b-progress>
                       </b-col>
                     </b-row>
                     <b-row class="py-1 mb-5">
                       <b-col md="4">IPP</b-col>
                       <b-col md="8">
-                        <span>Available: {{ timeallocation.ipp_time_available | formatFloat(1) }} Limit: {{ timeallocation.ipp_limit }}</span>
+                        <span>
+                          {{ (timeallocation.ipp_limit - timeallocation.ipp_time_available) | formatFloat(1) }} /
+                          {{ timeallocation.ipp_limit | formatFloat(1) }}
+                        </span>
+                        <span class="text-muted">
+                          (Available: {{ timeallocation.ipp_time_available | formatFloat(1) }}, Limit:
+                          {{ timeallocation.ipp_limit | formatFloat(1) }})
+                        </span>
+                        <b-progress :max="timeallocation.ipp_limit">
+                          <b-progress-bar :value="timeallocation.ipp_limit - timeallocation.ipp_time_available" />
+                        </b-progress>
                       </b-col>
                     </b-row>
                   </b-col>
@@ -326,6 +345,10 @@ export default {
   methods: {
     initializeDataEndpoint: function() {
       return this.$store.state.urls.observationPortalApi + '/api/proposals/' + this.id + '/';
+    },
+    getAllocationUnitDisplay: function(numHours) {
+      if (numHours === 1) return 'hour';
+      return 'hours';
     },
     clearMessages: function() {
       this.$store.commit('clearAllMessages');
