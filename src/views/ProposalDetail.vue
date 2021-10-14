@@ -156,10 +156,10 @@
             <template #cell(semester)="row">
               <span class="font-weight-bold">Semester {{ row.item.semester }}</span>
               <span class="float-right">
-                <b-link v-if="row.detailsShowing" @click="row.toggleDetails" class="px-1">
+                <b-link v-if="row.detailsShowing" class="px-1" @click="row.toggleDetails">
                   <i class="fas fa-angle-double-up fa-lg"></i>
                 </b-link>
-                <b-link v-else @click="row.toggleDetails" class="px-1">
+                <b-link v-else class="px-1" @click="row.toggleDetails">
                   <i class="fas fa-angle-double-down fa-lg"></i>
                 </b-link>
               </span>
@@ -432,5 +432,9 @@ li.observation-requests-links::before {
 <style>
 #time-allocation-table > thead {
   display: none;
+}
+#time-allocation-table > tbody > tr > td {
+  padding-left: 0px;
+  padding-right: 0px;
 }
 </style>
