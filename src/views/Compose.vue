@@ -852,6 +852,9 @@ export default {
       }
       for (let instrument in instrumentsData) {
         let configurationTypesToDelete = [];
+        if (instrument === '1M0-NRES-SCICAM'){
+          configurationTypesToDelete.push('ARC', 'LAMP_FLAT');
+        }
         for (let configurationType in instrumentsData[instrument].configuration_types) {
           if (formConfigurationTypes.indexOf(configurationType) < 0) {
             configurationTypesToDelete.push(configurationType);
