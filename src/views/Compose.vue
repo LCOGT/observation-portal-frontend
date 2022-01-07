@@ -172,6 +172,19 @@
                   </div>
                 </ocs-custom-field>
               </template>
+              <template #target-fields-footer="slotProps">
+                  <span v-show="showFractionalRate(slotProps.data.target)">
+                    <ocs-custom-field
+                      key="fractional_ephemeris_rate"
+                      v-model="slotProps.data.target.extra_params['fractional_ephemeris_rate']"
+                      field="fractional_ephemeris_rate"
+                      label="Fractional Ephemeris Rate"
+                      desc="Fractional rate at which to track the object relative to the stars around it, from 0 to 1"
+                      :errors="slotProps.data.target.errors"
+                      @input="slotProps.update()"
+                    />
+                  </span>
+              </template>
               <template #target-help="slotProps">
                 <archive
                   v-if="slotProps.data.target.ra && slotProps.data.target.dec"
@@ -622,7 +635,8 @@ export default {
                   proper_motion_ra: 0.0,
                   proper_motion_dec: 0.0,
                   epoch: 2000,
-                  parallax: 0
+                  parallax: 0,
+                  extra_params: {}
                 },
                 constraints: {
                   max_airmass: simpleInterface ? 2 : 1.6,
@@ -877,6 +891,13 @@ export default {
     },
     onRequestGroupSaved: function(requestGroupId) {
       this.$router.push({ name: 'requestgroupDetail', params: { id: requestGroupId } });
+    },
+    showFractionalRate: function(target) {
+      if (target.type === 'ORBITAL_ELEMENTS' && !target.scheme.includes('MAJOR_PLANET')) {
+        return true;
+      }
+      delete target.extra_params['fractional_ephemeris_rate']
+      return false;
     },
     doTargetLookup: _.debounce(function(target, callback) {
       this.targetLookup.busy = true;
