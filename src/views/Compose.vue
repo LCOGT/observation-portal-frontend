@@ -691,7 +691,9 @@ export default {
       if (target.type === 'ORBITAL_ELEMENTS' && !target.scheme.includes('MAJOR_PLANET')) {
         return true;
       }
-      delete target.extra_params['fractional_ephemeris_rate']
+      else if (target.extra_params) {
+        delete target.extra_params['fractional_ephemeris_rate'];
+      }
       return false;
     },
     selectedInstruments: function() {
