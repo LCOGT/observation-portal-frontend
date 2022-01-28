@@ -173,6 +173,7 @@
                 </ocs-custom-field>
               </template>
               <template #target-fields-footer="slotProps">
+                  <!-- This showFractionalRate has a side effect of clearing out the fractional_ephemeris_rate from the extra_params if it doesn't show -->
                   <span v-show="showFractionalRate(slotProps.data.target)">
                     <ocs-custom-field
                       key="fractional_ephemeris_rate"
@@ -686,6 +687,13 @@ export default {
       }
       return nActiveProposals > 0 ? true : false;
     },
+    showFractionalRate: function(target) {
+      if (target.type === 'ORBITAL_ELEMENTS' && !target.scheme.includes('MAJOR_PLANET')) {
+        return true;
+      }
+      delete target.extra_params['fractional_ephemeris_rate']
+      return false;
+    },
     selectedInstruments: function() {
       // Return object where the first key is the requestIndex and the second is the configurationIndex
       let _selectedInstruments = {};
@@ -891,13 +899,6 @@ export default {
     },
     onRequestGroupSaved: function(requestGroupId) {
       this.$router.push({ name: 'requestgroupDetail', params: { id: requestGroupId } });
-    },
-    showFractionalRate: function(target) {
-      if (target.type === 'ORBITAL_ELEMENTS' && !target.scheme.includes('MAJOR_PLANET')) {
-        return true;
-      }
-      delete target.extra_params['fractional_ephemeris_rate']
-      return false;
     },
     doTargetLookup: _.debounce(function(target, callback) {
       this.targetLookup.busy = true;
