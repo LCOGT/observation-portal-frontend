@@ -180,7 +180,7 @@
                       v-model="slotProps.data.target.extra_params['fractional_ephemeris_rate']"
                       field="fractional_ephemeris_rate"
                       label="Fractional Ephemeris Rate"
-                      desc="Fractional rate at which to track the object relative to the stars around it, from 0 to 1"
+                      desc="Fraction of the target's motion that will be used for tracking. Must be a value from 0.0 (Sidereal Tracking) to 1.0 (Target Tracking). See the Getting Started guide for suggestions on how to counter target drift."
                       :errors="slotProps.data.target.errors"
                       @input="slotProps.update()"
                     />
