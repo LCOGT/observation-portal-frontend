@@ -151,7 +151,7 @@
     <b-row>
       <b-col>
         <template v-if="userIsCI">
-          <h2>
+          <h4>
             Co-Investigator Time Allocation
             <small>
               <b-link v-b-toggle.collapse-coi-time-allocation href="#">
@@ -159,7 +159,7 @@
                 <span class="when-closed"><i class="fa fa-eye fa-eye-slash"></i></span>
               </b-link>
             </small>
-          </h2>
+          </h4>
           <b-collapse id="collapse-coi-time-allocation" class="w-100" visible>
             <b-col v-if="coInvestigatorHasNoTimeLimit" md="9" class="mb-4">
               <span>
