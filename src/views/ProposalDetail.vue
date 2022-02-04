@@ -75,8 +75,8 @@
       </b-col>
     </b-row>
     <b-row>
+      <hr class="w-100" />
       <template v-if="userIsPI">
-        <hr class="w-100" />
         <b-col>
           <h4>
             Co-Investigators
@@ -450,28 +450,28 @@ export default {
       this.setGlobalMembershipLimit(-1);
       this.globallimit.timeLimit = null;
     },
-    updateCoInvestigatorTimeAllocationInformation: function(data) {
+    updateCoInvestigatorTimeInformation: function(data) {
       if (data.results.length > 0) {
         let timeLimit = 0;
         let timeUsed = 0;
-        // there should only be one result, but future-proof this just in case
+        // in most cases there will only be one result, but handle multiple
         for (let result of data.results) {
           timeLimit += result.time_limit;
           timeUsed += result.time_used_by_user;
         }
+        // convert from seconds to hours
         this.coInvestigatorTimeInformation.timeLimit = Math.floor(timeLimit / 3600);
         this.coInvestigatorTimeInformation.timeUsed = Math.floor(timeUsed / 3600);
         this.coInvestigatorTimeInformation.role = 'CI';
       }
     },
     getCoInvestigatorTimeAllocationInformation: function() {
-      let that = this;
       $.ajax({
         method: 'GET',
         url: this.observationPortalApiUrl + '/api/memberships/',
         data: { proposal: this.id, username: this.$store.state.profile.username, role: 'CI' }
-      }).done(function(data) {
-        that.updateCoInvestigatorTimeAllocationInformation(data);
+      }).done(data => {
+        this.updateCoInvestigatorTimeInformation(data);
       });
     }
   }
