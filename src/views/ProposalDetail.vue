@@ -150,7 +150,33 @@
     </b-row>
     <b-row>
       <b-col>
-        <h4>Time Allocation</h4>
+        <template v-if="userIsCI">
+          <h4>
+            Co-Investigator Time Allocation
+            <small>
+              <b-link v-b-toggle.collapse-coi-time-allocation href="#">
+                <span class="when-open"><i class="fa fa-eye"></i></span>
+                <span class="when-closed"><i class="fa fa-eye fa-eye-slash"></i></span>
+              </b-link>
+            </small>
+          </h4>
+          <b-collapse id="collapse-coi-time-allocation" class="w-100" visible>
+            <b-col md="9">
+              <span>
+                {{ coInvestigatorTimeInformation.timeUsed | formatFloat(1) }} hours used /
+                {{ coInvestigatorTimeInformation.timeLimit | formatFloat(1) }} hours allocated
+              </span>
+              <b-progress :max="coInvestigatorTimeInformation.timeLimit" class="mb-4">
+                <b-progress-bar :value="coInvestigatorTimeInformation.timeUsed" />
+              </b-progress>
+            </b-col>
+          </b-collapse>
+        </template>
+      </b-col>
+    </b-row>
+    <h2>Time Allocation</h2>
+    <b-row>
+      <b-col>
         <div class="table-responsive">
           <b-table id="time-allocation-table" :fields="['semester']" :items="timeAllocationsBySemesterAsList" responsive show-empty>
             <template #cell(semester)="row">
@@ -288,6 +314,11 @@ export default {
       },
       deleteMembership: {
         isBusy: false
+      },
+      coInvestigatorTimeInformation: {
+        timeUsed: 0,
+        timeLimit: 0,
+        role: ''
       }
     };
   },
@@ -309,6 +340,9 @@ export default {
       }
       return false;
     },
+    userIsCI: function() {
+      return this.coInvestigatorTimeInformation.role === 'CI' ? true : false;
+    },
     timeAllocationsBySemesterAsList: function() {
       let groupedTimeAllocationsBySemester = _.groupBy(this.data.timeallocation_set, 'semester');
       let groupedTimeAllocationsBySemesterAsList = [];
@@ -329,6 +363,7 @@ export default {
     if (this.$store.state.profile.proposal_notifications.indexOf(this.id) > -1) {
       this.proposalNotification.enabled = true;
     }
+    this.getCoInvestigatorTimeAllocationInformation();
   },
   methods: {
     initializeDataEndpoint: function() {
@@ -405,6 +440,30 @@ export default {
       // A negative number means no limit
       this.setGlobalMembershipLimit(-1);
       this.globallimit.timeLimit = null;
+    },
+    updateCoInvestigatorTimeAllocationInformation: function(data) {
+      if (data.results.length > 0) {
+        let timeLimit = 0;
+        let timeUsed = 0;
+        // there should only be one result, but future-proof this just in case
+        for (let result of data.results) {
+          timeLimit += result.time_limit;
+          timeUsed += result.time_used_by_user;
+        }
+        this.coInvestigatorTimeInformation.timeLimit = Math.floor(timeLimit / 3600);
+        this.coInvestigatorTimeInformation.timeUsed = Math.floor(timeUsed / 3600);
+        this.coInvestigatorTimeInformation.role = 'CI';
+      }
+    },
+    getCoInvestigatorTimeAllocationInformation: function() {
+      let that = this;
+      $.ajax({
+        method: 'GET',
+        url: this.observationPortalApiUrl + '/api/memberships/',
+        data: { proposal: this.id, username: this.$store.state.profile.username, role: 'CI' }
+      }).done(function(data) {
+        that.updateCoInvestigatorTimeAllocationInformation(data);
+      });
     }
   }
 };
