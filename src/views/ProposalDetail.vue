@@ -161,13 +161,13 @@
             </small>
           </h2>
           <b-collapse id="collapse-coi-time-allocation" class="w-100" visible>
-            <b-col md="9" v-if="coInvestigatorHasNoTimeLimit" class="mb-4">
+            <b-col v-if="coInvestigatorHasNoTimeLimit" md="9" class="mb-4">
               <span>
-                {{ coInvestigatorTimeInformation.timeUsed | formatFloat(1) }} hours used.
-                The Principal Investigator has not set a time limit for this Co-Investigator.
+                {{ coInvestigatorTimeInformation.timeUsed | formatFloat(1) }} hours used. The Principal Investigator has not set a time limit for this
+                Co-Investigator.
               </span>
             </b-col>
-            <b-col md="9" v-else>
+            <b-col v-else md="9">
               <span>
                 {{ coInvestigatorTimeInformation.timeUsed | formatFloat(1) }} hours used /
                 {{ coInvestigatorTimeInformation.timeLimit | formatFloat(1) }} hours allocated
@@ -350,7 +350,7 @@ export default {
       return this.coInvestigatorTimeInformation.role === 'CI' ? true : false;
     },
     coInvestigatorHasNoTimeLimit: function() {
-      return this.coInvestigatorTimeInformation.timeLimit === -1 ? true: false;
+      return this.coInvestigatorTimeInformation.timeLimit === -1 ? true : false;
     },
     timeAllocationsBySemesterAsList: function() {
       let groupedTimeAllocationsBySemester = _.groupBy(this.data.timeallocation_set, 'semester');
