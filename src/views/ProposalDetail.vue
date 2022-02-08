@@ -180,7 +180,7 @@
         </template>
       </b-col>
     </b-row>
-    <h2>Time Allocation</h2>
+    <h2>Project Time Allocation</h2>
     <b-row>
       <b-col>
         <div class="table-responsive">
