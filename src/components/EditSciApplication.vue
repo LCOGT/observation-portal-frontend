@@ -244,8 +244,8 @@
               <div class="help-block">
                 <template v-if="data.proposal_type === 'SCI'">
                   <p>
-                    For the remainder of your proposal, please upload a single pdf file that includes the following sections but <em>not</em> an
-                    author list:
+                    For the remainder of your proposal, please upload a single pdf file that includes the following sections <em>but not an
+                    author list</em>:
                   </p>
                   <ul>
                     <li>
@@ -267,6 +267,9 @@
                       <strong>Report of related programs on other telescopes.</strong> A concise account of other programs that relate to this
                       proposal.
                     </li>
+                  </ul>
+                  <p>The following two items must begin on a new page (within the same pdf):</p>
+                  <ul>
                     <li>
                       <strong>Report on use of LCO in the past 3 years.</strong> A concise account of LCO network time used in the past 3 years.
                     </li>
@@ -283,8 +286,8 @@
                 </template>
                 <template v-else-if="data.proposal_type === 'KEY'">
                   <p>
-                    For the remainder of your proposal, please upload a single pdf file that includes the sections listed below, but <em>not</em> an
-                    author list. Consult the Call for Key Projects for information on the sections (e.g. Plan for management) that are unique to key
+                    For the remainder of your proposal, please upload a single pdf file that includes the sections listed below, <em>but not an
+                    author list</em>. Consult the Call for Key Projects for information on the sections (e.g. Plan for management) that are unique to key
                     projects.
                   </p>
                   <ul>
@@ -319,6 +322,9 @@
                       <strong>Report of related programs on other telescopes.</strong> A concise account of other programs that relate to this
                       proposal.
                     </li>
+                  </ul>
+                  <p>The following two items must begin on a new page (within the same pdf):</p>
+                  <ul>
                     <li>
                       <strong>Report on use of LCO in the past 3 years.</strong> A concise account of LCO network time used in the past 3 years.
                     </li>
