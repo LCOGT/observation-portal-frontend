@@ -19,7 +19,6 @@ export default new Vuex.Store({
     userIsAuthenticated: false,
     userAcceptedTerms: false,
     messages: [],
-    archiveToken: '',
     urls: {}
   },
   mutations: {
@@ -41,9 +40,6 @@ export default new Vuex.Store({
     },
     setRuntimeConfig(state, payload) {
       state.urls = payload;
-    },
-    setArchiveToken(state, token) {
-      state.archiveToken = token;
     },
     addMessage(state, newMessage) {
       /* Add a message.
@@ -101,35 +97,6 @@ export default new Vuex.Store({
             }
           }
         });
-      });
-    },
-    getArchiveToken(context) {
-      return new Promise((resolve, reject) => {
-        if (context.state.userIsAuthenticated && context.state.archiveToken === '') {
-          $.ajax({
-            method: 'POST',
-            dataType: 'json',
-            url: context.state.urls.archiveApi + '/api-token-auth/',
-            headers: {
-              Authorization: 'Bearer ' + context.state.profile.tokens.archive
-            },
-            success: function(response) {
-              context.commit('setArchiveToken', response.token);
-              resolve();
-            },
-            error: function(response) {
-              if (response.status === 401) {
-                // No such user, but that is ok
-                resolve();
-              }
-              reject();
-            }
-          });
-        } else {
-          // The archive token is already in the store, or the user is not authenticated, no
-          // need to retrieve the token
-          resolve();
-        }
       });
     }
   },

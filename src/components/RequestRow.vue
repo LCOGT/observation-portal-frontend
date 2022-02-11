@@ -109,9 +109,6 @@ export default {
     archiveClientUrl: function() {
       return this.$store.state.urls.archiveClient;
     },
-    archiveToken: function() {
-      return this.$store.state.archiveToken;
-    },
     requestApiUrl: function() {
       return this.$store.state.urls.observationPortalApi + '/api/requests/' + this.request.id + '/';
     },
@@ -142,7 +139,7 @@ export default {
   },
   created: function() {
     let that = this;
-    this.$store.dispatch('getArchiveToken').then(() => {
+    this.$store.dispatch('getProfileData').then(() => {
       that.loadLatestThumbnail();
     });
     if (this.request.state === 'PENDING') {
@@ -151,7 +148,7 @@ export default {
   },
   methods: {
     downloadAllData: function() {
-      downloadAll(this.request.id, this.archiveApiUrl, this.archiveClientUrl, this.archiveToken);
+      downloadAll(this.request.id, this.archiveApiUrl, this.archiveClientUrl, this.$store.state.profile.tokens.api_token);
     },
     loadLatestThumbnail: function() {
       const thumbnailSize = 75;

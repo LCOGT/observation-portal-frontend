@@ -111,7 +111,7 @@ export default {
       requestgroup: {},
       instruments: {},
       requestgroupLoaded: false,
-      archiveTokenLoaded: false,
+      profileLoaded: false,
       requestgroupLoadError: false,
       requestgroupNotFound: false,
       fields: [{ key: 'requestRow', tdClass: 'p-0' }],
@@ -157,8 +157,8 @@ export default {
     // Get the archive token here before the rest of the components are rendered since
     // a variety of them need the token, and doing this ensures only one request to get
     // the token is sent.
-    this.$store.dispatch('getArchiveToken').finally(() => {
-      that.archiveTokenLoaded = true;
+    this.$store.dispatch('getProfileData').finally(() => {
+      that.profileLoaded = true;
       if (that.requestDetail) {
         that.getRequestgroupByRequestId();
       } else {

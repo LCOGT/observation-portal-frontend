@@ -29,9 +29,6 @@ export default {
     archiveClientUrl: function() {
       return this.$store.state.urls.archiveClient;
     },
-    archiveToken: function() {
-      return this.$store.state.archiveToken;
-    },
     archiveLink: function() {
       return this.archiveClientUrl + '/?REQNUM=' + this.requestid + '&start=2014-01-01';
     }
@@ -109,7 +106,7 @@ export default {
         }
       ]
     });
-    this.$store.dispatch('getArchiveToken').then(() => {
+    this.$store.dispatch('getProfileData').then(() => {
       that.refreshTable();
     });
   },
@@ -124,10 +121,10 @@ export default {
       for (let i = 0; i < selections.length; i++) {
         frameIds.push(selections[i].id);
       }
-      downloadZip(frameIds, this.archiveApiUrl, this.archiveToken);
+      downloadZip(frameIds, this.archiveApiUrl, this.$store.state.profile.tokens.api_token);
     },
     downloadAll: function() {
-      downloadAll(this.requestid, this.archiveApiUrl, this.archiveClientUrl, this.archiveToken);
+      downloadAll(this.requestid, this.archiveApiUrl, this.archiveClientUrl, this.$store.state.profile.tokens.api_token);
     },
     refreshTable: function() {
       if (this.requestid) {
