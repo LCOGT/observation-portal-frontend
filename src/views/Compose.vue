@@ -172,6 +172,20 @@
                   </div>
                 </ocs-custom-field>
               </template>
+              <template #target-fields-footer="slotProps">
+                  <!-- This showFractionalRate has a side effect of clearing out the fractional_ephemeris_rate from the extra_params if it doesn't show -->
+                  <span v-show="showFractionalRate(slotProps.data.target)">
+                    <ocs-custom-field
+                      key="fractional_ephemeris_rate"
+                      v-model="slotProps.data.target.extra_params['fractional_ephemeris_rate']"
+                      field="fractional_ephemeris_rate"
+                      label="Fractional Ephemeris Rate"
+                      desc="Fraction of the target's motion that will be used for tracking. Must be a value from 0.0 (Sidereal Tracking) to 1.0 (Target Tracking). See the Getting Started guide for suggestions on how to counter target drift."
+                      :errors="slotProps.data.target.errors"
+                      @input="slotProps.update()"
+                    />
+                  </span>
+              </template>
               <template #target-help="slotProps">
                 <archive
                   v-if="slotProps.data.target.ra && slotProps.data.target.dec"
@@ -622,7 +636,8 @@ export default {
                   proper_motion_ra: 0.0,
                   proper_motion_dec: 0.0,
                   epoch: 2000,
-                  parallax: 0
+                  parallax: 0,
+                  extra_params: {}
                 },
                 constraints: {
                   max_airmass: simpleInterface ? 2 : 1.6,
@@ -877,6 +892,15 @@ export default {
     },
     onRequestGroupSaved: function(requestGroupId) {
       this.$router.push({ name: 'requestgroupDetail', params: { id: requestGroupId } });
+    },
+    showFractionalRate: function(target) {
+      if (target.type === 'ORBITAL_ELEMENTS' && !target.scheme.includes('MAJOR_PLANET')) {
+        return true;
+      }
+      else if (target.extra_params) {
+        delete target.extra_params['fractional_ephemeris_rate'];
+      }
+      return false;
     },
     doTargetLookup: _.debounce(function(target, callback) {
       this.targetLookup.busy = true;
