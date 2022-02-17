@@ -1,7 +1,7 @@
 <template>
   <b-row>
     <b-col md="8">
-      <h3>Settings</h3>
+      <h3>{{ profile.username }}'s Settings</h3>
       <b-form @submit="updateProfileData" @reset="clearProfileForm">
         <b-form-group id="input-group-first-name" label="First Name" label-for="input-first-name">
           <b-form-input id="input-first-name" v-model="formData.first_name" :state="getValidState('first_name')" required />
@@ -13,12 +13,6 @@
           <b-form-input id="input-last-name" v-model="formData.last_name" :state="getValidState('last_name')" required />
           <b-form-invalid-feedback id="input-last-name-state">
             <span v-for="msg in getFeedback('last_name')" :key="msg">{{ msg }}</span>
-          </b-form-invalid-feedback>
-        </b-form-group>
-        <b-form-group id="input-group-username" label="Username" label-for="input-username">
-          <b-form-input id="input-username" v-model="formData.username" :state="getValidState('username')" required />
-          <b-form-invalid-feedback id="input-username-state">
-            <span v-for="msg in getFeedback('username')" :key="msg">{{ msg }}</span>
           </b-form-invalid-feedback>
         </b-form-group>
         <b-form-group id="input-group-email" label="Email" label-for="input-email">
