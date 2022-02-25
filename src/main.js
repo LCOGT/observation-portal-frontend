@@ -50,9 +50,9 @@ $.ajax({
   $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
     if (
       (options.url.startsWith(store.state.urls.archiveApi) || options.url.startsWith(store.state.urls.thumbnailService)) &&
-      store.state.archiveToken
+      store.state.profile
     ) {
-      jqXHR.setRequestHeader('Authorization', 'Token ' + store.state.archiveToken);
+      jqXHR.setRequestHeader('Authorization', 'Token ' + store.state.profile.tokens.api_token);
     }
   });
 

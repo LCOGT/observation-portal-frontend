@@ -199,7 +199,7 @@ export default {
   },
   created: function() {
     let that = this;
-    this.$store.dispatch('getArchiveToken').then(() => {
+    this.$store.dispatch('getProfileData').then(() => {
       if (that.request.state === 'COMPLETED') {
         getLatestFrame(that.request.id, that.archiveApiUrl, function(frame) {
           that.curFrame = frame;
