@@ -55,7 +55,7 @@ export default {
   methods: {
     setResultCount: _.debounce(function() {
       let that = this;
-      $.getJSON(this.archiveApiUrl + '/frames/?OBSTYPE=EXPOSE&covers=POINT(' + that.ra + ' ' + that.dec + ')', function(data) {
+      $.getJSON(this.archiveApiUrl + '/frames/?configuration_type=EXPOSE&covers=POINT(' + that.ra + ' ' + that.dec + ')', function(data) {
         that.resultCount = data.count;
       });
     }, 500)

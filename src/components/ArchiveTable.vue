@@ -30,7 +30,7 @@ export default {
       return this.$store.state.urls.archiveClient;
     },
     archiveLink: function() {
-      return this.archiveClientUrl + '/?REQNUM=' + this.requestid + '&start=2014-01-01';
+      return this.archiveClientUrl + '/?request_id=' + this.requestid + '&start=2014-01-01';
     }
   },
   watch: {
@@ -129,7 +129,7 @@ export default {
     refreshTable: function() {
       if (this.requestid) {
         $('#archive-table').bootstrapTable('refresh', {
-          url: this.archiveApiUrl + '/frames/?limit=1000&exclude_OBSTYPE=GUIDE&REQNUM=' + this.requestid
+          url: this.archiveApiUrl + '/frames/?limit=1000&exclude_configuration_type=GUIDE&request_id=' + this.requestid
         });
       }
     }
