@@ -78,7 +78,7 @@ export default {
           sortable: 'true'
         },
         {
-          field: 'DATE_OBS',
+          field: 'observation_date',
           title: 'DATE_OBS',
           sortable: 'true',
           formatter: function(value) {
@@ -86,17 +86,17 @@ export default {
           }
         },
         {
-          field: 'FILTER',
+          field: 'primary_optical_element',
           title: 'filter',
           sortable: 'true'
         },
         {
-          field: 'OBSTYPE',
+          field: 'configuration_type',
           title: 'obstype',
           sortable: 'true'
         },
         {
-          field: 'RLEVEL',
+          field: 'reduction_level',
           title: 'Reduction',
           sortable: 'true',
           formatter: function(value) {

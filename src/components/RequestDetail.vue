@@ -163,7 +163,7 @@ export default {
         blue: ['B']
       };
       let filtersUsed = this.frames.map(function(frame) {
-        return frame.FILTER;
+        return frame.primary_optical_element;
       });
       let numColors = 0;
       for (let color in colorFilters) {
