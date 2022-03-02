@@ -20,7 +20,7 @@ function downloadZip(frameIds, archiveRoot, archiveToken) {
 }
 
 function downloadAll(requestId, archiveRoot, archiveClientUrl, archiveToken) {
-  $.getJSON(archiveRoot + '/frames/?limit=1000&REQNUM=' + requestId, function(data) {
+  $.getJSON(archiveRoot + '/frames/?limit=1000&request_id=' + requestId, function(data) {
     if (data.count > 1000) {
       alert('Over 1000 products found. Please use ' + archiveClientUrl + ' to download your data');
       return false;
@@ -35,7 +35,7 @@ function downloadAll(requestId, archiveRoot, archiveClientUrl, archiveToken) {
 
 function getLatestFrame(requestId, archiveRoot, callback) {
   $.ajax({
-    url: archiveRoot + '/frames/?ordering=-id&limit=1&REQNUM=' + requestId,
+    url: archiveRoot + '/frames/?ordering=-id&limit=1&request_id=' + requestId,
     dataType: 'json'
   }).done(function(response) {
     callback(response.results[0]);

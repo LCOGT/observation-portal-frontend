@@ -30,7 +30,7 @@ export default {
       return this.$store.state.urls.archiveClient;
     },
     archiveLink: function() {
-      return this.archiveClientUrl + '/?REQNUM=' + this.requestid + '&start=2014-01-01';
+      return this.archiveClientUrl + '/?request_id=' + this.requestid + '&start=2014-01-01';
     }
   },
   watch: {
@@ -78,7 +78,7 @@ export default {
           sortable: 'true'
         },
         {
-          field: 'DATE_OBS',
+          field: 'observation_date',
           title: 'DATE_OBS',
           sortable: 'true',
           formatter: function(value) {
@@ -86,17 +86,17 @@ export default {
           }
         },
         {
-          field: 'FILTER',
+          field: 'primary_optical_element',
           title: 'filter',
           sortable: 'true'
         },
         {
-          field: 'OBSTYPE',
+          field: 'configuration_type',
           title: 'obstype',
           sortable: 'true'
         },
         {
-          field: 'RLEVEL',
+          field: 'reduction_level',
           title: 'Reduction',
           sortable: 'true',
           formatter: function(value) {
@@ -129,7 +129,7 @@ export default {
     refreshTable: function() {
       if (this.requestid) {
         $('#archive-table').bootstrapTable('refresh', {
-          url: this.archiveApiUrl + '/frames/?limit=1000&exclude_OBSTYPE=GUIDE&REQNUM=' + this.requestid
+          url: this.archiveApiUrl + '/frames/?limit=1000&exclude_configuration_type=GUIDE&request_id=' + this.requestid
         });
       }
     }

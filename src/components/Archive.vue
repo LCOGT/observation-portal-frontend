@@ -31,7 +31,7 @@ export default {
   },
   computed: {
     guiLink: function() {
-      return this.$store.state.urls.archiveClient + '/?OBSTYPE=EXPOSE&start=2014-05-01&covers=POINT(' + this.ra + ' ' + this.dec + ')';
+      return this.$store.state.urls.archiveClient + '/?configuration_type=EXPOSE&start=2014-05-01&covers=POINT(' + this.ra + ' ' + this.dec + ')';
     },
     archiveApiUrl: function() {
       return this.$store.state.urls.archiveApi;
@@ -55,7 +55,7 @@ export default {
   methods: {
     setResultCount: _.debounce(function() {
       let that = this;
-      $.getJSON(this.archiveApiUrl + '/frames/?OBSTYPE=EXPOSE&covers=POINT(' + that.ra + ' ' + that.dec + ')', function(data) {
+      $.getJSON(this.archiveApiUrl + '/frames/?configuration_type=EXPOSE&covers=POINT(' + that.ra + ' ' + that.dec + ')', function(data) {
         that.resultCount = data.count;
       });
     }, 500)

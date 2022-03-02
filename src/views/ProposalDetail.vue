@@ -333,7 +333,7 @@ export default {
       return this.$store.state.urls.observationPortalApi;
     },
     archiveLink: function() {
-      return this.$store.state.urls.archiveClient + '?PROPID=' + this.id;
+      return this.$store.state.urls.archiveClient + '?proposal_id=' + this.id;
     },
     principleInvestigators: function() {
       return _.get(this.data, 'pis', []);
