@@ -87,6 +87,9 @@
         <router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: data.item.id } }" target="_blank">
           <span class="text-primary mx-auto"><i class="far fa-file-pdf"></i></span>
         </router-link>
+        <b-button :disabled="cannotCopy(data.item.id)" v-b-tooltip.hover size="sm" class="mx-1" variant="success" title="Copy Science Application for current Call" @click="copyScienceApplication(data.item.id)">
+          <i class="fa fa-copy fa-fw" />
+        </b-button>
       </template>
     </b-table>
   </div>
@@ -114,6 +117,13 @@ export default {
       required: true
     },
     sciCollabAllocations: {
+      type: Array,
+      required: false,
+      default: function() {
+        return [];
+      }
+    },
+    openCallTypes: {
       type: Array,
       required: false,
       default: function() {
@@ -163,6 +173,9 @@ export default {
         return app.status !== 'DRAFT';
       });
     },
+    cannotCopy: function(applicationId) {
+      return !this.openCallTypes.includes(_.find(this.submittedApplications(), function (item) { return item.id == applicationId; }).call.proposal_type);
+    },
     draftApplications: function() {
       return _.filter(this.data.results, app => {
         return app.status === 'DRAFT';
@@ -195,6 +208,22 @@ export default {
     },
     clearMessages: function() {
       this.$store.commit('clearNamespacedMessages', 'scicollab-applications');
+    },
+    copyScienceApplication: function(applicationId) {
+      this.clearMessages();
+      var that = this;
+      $.ajax({
+        type: 'POST',
+        url: `${this.observationPortalApiBaseUrl}/api/scienceapplications/${appilcationId}/copy/`,
+        contentType: 'application/json'
+      })
+        .done(function() {
+          that.addMessage('Science Application Copied', 'success');
+          that.getData();
+        })
+        .fail(function(response) {
+          that.addMessage('There was a problem copying the science application. Please ensure there is an open call of the same type and try again', 'danger');
+        });
     },
     getDeleteConfirmationMessage: function(title) {
       return 'Are you sure you want to delete "' + title + '"?';

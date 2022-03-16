@@ -68,7 +68,7 @@
         <sci-applications :is-sci-collab="true" :sci-collab-allocations="allocations"></sci-applications>
       </template>
       <h1>Your Proposals</h1>
-      <sci-applications :is-sci-collab="false"></sci-applications>
+      <sci-applications :is-sci-collab="false" :open-call-types="openCallTypes"></sci-applications>
     </b-col>
   </b-row>
 </template>
@@ -115,6 +115,9 @@ export default {
       return _.filter(this.data.results, call => {
         return call.proposal_type === 'COLAB';
       });
+    },
+    openCallTypes: function() {
+      return _.uniqBy(_.map(this.data.results, 'proposal_type'));
     },
     sciencecollaborationallocation: function() {
       return this.$store.state.profile.profile.sciencecollaborationallocation;
