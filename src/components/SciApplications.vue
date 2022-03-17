@@ -87,8 +87,10 @@
         <router-link :to="{ name: 'appCombinedPdf', params: { sciAppId: data.item.id } }" target="_blank">
           <span class="text-primary mx-auto"><i class="far fa-file-pdf"></i></span>
         </router-link>
-        <b-button :disabled="cannotCopy(data.item.id)" v-b-tooltip.hover size="sm" class="mx-1" variant="success" title="Copy Science Application for current Call" @click="copyScienceApplication(data.item.id)">
-          <i class="fa fa-copy fa-fw" />
+      </template>
+      <template #cell(copy)="data" v-if="!isSciCollab">
+        <b-button :disabled="cannotCopy(data.item.id)" @click="copyScienceApplication(data.item.id)" variant="link" size="sm" v-b-tooltip.hover title="Copy Science Application as draft for current Call">
+          <b-icon icon="stickies" flip-v shift-v="3" aria-hidden="true"></b-icon>
         </b-button>
       </template>
     </b-table>
@@ -156,7 +158,7 @@ export default {
       ];
     } else {
       draftApplicationFields = [{ key: 'title' }, { key: 'call' }, { key: 'deadline' }, { key: 'status' }, { key: 'preview' }, { key: 'delete' }];
-      submittedApplicationFields = [{ key: 'title' }, { key: 'call' }, { key: 'deadline' }, { key: 'status' }, { key: 'view' }];
+      submittedApplicationFields = [{ key: 'title' }, { key: 'call' }, { key: 'deadline' }, { key: 'status' }, { key: 'view' }, { key: 'copy' }];
     }
     return {
       draftApplicationFields: draftApplicationFields,
