@@ -173,9 +173,6 @@ export default {
         return app.status !== 'DRAFT';
       });
     },
-    cannotCopy: function(applicationId) {
-      return !this.openCallTypes.includes(_.find(this.submittedApplications(), function (item) { return item.id == applicationId; }).call.proposal_type);
-    },
     draftApplications: function() {
       return _.filter(this.data.results, app => {
         return app.status === 'DRAFT';
@@ -209,12 +206,19 @@ export default {
     clearMessages: function() {
       this.$store.commit('clearNamespacedMessages', 'scicollab-applications');
     },
+    cannotCopy: function(applicationId) {
+      var scienceApplication = _.find(this.submittedApplications, ["id", applicationId]);
+      if (scienceApplication) {
+        return !this.openCallTypes.includes(scienceApplication.call.proposal_type);
+      }
+      return true;
+    },
     copyScienceApplication: function(applicationId) {
       this.clearMessages();
       var that = this;
       $.ajax({
         type: 'POST',
-        url: `${this.observationPortalApiBaseUrl}/api/scienceapplications/${appilcationId}/copy/`,
+        url: `${this.observationPortalApiUrl}/api/scienceapplications/${applicationId}/copy/`,
         contentType: 'application/json'
       })
         .done(function() {
