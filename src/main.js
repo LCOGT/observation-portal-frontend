@@ -6,7 +6,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import { BootstrapVue, BIcon, BIconStickies} from 'bootstrap-vue';
+import { BootstrapVue, BIcon, BIconStickies } from 'bootstrap-vue';
 import 'bootstrap';
 import '@/assets/scss/app.scss';
 import $ from 'jquery';
@@ -50,10 +50,7 @@ $.ajax({
 
   // Add the archive token to a request being sent to the archive api or the thumbservice
   $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-    if (
-      (options.url.startsWith(store.state.urls.archiveApi) || options.url.startsWith(store.state.urls.thumbnailService)) &&
-      store.state.profile
-    ) {
+    if ((options.url.startsWith(store.state.urls.archiveApi) || options.url.startsWith(store.state.urls.thumbnailService)) && store.state.profile) {
       jqXHR.setRequestHeader('Authorization', 'Token ' + store.state.profile.tokens.api_token);
     }
   });

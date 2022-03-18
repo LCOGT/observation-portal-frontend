@@ -88,8 +88,15 @@
           <span class="text-primary mx-auto"><i class="far fa-file-pdf"></i></span>
         </router-link>
       </template>
-      <template #cell(copy)="data" v-if="!isSciCollab">
-        <b-button :disabled="cannotCopy(data.item.id)" @click="copyScienceApplication(data.item.id)" variant="link" size="sm" v-b-tooltip.hover title="Copy Science Application as draft for current Call">
+      <template v-if="!isSciCollab" #cell(copy)="data">
+        <b-button
+          v-b-tooltip.hover
+          :disabled="cannotCopy(data.item.id)"
+          variant="link"
+          size="sm"
+          title="Copy Science Application as draft for current Call"
+          @click="copyScienceApplication(data.item.id)"
+        >
           <b-icon icon="stickies" flip-v shift-v="3" aria-hidden="true"></b-icon>
         </b-button>
       </template>
@@ -209,7 +216,7 @@ export default {
       this.$store.commit('clearNamespacedMessages', 'scicollab-applications');
     },
     cannotCopy: function(applicationId) {
-      var scienceApplication = _.find(this.submittedApplications, ["id", applicationId]);
+      var scienceApplication = _.find(this.submittedApplications, ['id', applicationId]);
       if (scienceApplication) {
         return !this.openCallTypes.includes(scienceApplication.call.proposal_type);
       }
@@ -227,8 +234,11 @@ export default {
           that.addMessage('Science Application Copied', 'success');
           that.getData();
         })
-        .fail(function(response) {
-          that.addMessage('There was a problem copying the science application. Please ensure there is an open call of the same type and try again', 'danger');
+        .fail(function() {
+          that.addMessage(
+            'There was a problem copying the science application. Please ensure there is an open call of the same type and try again',
+            'danger'
+          );
         });
     },
     getDeleteConfirmationMessage: function(title) {
