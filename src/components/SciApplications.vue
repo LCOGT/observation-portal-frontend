@@ -88,6 +88,18 @@
           <span class="text-primary mx-auto"><i class="far fa-file-pdf"></i></span>
         </router-link>
       </template>
+      <template v-if="!isSciCollab" #cell(copy)="data">
+        <b-button
+          v-b-tooltip.hover
+          :disabled="cannotCopy(data.item.id)"
+          variant="link"
+          size="sm"
+          title="Copy Science Application as draft for current Call"
+          @click="copyScienceApplication(data.item.id)"
+        >
+          <b-icon icon="stickies" flip-v shift-v="3" aria-hidden="true"></b-icon>
+        </b-button>
+      </template>
     </b-table>
   </div>
 </template>
@@ -114,6 +126,13 @@ export default {
       required: true
     },
     sciCollabAllocations: {
+      type: Array,
+      required: false,
+      default: function() {
+        return [];
+      }
+    },
+    openCallTypes: {
       type: Array,
       required: false,
       default: function() {
@@ -146,7 +165,7 @@ export default {
       ];
     } else {
       draftApplicationFields = [{ key: 'title' }, { key: 'call' }, { key: 'deadline' }, { key: 'status' }, { key: 'preview' }, { key: 'delete' }];
-      submittedApplicationFields = [{ key: 'title' }, { key: 'call' }, { key: 'deadline' }, { key: 'status' }, { key: 'view' }];
+      submittedApplicationFields = [{ key: 'title' }, { key: 'call' }, { key: 'deadline' }, { key: 'status' }, { key: 'view' }, { key: 'copy' }];
     }
     return {
       draftApplicationFields: draftApplicationFields,
@@ -195,6 +214,32 @@ export default {
     },
     clearMessages: function() {
       this.$store.commit('clearNamespacedMessages', 'scicollab-applications');
+    },
+    cannotCopy: function(applicationId) {
+      var scienceApplication = _.find(this.submittedApplications, ['id', applicationId]);
+      if (scienceApplication) {
+        return !this.openCallTypes.includes(scienceApplication.call.proposal_type);
+      }
+      return true;
+    },
+    copyScienceApplication: function(applicationId) {
+      this.clearMessages();
+      var that = this;
+      $.ajax({
+        type: 'POST',
+        url: `${this.observationPortalApiUrl}/api/scienceapplications/${applicationId}/copy/`,
+        contentType: 'application/json'
+      })
+        .done(function() {
+          that.addMessage('Science Application Copied', 'success');
+          that.getData();
+        })
+        .fail(function() {
+          that.addMessage(
+            'There was a problem copying the science application. Please ensure there is an open call of the same type and try again',
+            'danger'
+          );
+        });
     },
     getDeleteConfirmationMessage: function(title) {
       return 'Are you sure you want to delete "' + title + '"?';

@@ -244,8 +244,8 @@
               <div class="help-block">
                 <template v-if="data.proposal_type === 'SCI'">
                   <p>
-                    For the remainder of your proposal, please upload a single pdf file that includes the following sections <em>but not an
-                    author list</em>:
+                    For the remainder of your proposal, please upload a single pdf file that includes the following sections
+                    <em>but not an author list</em>:
                   </p>
                   <ul>
                     <li>
@@ -286,9 +286,9 @@
                 </template>
                 <template v-else-if="data.proposal_type === 'KEY'">
                   <p>
-                    For the remainder of your proposal, please upload a single pdf file that includes the sections listed below, <em>but not an
-                    author list</em>. Consult the Call for Key Projects for information on the sections (e.g. Plan for management) that are unique to key
-                    projects.
+                    For the remainder of your proposal, please upload a single pdf file that includes the sections listed below,
+                    <em>but not an author list</em>. Consult the Call for Key Projects for information on the sections (e.g. Plan for management) that
+                    are unique to key projects.
                   </p>
                   <ul>
                     <li>
