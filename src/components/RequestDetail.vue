@@ -35,7 +35,7 @@
           </div>
           <div class="row">
             <div class="col-md-12">
-              <h4>Configurations</h4>
+              <h4>"configurationRepeatString"</h4>
               <div role="tablist">
                 <ocs-request-configurations-detail :configurations="request.configurations"></ocs-request-configurations-detail>
               </div>
@@ -155,6 +155,12 @@ export default {
       } else {
         return '';
       }
+    },
+    configurationRepeatString: function() {
+      if (this.request.configuration_repeats > 1) {
+        return "Configurations - " + this.request.configuration_repeats + " repeats";
+      }
+      return "Configurations";
     },
     canViewColor: function() {
       let colorFilters = {
