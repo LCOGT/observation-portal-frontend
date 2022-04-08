@@ -761,7 +761,15 @@ export default {
         .done(response => {
           this.requestGroup = {};
           Vue.nextTick(() => {
-            this.requestGroup = JSON.parse(response.content);
+            var draftRequestGroup = JSON.parse(response.content);
+            for (let i = 0; i < draftRequestGroup.requests.length; i++) {
+              for (let j = 0; j < draftRequestGroup.requests[i].configurations.length; j++) {
+                if (!("extra_params" in draftRequestGroup.requests[i].configurations[j].target)) {
+                  draftRequestGroup.requests[i].configurations[j].target.extra_params = {};
+                }
+              }
+            }
+            this.requestGroup = draftRequestGroup
             this.draftId = draftId;
           });
         })
