@@ -6,7 +6,7 @@
         <ocs-custom-alert v-show="!isMemberOfActiveProposals" alert-class="danger" :dismissible="false">
           <p>
             You must be a member of a currently active proposal in order to create and submit observation requests. You can review the
-            <a href="https://lco.global/documents/1242/GettingStartedontheLCONetwork.latest.pdf">getting started guide</a> or the
+            <a href="https://lco.global/documents/1505/GettingStartedontheLCONetwork.latest.pdf">getting started guide</a> or the
             <a href="https://lco.global/observatory/proposal/process/">proposal process documentation</a> to see how to become a member of a proposal.
           </p>
         </ocs-custom-alert>
