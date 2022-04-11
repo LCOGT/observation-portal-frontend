@@ -35,7 +35,7 @@
           </div>
           <div class="row">
             <div class="col-md-12">
-              <h4>"configurationRepeatString"</h4>
+              <h4>{{ configurationRepeatString }}</h4>
               <div role="tablist">
                 <ocs-request-configurations-detail :configurations="request.configurations"></ocs-request-configurations-detail>
               </div>
