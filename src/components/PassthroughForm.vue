@@ -98,11 +98,7 @@ export default {
           let updatedForm = that.readFormFromResponse(response);
           let updatedHelpText = that.readHelpTextFromResponse(response);
           if (updatedForm.length == 1) {
-            // Login form can also redirect to change password form.
-            // If the input button says "Change password" redirect to the
-            // correct Vue route. Otherwise this form will post to the wrong endpoint.
-            if (updatedForm.find("input[value='Change password']").length == 1)
-                window.location.href = that.$router.resolve({name: "passwordChange"}).href
+            that.$emit("formUpdated", updatedForm);
 
             // If the form is in the response, that means there was an error logging in. Replace with
             // the new form to display it and its error messages.
