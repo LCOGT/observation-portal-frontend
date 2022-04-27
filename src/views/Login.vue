@@ -1,7 +1,7 @@
 <template>
   <b-row>
     <b-col>
-      <passthrough-form endpoint="/accounts/login/" :success-redirect-path="redirectPath" />
+      <passthrough-form endpoint="/accounts/login/" :success-redirect-path="redirectPath" @formUpdated="onFormUpdated" />
       <br />
       <!-- TODO: Translate this -->
       <p>Forgot your password?<router-link :to="{ name: 'passwordReset' }"> Reset it</router-link>.</p>
@@ -25,6 +25,15 @@ export default {
   computed: {
     redirectPath: function() {
       return this.$route.query.next || '/';
+    }
+  },
+  methods: {
+    onFormUpdated: function(form) {
+      // Login form can also redirect to change password form.
+      // If the input button says "Change password" redirect to the
+      // correct Vue route. Otherwise this form will post to the wrong endpoint.
+      if (form.find("input[value='Change password']").length == 1)
+          window.location.href = this.$router.resolve({name: "passwordChange"}).href
     }
   }
 };

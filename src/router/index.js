@@ -299,7 +299,7 @@ router.beforeEach((to, from, next) => {
 router.beforeEach((to, from, next) => {
   // Redirect to the Accept Terms page if the user is logged in but has not
   // yet accepted the terms.
-  if (store.state.userIsAuthenticated && !store.state.userAcceptedTerms && to.name !== 'acceptTerms') {
+  if (store.state.userIsAuthenticated && !store.state.userAcceptedTerms && to.name !== 'passwordChange' && to.name !== 'acceptTerms') {
     next({ name: 'acceptTerms' });
   } else {
     next();
