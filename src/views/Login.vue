@@ -33,7 +33,7 @@ export default {
       // If the input button says "Change password" redirect to the
       // correct Vue route. Otherwise this form will post to the wrong endpoint.
       if (form.find("input[value='Change password']").length == 1)
-          window.location.href = this.$router.resolve({name: "passwordChange"}).href
+          this.$router.push({name: "passwordChange"})
     }
   }
 };
