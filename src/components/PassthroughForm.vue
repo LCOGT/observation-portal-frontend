@@ -98,6 +98,8 @@ export default {
           let updatedForm = that.readFormFromResponse(response);
           let updatedHelpText = that.readHelpTextFromResponse(response);
           if (updatedForm.length == 1) {
+            that.$emit("formUpdated", updatedForm);
+
             // If the form is in the response, that means there was an error logging in. Replace with
             // the new form to display it and its error messages.
             that.replaceElements(updatedForm, updatedHelpText);
