@@ -387,6 +387,11 @@ export default {
             and avert rescheduling. The percentage should be set to the lowest value for which the amount
             of data is acceptable to meet the science goal of the request.`
           },
+          configuration_repeats: {
+            hide: simpleInterface,
+            desc: `The number of times this Request's set of Configurations should be repeated. This is useful for
+            nodding back and forth between a set of Targets that are too far apart to use Dithering.`
+          },
           mosaic: {
             invalid_parameters_feedback: `The limit to the number of mosaic pointings that can be generated in the frontend is ${mosaicMaxNumPointings}.
             Please update your parameters before generating a mosaic. To generate a mosaic with more pointings, you can use the API
@@ -599,6 +604,7 @@ export default {
         requests: [
           {
             acceptability_threshold: '',
+            configuration_repeats: 1,
             configurations: [
               {
                 type: 'EXPOSE',
