@@ -565,7 +565,7 @@ export default {
             desc: 'Minimum acceptable angular separation (degrees) between the target and the moon.'
           },
           max_lunar_phase: {
-            hide: true
+            desc: 'Maximum acceptable fractional phase of the moon, from 0.0 (new moon) to 1.0 (full moon).'
           },
           max_seeing: {
             hide: true
@@ -647,7 +647,8 @@ export default {
                 },
                 constraints: {
                   max_airmass: simpleInterface ? 2 : 1.6,
-                  min_lunar_distance: 30.0
+                  min_lunar_distance: 30.0,
+                  max_lunar_phase: 1.0,
                 }
               }
             ],
