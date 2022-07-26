@@ -104,7 +104,7 @@
                   </li>
                 </ul>
                 <!-- TODO: Do not show if calibrations have been created -->
-                <b-row v-show="slotProps.data.configuration.type === 'SPECTRUM'" class="p-2">
+                <b-row v-show="slotProps.data.configuration.type === 'SPECTRUM' && slotProps.data.configuration.instrument_type != 'SOAR_TRIPLESPEC'" class="p-2">
                   <b-col>
                     <h3>Calibration frames</h3>
                     <p>
@@ -876,6 +876,7 @@ export default {
           'LAMP_FLAT',
           'REPEAT_SPECTRUM',
           'SPECTRUM',
+          'STANDARD',
           'REPEAT_NRES_SPECTRUM',
           'NRES_SPECTRUM'
         ];

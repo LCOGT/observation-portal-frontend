@@ -278,6 +278,26 @@ export default {
       this.instrumentConfig.extra_params.defocus = value || undefined;
       this.update();
     },
+    'instrumentConfig.exposure_time': function(value) {
+      if (this.selectedInstrument === 'SOAR_TRIPLESPEC'){
+        if (value < 7.0) {
+          this.instrumentConfig.mode = 'fowler1_coadds2';
+        }
+        else if (value < 25.0) {
+          this.instrumentConfig.mode = 'fowler1_coadds1';
+        }
+        else if (value < 58.0) {
+          this.instrumentConfig.mode = 'fowler4_coadds1';
+        }
+        else if (value < 134.0) {
+          this.instrumentConfig.mode = 'fowler8_coadds1';
+        }
+        else {
+          this.instrumentConfig.mode = 'fowler16_coadds1';
+        }
+      }
+      this.update();
+    },
     'muscat.exposure_time_g': function(value) {
       this.instrumentConfig.extra_params.exposure_time_g = value || undefined;
       this.updateExposureTime();
