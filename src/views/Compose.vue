@@ -392,6 +392,9 @@ export default {
             desc: `The number of times this Request's set of Configurations should be repeated. This is useful for
             nodding back and forth between a set of Targets that are too far apart to use Dithering.`
           },
+          optimization_type: {
+            hide: simpleInterface
+          },
           mosaic: {
             invalid_parameters_feedback: `The limit to the number of mosaic pointings that can be generated in the frontend is ${mosaicMaxNumPointings}.
             Please update your parameters before generating a mosaic. To generate a mosaic with more pointings, you can use the API
@@ -605,6 +608,7 @@ export default {
           {
             acceptability_threshold: '',
             configuration_repeats: 1,
+            optimization_type: 'TIME',
             configurations: [
               {
                 type: 'EXPOSE',
