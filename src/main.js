@@ -25,14 +25,15 @@ Vue.config.productionTip = false;
 
 $.ajax({
   method: 'GET',
-  url: '/config/urls.json'
+  url: '/config/config.json'
 }).done(function(json) {
   store.commit('setRuntimeConfig', {
     observationPortalApi: process.env.VUE_APP_OBSERVATION_PORTAL_API_URL || json.observationPortalApiUrl,
     archiveApi: process.env.VUE_APP_ARCHIVE_API_URL || json.archiveApiUrl,
     archiveClient: process.env.VUE_APP_ARCHIVE_CLIENT_URL || json.archiveClientUrl,
     simbadService: process.env.VUE_APP_SIMBAD_SERVICE_URL || json.simbadServiceUrl,
-    thumbnailService: process.env.VUE_APP_THUMBNAILS_SERVICE_URL || json.thumbnailServiceUrl
+    thumbnailService: process.env.VUE_APP_THUMBNAILS_SERVICE_URL || json.thumbnailServiceUrl,
+    availableSeeingOptions: process.env.VUE_APP_AVAILABLE_SEEING_OPTIONS || JSON.stringify(json.availableSeeingOptions)
   });
 
   // Add csrf protection and credentials to requests sent to the observation portal API

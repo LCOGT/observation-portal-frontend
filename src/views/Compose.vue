@@ -41,6 +41,7 @@
               :loaded-draft-id="draftId"
               :form-config="formConfig"
               :tooltip-config="tooltipConfig"
+              :available-seeing-options="availableSeeingOptions"
               @save-draft-failed="onSaveDraftFailed"
               @save-draft-succeeded="onSaveDraftSucceeded"
               @request-group-saved="onRequestGroupSaved"
@@ -571,7 +572,7 @@ export default {
             desc: 'Maximum acceptable fractional phase of the moon, from 0.0 (new moon) to 1.0 (full moon).'
           },
           max_seeing: {
-            hide: true
+            hide: false,
           },
           min_transparency: {
             hide: true
@@ -714,6 +715,14 @@ export default {
         }
       }
       return _selectedInstruments;
+    },
+    availableSeeingOptions: function() {
+      let options = JSON.parse(this.$store.state.urls.availableSeeingOptions);
+      let dropdownOptions = [];
+      for (const [text, value] of Object.entries(options)) {
+        dropdownOptions.push({"value": String(value), "text": String(text)})
+      }
+      return dropdownOptions;
     }
   },
   created: function() {

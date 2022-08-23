@@ -3,5 +3,6 @@
     "archiveApiUrl": "http://127.0.0.1:8000",
     "archiveClientUrl": "http://127.0.0.1:8000",
     "simbadServiceUrl": "http://127.0.0.1:8000",
-    "thumbnailServiceUrl": "http://127.0.0.1:8000"
+    "thumbnailServiceUrl": "http://127.0.0.1:8000",
+    "availableSeeingOptions": {"Best": 1.5, "Average": 3, "All": null}
 }
