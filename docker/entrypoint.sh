@@ -1,14 +1,19 @@
 #!/bin/sh
 
-CONFIG_FILE_PATH=/app/config/urls.json
+CONFIG_FILE_PATH=/app/config/config.json
 
 check_and_set_config() {
     env_var_value=$1
     config_key=$2
     config_file_path=$3
     if [[ -n "${env_var_value}" ]]; then
-        echo "Setting ${config_key} to ${env_var_value}"
-        contents=$(jq '.'${config_key}' = "'${env_var_value}'"' ${config_file_path})
+        # Check if this is a JSON object encoded as a string
+        if echo "${env_var_value}" | grep -q '{'; then
+            export value=${env_var_value}
+            contents=$(jq '.'${config_key}' = ($ENV.value | fromjson)' ${config_file_path})
+        else
+            contents=$(jq '.'${config_key}' = "'${env_var_value}'"' ${config_file_path})
+        fi
         echo ${contents} > ${config_file_path}
     fi
 }
@@ -18,6 +23,7 @@ then
     check_and_set_config "${VUE_APP_OBSERVATION_PORTAL_API_URL}" "observationPortalApiUrl" "${CONFIG_FILE_PATH}"
     check_and_set_config "${VUE_APP_ARCHIVE_API_URL}" "archiveApiUrl" "${CONFIG_FILE_PATH}"
     check_and_set_config "${VUE_APP_SIMBAD_SERVICE_URL}" "simbadServiceUrl" "${CONFIG_FILE_PATH}"
+    check_and_set_config "${VUE_APP_AVAILABLE_SEEING_OPTIONS}" "availableSeeingOptions" "${CONFIG_FILE_PATH}"
 fi
 
 # Copy the internal observation portal url into the nginx configuration file and run the nginx entrypoint.

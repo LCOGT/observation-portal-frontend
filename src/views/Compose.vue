@@ -654,6 +654,7 @@ export default {
                   max_airmass: simpleInterface ? 2 : 1.6,
                   min_lunar_distance: 30.0,
                   max_lunar_phase: 1.0,
+                  max_seeing: null
                 }
               }
             ],
