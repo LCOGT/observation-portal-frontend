@@ -20,7 +20,7 @@ function downloadZip(frameIds, archiveRoot, archiveToken) {
 }
 
 function downloadAll(requestId, archiveRoot, archiveClientUrl, archiveToken) {
-  $.getJSON(archiveRoot + '/frames/?limit=1000&request_id=' + requestId, function(data) {
+  $.getJSON(archiveRoot + '/frames/?limit=1000&exclude_configuration_type=GUIDE&request_id=' + requestId, function(data) {
     if (data.count > 1000) {
       alert('Over 1000 products found. Please use ' + archiveClientUrl + ' to download your data');
       return false;
