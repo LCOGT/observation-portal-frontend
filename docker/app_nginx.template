@@ -29,6 +29,9 @@ http {
     location /admin/ {
         proxy_pass ${INTERNAL_OBSERVATION_PORTAL_API_URL};
     }
+    location /o/ {
+        proxy_pass ${INTERNAL_OBSERVATION_PORTAL_API_URL};
+    }
     location /static/ {
       proxy_pass ${INTERNAL_OBSERVATION_PORTAL_API_URL};
     }
