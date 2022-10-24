@@ -30,7 +30,7 @@ export default {
       return this.$store.state.urls.archiveClient;
     },
     archiveLink: function() {
-      return this.archiveClientUrl + '/?request_id=' + this.requestid + '&start=2014-01-01';
+      return this.archiveClientUrl + '/?request_id=' + this.requestid + '&start=2014-01-01&public=true';
     }
   },
   watch: {
@@ -47,6 +47,7 @@ export default {
           alert('More than 1000 results found, please view on archive to view all data');
         }
         that.$emit('dataLoaded', res.results);
+        $('.fixed-table-loading').hide();
         return res.results;
       },
       onClickRow: function(row) {
