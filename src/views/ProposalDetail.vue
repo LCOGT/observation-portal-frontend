@@ -43,7 +43,7 @@
             <sup
               v-b-tooltip="tooltipConfig"
               class="text-primary"
-              title="If notifications are enabled, you will receive notifications whenever a requested observation on this proposal is completed."
+              title="If notifications are enabled, you will receive notifications whenever an observation for this proposal is completed. To enable notifications for all your proposals, go to your Profile page."
             >
               ?
             </sup>
