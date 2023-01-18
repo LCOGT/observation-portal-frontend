@@ -17,7 +17,9 @@ if [ ! "$DISABLE_OVERWRITE_APP_CONFIG_IN_ENTRYPOINT" = "true" ]
 then
     check_and_set_config "${VUE_APP_OBSERVATION_PORTAL_API_URL}" "observationPortalApiUrl" "${CONFIG_FILE_PATH}"
     check_and_set_config "${VUE_APP_ARCHIVE_API_URL}" "archiveApiUrl" "${CONFIG_FILE_PATH}"
+    check_and_set_config "${VUE_APP_ARCHIVE_CLIENT_URL}" "archiveClientUrl" "${CONFIG_FILE_PATH}"
     check_and_set_config "${VUE_APP_SIMBAD_SERVICE_URL}" "simbadServiceUrl" "${CONFIG_FILE_PATH}"
+    check_and_set_config "${VUE_APP_THUMBNAILS_SERVICE_URL}" "thumbnailServiceUrl" "${CONFIG_FILE_PATH}"
 fi
 
 # Copy the internal observation portal url into the nginx configuration file and run the nginx entrypoint.

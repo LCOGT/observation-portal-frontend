@@ -6,7 +6,7 @@
       <!-- TODO: Log in link, with next query parameter to the page that was originally requestted (request.path) -->
       <p v-if="!userIsAuthenticated">
         Perhaps you should try
-        <router-link :to="{ name: 'login' }"> logging in </router-link>.
+        <router-link :to="routerTo()"> logging in </router-link>.
       </p>
       <p v-else-if="userIsStaffWithoutStaffViewSet">
         Perhaps you should try turning on staff view. You can do this on your <router-link :to="{ name: 'profile' }">profile page</router-link>.
@@ -17,6 +17,16 @@
 <script>
 export default {
   name: 'NotFound',
+  methods: {
+    routerTo: function() {
+      return {
+        name: 'login',
+        query: {
+          next: this.$route.path
+        }
+      };
+    }
+  },
   computed: {
     userIsAuthenticated: function() {
       return this.$store.state.userIsAuthenticated;

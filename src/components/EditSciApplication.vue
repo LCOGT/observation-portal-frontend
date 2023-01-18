@@ -294,42 +294,44 @@
                     <li>
                       <strong>Science Justification.</strong> This section must provide appropriate background information and state the goals of the
                       project. The results of any previous time allocated for this project should be discussed. Pertinent references should be
-                      included. Figures may be embedded or appended, but the text itself should be limited to approximately the equivalent of three
+                      included. Figures and tables may be embedded or appended, but the text itself should be limited to approximately the equivalent of 5
                       pages.
                     </li>
                     <li>
-                      <strong>Experimental Design.</strong> This section should describe the strategy of your observing program, including the
-                      characteristics of your targets, what measurements you will make from the data, and what additional work you will do to address
-                      your science goals. If your targets are known, list them and their expected brightnesses. This section must include an
-                      explanation of your observing budget, in which you justify the instruments, the exposure times, and the total number of hours
-                      you’re requesting. You must provide independent justification for requests for Rapid Response or Time Critical observations. If
-                      these are not adequately justified, they will not be granted. If unusual scheduling constraints might impact your success,
-                      identify them.
+                      <strong>Experimental Design.</strong> This section should describe how the proposed study takes advantage of the
+                      unique aspects of the LCO network. This section should also include the strategy of the observing program, including the
+                      characteristics of your targets, what measurements will be made, and what additional work will be done to address
+                      the science goals. If the targets are known, list them and their expected brightnesses. This section must include an
+                      explanation of the observing budget, in which the instruments, the exposure times, and the total number of hours requested
+                      are justified. Requests for Rapid Response or Time Critical observations must be justified independently. If
+                      these are not adequately justified, they will not be granted. If unusual scheduling constraints might impact the project's success,
+                      identify them. The text should be limited to approximately 4 pages.
                     </li>
                     <li>
-                      <strong>Suitability for LCO's capabilities.</strong> This section should describe how the proposed study takes advantage of the
-                      unique aspects of the LCO network and will yield a result that could not be obtained without LCO.
-                    </li>
-                    <li>
-                      <strong>Plan for management of the entire scientific investigation.</strong>
-                    </li>
-                    <li>
-                      <strong>Contributions brought by non-LCO participants.</strong> This section should describe what resources collaborators on the
-                      key project team will commit to making the key project successful. Such resources could be access to other facilities,
-                      additional time on the LCO network from their own institutions, computing resources, or scientist time.
+                      <strong>Management Plan.</strong> A description of how the project will be managed, including the observing program and the path to science.
+                      This section should also describe what resources collaborators on the key project team will commit to making the key project successful.
+                      Such resources could be access to other facilities, additional time on the LCO network from their own institutions, computing resources,
+                      or scientist time. The text should be limited to approximately 2 pages.
                     </li>
                     <li>
                       <strong>Report of related programs on other telescopes.</strong> A concise account of other programs that relate to this
                       proposal.
                     </li>
+                    <li>
+                      <strong> References.</strong> Approximately 1 page.
+                    </li>
                   </ul>
-                  <p>The following two items must begin on a new page (within the same pdf):</p>
+                  <p>The following supporting material must begin on a new page (within the same pdf):</p>
                   <ul>
                     <li>
                       <strong>Report on use of LCO in the past 3 years.</strong> A concise account of LCO network time used in the past 3 years.
+                      The text should be no more than 3 pages.
                     </li>
                     <li>
-                      <strong>List of the authors’ related publications.</strong>
+                      <strong>List of the authors’ related publications.</strong> Approximately 1 page.
+                    </li>
+                    <li>
+                      <strong> Large Co-I list.</strong> Proposals with >10 investigators can include a separate page listing all of the Co-I information in a table.
                     </li>
                   </ul>
                   <p>The format of the pdf file is subject to the following constraints.</p>
@@ -338,7 +340,7 @@
                     <li>Margins on all edges must be at least 1 inch.</li>
                     <li>Line spacing must be no denser than 6 lines per inch.</li>
                     <li>The file size must be under {{ pdfSizeLimit.asMegaBytes }}MB.</li>
-                    <li>The recommended length is 14 pages.</li>
+                    <li>The recommended length of the main proposal (i.e. without the supporting materials) is 15 pages.</li>
                   </ul>
                 </template>
                 <template v-else-if="data.proposal_type === 'DDT'">
