@@ -25,7 +25,7 @@
             </router-link>
           </div>
           <h3 class="mt-4">Need help?</h3>
-          <a href="https://lco.global/documentation/">View the documentation</a> or <a href="mailto:scisupport@lco.global">contact support</a>.
+          <a href="https://lco.global/documentation/">View the documentation</a> or <a href="mailto:science-support@lco.global">contact support</a>.
         </center>
       </div>
     </template>
