@@ -54,7 +54,7 @@
     <template v-if="sciApp.call && sciApp.call.proposal_type !== 'DDT'">
       <div class="page-break"></div>
     </template>
-    <template v-if="!isCombinedPdf">
+    <template>
       <!-- TODO: Translate this -->
       <h2>Principal Investigator</h2>
       <template v-if="sciApp.pi">
