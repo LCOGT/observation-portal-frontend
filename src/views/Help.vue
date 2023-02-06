@@ -40,10 +40,9 @@
         </li>
       </ul>
       <p>
-        If you are a new user of this Observation Portal, we strongly recommend that you read the
-        <a href="https://lco.global/documents/1505/GettingStartedontheLCONetwork.latest.pdf"
-          >"Getting Started on the LCO Global Telescope Network" Guide.</a
-        >
+        If you are a new user of this Observation Portal, we strongly recommend that you read the "Getting Started on the LCO Global Telescope Network" Guide,
+        linked from the
+        <a href="https://lco.global/documentation">Documentation</a> page
       </p>
       <p>
         If you are a new user of the LCO network, information about the
