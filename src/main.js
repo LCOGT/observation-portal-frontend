@@ -14,12 +14,30 @@ import { getCookie, csrfSafeMethod } from '@/utils.js';
 import { OCSComponentLib } from 'ocs-component-lib';
 import 'ocs-component-lib/dist/ocs-component-lib.css';
 import VueCompositionAPI from '@vue/composition-api';
+import VueKatex from 'vue-katex';
+import 'katex/dist/katex.min.css';
 
 Vue.use(VueCompositionAPI);
 Vue.use(BootstrapVue);
 Vue.component('BIcon', BIcon);
 Vue.component('BIconStickies', BIconStickies);
 Vue.use(OCSComponentLib);
+Vue.use(VueKatex, {
+  globalOptions: {
+    throwOnError: false,
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$", right: "$", display: false},
+      {left: "\\(", right: "\\)", display: false},
+      {left: "\\begin{equation}", right: "\\end{equation}", display: true},
+      {left: "\\begin{align}", right: "\\end{align}", display: true},
+      {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
+      {left: "\\begin{gather}", right: "\\end{gather}", display: true},
+      {left: "\\begin{CD}", right: "\\end{CD}", display: true},
+      {left: "\\[", right: "\\]", display: true},
+    ]
+  }
+});
 
 Vue.config.productionTip = false;
 
