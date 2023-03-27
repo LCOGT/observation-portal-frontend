@@ -146,7 +146,7 @@ const routes = [
     meta: {
       title: 'Science Application',
       requiresAuth: true,
-      isPlainPage: true
+      isPlainPage: false
     }
   },
   {
@@ -156,7 +156,7 @@ const routes = [
     props: true,
     meta: {
       requiresAuth: true,
-      isPlainPage: true
+      isPlainPage: false
     }
   },
   {

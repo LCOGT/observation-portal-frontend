@@ -10,7 +10,7 @@
             <h3>
               {{ data.id }} <small class="text-muted">{{ data.title }}</small>
             </h3>
-            <p>{{ data.abstract }}</p>
+            <p class="abstract" v-katex:auto>{{ data.abstract }}</p>
             <template v-if="principleInvestigators.length === 1">
               <span class="font-weight-bolder">
                 Principal Investigator: {{ principleInvestigators[0].first_name }} {{ principleInvestigators[0].last_name }}
