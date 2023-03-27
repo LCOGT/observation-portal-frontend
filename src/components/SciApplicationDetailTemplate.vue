@@ -20,7 +20,7 @@
     <template v-if="sciApp.abstract">
       <!-- TODO: Translate this -->
       <h2>Abstract</h2>
-      <p v-katex:auto>{{ sciApp.abstract }}</p>
+      <p class="abstract" v-katex:auto>{{ sciApp.abstract }}</p>
     </template>
     <template v-if="timeRequests.length > 0">
       <!-- TODO: Translate this -->
