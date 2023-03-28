@@ -53,7 +53,7 @@
             :label="''"
             :errors="apiValidationErrors.tags"
             @input="updateTags('long-term', isLongTerm)"
-            checkbox-option-label="This proposal may be awarded time for multiple semesters, not just the upcoming semester."
+            checkbox-option-label="This is a long-term proposal and may be awarded time for up to 3 consecutive semesters."
           ></basic-custom-field>
           <template v-if="data.proposal_type === 'COLAB'">
             <basic-custom-field
