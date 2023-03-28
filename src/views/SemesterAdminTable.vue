@@ -199,7 +199,14 @@ export default {
           label: 'Instrument Types',
           sortable: true
         },
-
+        {
+          key: 'tags',
+          sortable: true,
+          sortByFormatted: true,
+          formatter: function(value, key, item) {
+            return item.proposal.tags.join(', ');
+          }
+        },
         {
           key: 'std_allocation',
           label: 'Std Alloc',
