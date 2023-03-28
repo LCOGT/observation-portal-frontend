@@ -189,3 +189,9 @@ export default {
   font-size: 0.6rem;
 }
 </style>
+
+<style>
+.abstract {
+  white-space: pre-wrap;
+}
+</style>

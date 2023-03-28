@@ -46,7 +46,7 @@
                   {{ proposal.title }}
                 </b-link>
                 <b-modal :id="'modal' + proposal.id" :title="proposal.title" ok-only ok-title="Close" ok-variant="white">
-                  <p class="abstract">{{ proposal.abstract }}</p>
+                  <p class="abstract" v-katex:auto>{{ proposal.abstract }}</p>
                 </b-modal>
               </td>
               <td>
@@ -125,7 +125,7 @@ export default {
     },
     getScaName: function(scaProposals) {
       return _.get(scaProposals, [0, 'sca_name'], '');
-    }
+    },
   }
 };
 </script>

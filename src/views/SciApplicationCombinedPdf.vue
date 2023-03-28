@@ -4,9 +4,11 @@
       <not-found />
     </template>
     <iframe id="combined-pdf" style="position:absolute; left: 0; top: 0; border: none;" width="100%" height="100%" type="application/pdf" />
-    <b-embed type="iframe" height="0" width="0" style="border: none;">
-      <sci-application-detail-template id="pdf-content" :sci-app="data" is-combined-pdf></sci-application-detail-template>
-    </b-embed>
+    <div class="invisible">
+      <b-embed type="iframe">
+        <sci-application-detail-template id="pdf-content" :sci-app="data" is-combined-pdf></sci-application-detail-template>
+      </b-embed>
+    </div>
   </ocs-data-loader>
 </template>
 <script>
@@ -166,3 +168,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.invisible {
+  visibility: hidden;
+}
+</style>
