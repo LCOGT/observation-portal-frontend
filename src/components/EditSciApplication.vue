@@ -765,6 +765,9 @@ export default {
       let coInvestigators = this.getCoInvestigatorsForSubmissionBody();
       let timeRequests = this.getTimeRequestsForSubmissionBody();
       for (let i in timeRequests) {
+        if (timeRequests[i].instrument_types.some(x => x === "")) {
+          continue;
+        }
         formData.append('timerequest_set[' + i + ']instrument_types', timeRequests[i].instrument_types);
         formData.append('timerequest_set[' + i + ']semester', timeRequests[i].semester);
         formData.append('timerequest_set[' + i + ']std_time', timeRequests[i].std_time);
