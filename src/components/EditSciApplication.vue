@@ -765,7 +765,7 @@ export default {
       let coInvestigators = this.getCoInvestigatorsForSubmissionBody();
       let timeRequests = this.getTimeRequestsForSubmissionBody();
       for (let i in timeRequests) {
-        if (timeRequests[i].instrument_types.some(x => !x)) {
+        if (timeRequests[i].instrument_types.filter(x => !!x).length == 0) {
           continue;
         }
         formData.append('timerequest_set[' + i + ']instrument_types', timeRequests[i].instrument_types);
