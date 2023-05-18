@@ -47,7 +47,10 @@ export default {
   computed: {
     url: function() {
       let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
-      return this.$store.state.urls.observationPortalApi + endpoint + '?passthrough=true';
+      // make sure we include any URL params, too.
+      let params = this.$route.query;
+      params.passthrough = true;
+      return this.$store.state.urls.observationPortalApi + endpoint + '?' + new URLSearchParams(params).toString();
     }
   },
   mounted: function() {
