@@ -219,6 +219,15 @@ const routes = [
     component: Register,
     meta: {
       title: 'Register for an account'
+    },
+    // if user is authenticated, redirect to homepage
+    beforeEnter (to, from, next) {
+      if (store.state.userIsAuthenticated) {
+        next('/');
+      }
+      else {
+        next();
+      }
     }
   },
   {
