@@ -19,7 +19,7 @@
     "chart.js": "^2.8.0",
     "chartjs-plugin-annotation": "^0.5.7",
     "core-js": "^3.6.5",
-    "html2pdf.js": "^0.9.2",
+    "html2pdf.js": "^0.10.1",
     "jquery": "^3.5.0",
     "jquery-file-download": "^1.4.6",
     "katex": "^0.12.0",
