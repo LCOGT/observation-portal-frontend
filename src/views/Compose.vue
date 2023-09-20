@@ -452,16 +452,16 @@ export default {
           exposure_time_z: {
             desc: 'Exposure Time for the z-band camera in Seconds'
           },
-          diffuser_g_position: {
+          narrowband_g_positions: {
             hide: simpleInterface
           },
-          diffuser_r_position: {
+          narrowband_r_position: {
             hide: simpleInterface
           },
-          diffuser_i_position: {
+          narrowband_i_position: {
             hide: simpleInterface
           },
-          diffuser_z_position: {
+          narrowband_z_position: {
             hide: simpleInterface
           },
           offset_ra: {
@@ -836,10 +836,10 @@ export default {
           // Only show simple optical elements for the simple interface
           if (instrument === '2M0-SCICAM-MUSCAT') {
             instrumentsData[instrument].optical_elements = {
-              diffuser_g_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }],
-              diffuser_r_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }],
-              diffuser_i_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }],
-              diffuser_z_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }]
+              narrowband_g_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }],
+              narrowband_r_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }],
+              narrowband_i_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }],
+              narrowband_z_positions: [{ code: 'out', name: 'Out of Beam', schedulable: true, default: true }]
             };
           } else {
             instrumentsData[instrument].optical_elements = {

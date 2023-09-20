@@ -343,6 +343,29 @@ export default {
     }
   },
   mounted: function() {
+    // For any instrument, remove any optical elements that do not currently exist but were set
+    // This can happen when loading an old draft or copying an old request after OE have changed.
+    for (let oe in this.instrumentConfig.optical_elements){
+      let plural_oe = oe + 's';
+      if (!(plural_oe in this.availableInstruments[this.selectedInstrument].optical_elements )) {
+        delete this.instrumentConfig.optical_elements[oe];
+      }
+    }
+
+    // Now set the default of any unset optical elements if a default exists
+    for (let plural_oe in this.availableInstruments[this.selectedInstrument].optical_elements) {
+      let oe = plural_oe.slice(0, -1);
+      if (!(oe in this.instrumentConfig.optical_elements)) {
+        this.availableInstruments[this.selectedInstrument].optical_elements[plural_oe].every(oe_value => {
+          if (oe_value.default && oe_value.schedulable) {
+            this.instrumentConfig.optical_elements[oe] = oe_value.code;
+            return false;
+          }
+          return true;
+        });
+      }
+    }
+
     // If a draft is loaded in that has any extra_params set, update the corresponding params
     // here since extra_params is not reactive and cannot be watched
     if (this.instrumentConfig.extra_params.defocus) {
