@@ -26,6 +26,7 @@
               <th>Title</th>
               <th>Semesters</th>
               <th>Instrument Types</th>
+              <th>Archived Frames</th>
               <th>Total {{ id }} Hours</th>
             </tr>
           </thead>
@@ -58,6 +59,9 @@
                 <div v-for="instrument_type in getInstrumentTypes(proposal)" :key="instrument_type">
                   {{ instrument_type }}
                 </div>
+              </td>
+              <td>
+                <b-link :href="archiveClientLinkForProposal(proposal)">{{ proposal.id }}</b-link>
               </td>
               <td>
                 {{ getTotalAllocationForProposal(proposal) | formatFloat(0) }}
@@ -98,11 +102,17 @@ export default {
   computed: {
     proposalsBySca: function() {
       return _.groupBy(this.data, 'sca_id');
+    },
+    archiveClientUrl: function() {
+      return this.$store.state.urls.archiveClient;
     }
   },
   methods: {
     initializeDataEndpoint: function() {
       return this.$store.state.urls.observationPortalApi + '/api/semesters/' + this.id + '/proposals/';
+    },
+    archiveClientLinkForProposal: function(proposal) {
+      return this.archiveClientUrl + "?proposal_id=" + proposal.id;
     },
     getInstrumentTypes: function(proposal) {
       let instrumentTypesSet = new Set();
