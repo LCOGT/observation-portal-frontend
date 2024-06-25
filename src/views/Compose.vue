@@ -958,6 +958,7 @@ export default {
             target.meandist = _.get(data, ['semimajor_axis'], null);
             target.meananom = _.get(data, ['mean_anomaly'], null);
             target.dailymot = _.get(data, ['mean_daily_motion'], null);
+            this.targetLookup.text = `Found matching Object: ${target.name}`
           } else {
             this.targetLookup.text = 'Could not find any matching objects';
             this.targetLookup.failed = true;
