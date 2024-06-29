@@ -167,7 +167,7 @@
                   :errors="slotProps.data.errors"
                   @input="doTargetLookup(slotProps.data.target, slotProps.update)"
                 >
-                  <div v-show="targetLookup.busy || targetLookup.failed" slot="extra-help-text">
+                  <div slot="extra-help-text">
                     <i v-show="targetLookup.busy" class="fa fa-spinner fa-spin fa-fw" /> {{ targetLookup.text }}
                   </div>
                 </ocs-custom-field>
@@ -958,7 +958,7 @@ export default {
             target.meandist = _.get(data, ['semimajor_axis'], null);
             target.meananom = _.get(data, ['mean_anomaly'], null);
             target.dailymot = _.get(data, ['mean_daily_motion'], null);
-            this.targetLookup.text = `Found matching Object: ${target.name}`
+            this.targetLookup.text = `Found matching Object: ${_.get(data, ['name'], null)}`;
           } else {
             this.targetLookup.text = 'Could not find any matching objects';
             this.targetLookup.failed = true;
