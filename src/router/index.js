@@ -14,6 +14,9 @@ import Observations from '../views/Observations.vue';
 import ObservationDetail from '../views/ObservationDetail.vue';
 import Compose from '../views/Compose.vue';
 import ProposalList from '../views/ProposalList.vue';
+import ProposalReviewDashboard from '../views/ProposalReviewDashboard.vue';
+import ProposalReviewUserDetail from '../views/ProposalReviewUserDetail.vue';
+import ProposalReviewPanelDetail from '../views/ProposalReviewPanelDetail.vue';
 import ProposalDetail from '../views/ProposalDetail.vue';
 import SemesterDetail from '../views/SemesterDetail.vue';
 import SemesterDetailCurrent from '../views/SemesterDetailCurrent.vue';
@@ -47,6 +50,35 @@ const routes = [
     component: () => import(/* webpackChunkName: "help" */ '../views/Help.vue'),
     meta: {
       title: 'Help'
+    }
+  },
+  {
+    path: '/proposal-reviews',
+    name: 'proposalReviewDashboard',
+    component: ProposalReviewDashboard,
+    meta: {
+      title: 'Proposal Reviews',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/proposal-reviews/:id/my-review',
+    name: 'proposalReviewUserDetail',
+    props: true,
+    component: ProposalReviewUserDetail,
+    meta: {
+      title: 'Edit Your Proposal Review',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/proposal-reviews/:id/panel',
+    name: 'proposalReviewPanelDetail',
+    props: true,
+    component: ProposalReviewPanelDetail,
+    meta: {
+      title: 'Panel Proposal Reviews',
+      requiresAuth: true
     }
   },
   {

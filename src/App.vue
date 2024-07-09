@@ -26,7 +26,10 @@
           <b-navbar-nav>
             <b-nav-item :to="{ name: 'home' }">Home</b-nav-item>
             <b-nav-item :to="{ name: 'create' }">Submit Observation</b-nav-item>
-            <b-nav-item :to="{ name: 'proposals' }">Manage Proposals</b-nav-item>
+            <b-nav-item-dropdown text="Manage Proposals" right>
+              <b-dropdown-item :to="{ name: 'proposals' }">Your Proposals</b-dropdown-item>
+              <b-dropdown-item :to="{ name: 'proposalReviewDashboard' }">Reviews</b-dropdown-item>
+            </b-nav-item-dropdown>
             <b-nav-item href="https://lco.global/observatory/tools/">Planning Tools</b-nav-item>
             <b-nav-item :to="{ name: 'help' }">Help</b-nav-item>
             <template v-if="userIsAuthenticated">
