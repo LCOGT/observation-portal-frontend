@@ -55,6 +55,24 @@
             @input="updateTags('long-term', isLongTerm)"
             checkbox-option-label="This is a long-term proposal and may be awarded time for up to 3 consecutive semesters."
           ></basic-custom-field>
+          <basic-custom-field
+            v-model="isOpenAccess"
+            field-type="checkbox"
+            field="is-open-access-tag"
+            :label="''"
+            :errors="apiValidationErrors.tags"
+            @input="updateTags('open-access', isOpenAccess)"
+            checkbox-option-label="This is part of the Open Access Program."
+          ></basic-custom-field>
+          <basic-custom-field
+            v-model="isLCO"
+            field-type="checkbox"
+            field="lco-tag"
+            :label="''"
+            :errors="apiValidationErrors.tags"
+            @input="updateTags('lco', isLCO)"
+            checkbox-option-label="This is for LCO’s share of network time."
+          ></basic-custom-field>
           <template v-if="data.proposal_type === 'COLAB'">
             <basic-custom-field
               v-model="sciApp.tac_rank"
@@ -495,6 +513,8 @@ export default {
       pdfPath: sciAppData.pdfPath,
       isStudent: sciAppData.isStudent,
       isLongTerm: sciAppData.isLongTerm,
+      isOpenAccess: sciAppData.isOpenAccess,
+      isLCO: sciAppData.isLCO,
       clearPdf: false,
       userTableFields: ['email', 'firstName', 'lastName', 'institution'],
       timeRequestFields: [{ key: 'semester', class: 'd-none' }, 'instrumentTypes', 'standardTime', 'rapidResponse', 'timeCritical'],
@@ -618,6 +638,14 @@ export default {
       if (sciApp.tags.includes('long-term')) {
         isLongTerm = true;
       }
+      let isOpenAccess = false;
+      if (sciApp.tags.includes('open-access')) {
+        isOpenAccess = true;
+      }
+      let isLCO = false;
+      if (sciApp.tags.includes('lco')) {
+        isLCO = true;
+      }
       if (_.get(sciApp, 'timerequest_set', []).length === 0) {
         sciApp.timerequest_set = [this.getEmptyTimeRequest()];
       }
@@ -627,7 +655,7 @@ export default {
       // `pdfPath` will either be null for a new science application or
       // for an application to be updated where no pdf has been uploaded yet,
       // or it will be the path to an uploaded pdf.
-      return { sciApp: sciApp, pdfPath: initialSciApp.pdf || null, isStudent: isStudent, isLongTerm: isLongTerm };
+      return { sciApp: sciApp, pdfPath: initialSciApp.pdf || null, isStudent: isStudent, isLongTerm: isLongTerm, isOpenAccess: isOpenAccess, isLCO: isLCO };
     },
     updateTags: function(newTag, checked) {
       checked ? this.sciApp.tags.push(newTag) : _.pull(this.sciApp.tags, newTag);
