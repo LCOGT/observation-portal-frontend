@@ -119,17 +119,6 @@
       :errors="null"
       @input="updateInstrumentConfigExtraParam($event, field)"
     />
-    <!-- TODO: Validate to make sure this is a floating point number -->
-    <ocs-custom-field
-      v-model="defocus"
-      field="defocus"
-      :label="getFromObject(formConfig, ['instrumentConfig', 'defocus', 'label'], 'Defocus')"
-      :desc="getFromObject(formConfig, ['instrumentConfig', 'defocus', 'desc'], '')"
-      :hide="getFromObject(formConfig, ['instrumentConfig', 'defocus', 'hide'], selectedInstrumentCategory !== 'IMAGE' || simpleInterface)"
-      :errors="null"
-      type="number"
-      @input="update"
-    />
     <ocs-custom-field
       v-model="offsetRA"
       field="offset-ra"
@@ -148,6 +137,14 @@
       :errors="null"
       @input="update"
     />
+    <ocs-extra-params-fields
+      :extra-params.sync="instrumentConfig.extra_params"
+      :validation-schema="extraParamsValidationSchema"
+      :errors="errors.extra_params"
+      :parent-show="show"
+      @extraparamsupdate="update"
+    >
+    </ocs-extra-params-fields>
   </b-form>
 </template>
 <script>
@@ -216,6 +213,7 @@ export default {
       rotatorModeOptions,
       requiredRotatorModeFields,
       availableOpticalElementGroups,
+      extraParamsValidationSchema,
       update,
       updateOpticalElement,
       updateInstrumentConfigExtraParam
@@ -230,6 +228,7 @@ export default {
       rotatorModeOptions,
       requiredRotatorModeFields,
       availableOpticalElementGroups,
+      extraParamsValidationSchema,
       // Methods
       update,
       updateOpticalElement,
@@ -238,7 +237,6 @@ export default {
   },
   data: function() {
     return {
-      defocus: 0,
       // Fields used for the muscat instrument
       muscat: {
         exposure_time_g: 0,
@@ -274,10 +272,6 @@ export default {
     }
   },
   watch: {
-    defocus: function(value) {
-      this.instrumentConfig.extra_params.defocus = value || undefined;
-      this.update();
-    },
     'instrumentConfig.exposure_time': function(value) {
       if (this.selectedInstrument === 'SOAR_TRIPLESPEC'){
         if (value < 7.0) {
@@ -334,11 +328,6 @@ export default {
       }
     },
     selectedInstrumentCategory: function(value) {
-      if (value === 'IMAGE') {
-        this.instrumentConfig.extra_params.defocus = this.defocus;
-      } else {
-        this.instrumentConfig.extra_params.defocus = undefined;
-      }
       this.update();
     }
   },
@@ -353,24 +342,23 @@ export default {
     }
 
     // Now set the default of any unset optical elements if a default exists
-    for (let plural_oe in this.availableInstruments[this.selectedInstrument].optical_elements) {
-      let oe = plural_oe.slice(0, -1);
-      if (!(oe in this.instrumentConfig.optical_elements)) {
-        this.availableInstruments[this.selectedInstrument].optical_elements[plural_oe].every(oe_value => {
-          if (oe_value.default && oe_value.schedulable) {
-            this.instrumentConfig.optical_elements[oe] = oe_value.code;
-            return false;
-          }
-          return true;
-        });
+    if (this.selectedInstrument in this.availableInstruments) {
+      for (let plural_oe in this.availableInstruments[this.selectedInstrument].optical_elements) {
+        let oe = plural_oe.slice(0, -1);
+        if (!(oe in this.instrumentConfig.optical_elements)) {
+          this.availableInstruments[this.selectedInstrument].optical_elements[plural_oe].every(oe_value => {
+            if (oe_value.default && oe_value.schedulable) {
+              this.instrumentConfig.optical_elements[oe] = oe_value.code;
+              return false;
+            }
+            return true;
+          });
+        }
       }
     }
 
     // If a draft is loaded in that has any extra_params set, update the corresponding params
     // here since extra_params is not reactive and cannot be watched
-    if (this.instrumentConfig.extra_params.defocus) {
-      this.defocus = this.instrumentConfig.extra_params.defocus;
-    }
     if (this.instrumentConfig.extra_params.exposure_time_g) {
       this.muscat.exposure_time_g = this.instrumentConfig.extra_params.exposure_time_g;
     }

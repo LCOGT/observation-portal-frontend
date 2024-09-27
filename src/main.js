@@ -3,6 +3,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 // Load other dependencies
 import Vue from 'vue';
+import '@/composition-api.js'
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -13,11 +14,9 @@ import $ from 'jquery';
 import { getCookie, csrfSafeMethod } from '@/utils.js';
 import { OCSComponentLib } from 'ocs-component-lib';
 import 'ocs-component-lib/dist/ocs-component-lib.css';
-import VueCompositionAPI from '@vue/composition-api';
 import VueKatex from 'vue-katex';
 import 'katex/dist/katex.min.css';
 
-Vue.use(VueCompositionAPI);
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 Vue.component('BIcon', BIcon);
