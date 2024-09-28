@@ -432,10 +432,6 @@ export default {
             label: 'Rotator Angle',
             desc: 'Position angle of the slit in degrees east of north.'
           },
-          defocus: {
-            desc: `Observations may be defocused to prevent the CCD from saturating on bright targets. This term
-            describes the offset (in mm) of the secondary mirror from its default (focused) position. The limits are ± 3mm.`
-          },
           exposure_mode: {
             desc: `Exposure Mode. SYNCHRONOUS syncs the start time of exposures on all 4 cameras. ASYNCHRONOUS
             takes exposures as quickly as possible on each camera`
@@ -623,7 +619,6 @@ export default {
                     extra_params: {
                       offset_ra: 0,
                       offset_dec: 0,
-                      defocus: 0
                     },
                     optical_elements: {}
                   }
