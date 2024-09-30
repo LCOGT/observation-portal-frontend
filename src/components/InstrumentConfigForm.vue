@@ -273,20 +273,16 @@ export default {
   },
   watch: {
     'instrumentConfig.exposure_time': function(value) {
-      if (this.selectedInstrument === 'SOAR_TRIPLESPEC'){
+      if (this.selectedInstrument === 'SOAR_TRIPLESPEC') {
         if (value < 7.0) {
           this.instrumentConfig.mode = 'fowler1_coadds2';
-        }
-        else if (value < 25.0) {
+        } else if (value < 25.0) {
           this.instrumentConfig.mode = 'fowler1_coadds1';
-        }
-        else if (value < 58.0) {
+        } else if (value < 58.0) {
           this.instrumentConfig.mode = 'fowler4_coadds1';
-        }
-        else if (value < 134.0) {
+        } else if (value < 134.0) {
           this.instrumentConfig.mode = 'fowler8_coadds1';
-        }
-        else {
+        } else {
           this.instrumentConfig.mode = 'fowler16_coadds1';
         }
       }
@@ -327,16 +323,16 @@ export default {
         this.instrumentConfig.extra_params.exposure_mode = undefined;
       }
     },
-    selectedInstrumentCategory: function(value) {
+    selectedInstrumentCategory: function() {
       this.update();
     }
   },
   mounted: function() {
     // For any instrument, remove any optical elements that do not currently exist but were set
     // This can happen when loading an old draft or copying an old request after OE have changed.
-    for (let oe in this.instrumentConfig.optical_elements){
+    for (let oe in this.instrumentConfig.optical_elements) {
       let plural_oe = oe + 's';
-      if (!(plural_oe in this.availableInstruments[this.selectedInstrument].optical_elements )) {
+      if (!(plural_oe in this.availableInstruments[this.selectedInstrument].optical_elements)) {
         delete this.instrumentConfig.optical_elements[oe];
       }
     }

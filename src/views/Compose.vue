@@ -104,7 +104,10 @@
                   </li>
                 </ul>
                 <!-- TODO: Do not show if calibrations have been created -->
-                <b-row v-show="slotProps.data.configuration.type === 'SPECTRUM' && slotProps.data.configuration.instrument_type != 'SOAR_TRIPLESPEC'" class="p-2">
+                <b-row
+                  v-show="slotProps.data.configuration.type === 'SPECTRUM' && slotProps.data.configuration.instrument_type != 'SOAR_TRIPLESPEC'"
+                  class="p-2"
+                >
                   <b-col>
                     <h3>Calibration frames</h3>
                     <p>
@@ -167,9 +170,7 @@
                   :errors="slotProps.data.errors"
                   @input="doTargetLookup(slotProps.data.target, slotProps.update)"
                 >
-                  <div slot="extra-help-text">
-                    <i v-show="targetLookup.busy" class="fa fa-spinner fa-spin fa-fw" /> {{ targetLookup.text }}
-                  </div>
+                  <div slot="extra-help-text"><i v-show="targetLookup.busy" class="fa fa-spinner fa-spin fa-fw" /> {{ targetLookup.text }}</div>
                 </ocs-custom-field>
               </template>
               <template #target-fields-footer="slotProps">
@@ -618,7 +619,7 @@ export default {
                     rotator_mode: '',
                     extra_params: {
                       offset_ra: 0,
-                      offset_dec: 0,
+                      offset_dec: 0
                     },
                     optical_elements: {}
                   }
@@ -648,7 +649,7 @@ export default {
                 constraints: {
                   max_airmass: simpleInterface ? 2 : 1.6,
                   min_lunar_distance: 30.0,
-                  max_lunar_phase: 1.0,
+                  max_lunar_phase: 1.0
                 }
               }
             ],
@@ -771,12 +772,12 @@ export default {
             var draftRequestGroup = JSON.parse(response.content);
             for (let i = 0; i < draftRequestGroup.requests.length; i++) {
               for (let j = 0; j < draftRequestGroup.requests[i].configurations.length; j++) {
-                if (!("extra_params" in draftRequestGroup.requests[i].configurations[j].target)) {
+                if (!('extra_params' in draftRequestGroup.requests[i].configurations[j].target)) {
                   draftRequestGroup.requests[i].configurations[j].target.extra_params = {};
                 }
               }
             }
-            this.requestGroup = draftRequestGroup
+            this.requestGroup = draftRequestGroup;
             this.draftId = draftId;
           });
         })

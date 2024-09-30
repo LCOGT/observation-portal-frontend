@@ -3,7 +3,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 // Load other dependencies
 import Vue from 'vue';
-import '@/composition-api.js'
+import '@/composition-api.js';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -26,15 +26,15 @@ Vue.use(VueKatex, {
   globalOptions: {
     throwOnError: false,
     delimiters: [
-      {left: "$$", right: "$$", display: true},
-      {left: "$", right: "$", display: false},
-      {left: "\\(", right: "\\)", display: false},
-      {left: "\\begin{equation}", right: "\\end{equation}", display: true},
-      {left: "\\begin{align}", right: "\\end{align}", display: true},
-      {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
-      {left: "\\begin{gather}", right: "\\end{gather}", display: true},
-      {left: "\\begin{CD}", right: "\\end{CD}", display: true},
-      {left: "\\[", right: "\\]", display: true},
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false },
+      { left: '\\(', right: '\\)', display: false },
+      { left: '\\begin{equation}', right: '\\end{equation}', display: true },
+      { left: '\\begin{align}', right: '\\end{align}', display: true },
+      { left: '\\begin{alignat}', right: '\\end{alignat}', display: true },
+      { left: '\\begin{gather}', right: '\\end{gather}', display: true },
+      { left: '\\begin{CD}', right: '\\end{CD}', display: true },
+      { left: '\\[', right: '\\]', display: true }
     ]
   }
 });
@@ -68,7 +68,10 @@ $.ajax({
 
   // Add the archive token to a request being sent to the archive api or the thumbservice
   $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-    if ((options.url.startsWith(store.state.urls.archiveApi) || options.url.startsWith(store.state.urls.thumbnailService)) && store.state.profile.tokens.api_token) {
+    if (
+      (options.url.startsWith(store.state.urls.archiveApi) || options.url.startsWith(store.state.urls.thumbnailService)) &&
+      store.state.profile.tokens.api_token
+    ) {
       jqXHR.setRequestHeader('Authorization', 'Token ' + store.state.profile.tokens.api_token);
     }
   });
