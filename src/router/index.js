@@ -253,11 +253,10 @@ const routes = [
       title: 'Register for an account'
     },
     // if user is authenticated, redirect to homepage
-    beforeEnter (to, from, next) {
+    beforeEnter(to, from, next) {
       if (store.state.userIsAuthenticated) {
         next('/');
-      }
-      else {
+      } else {
         next();
       }
     }
