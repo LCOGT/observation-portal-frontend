@@ -141,6 +141,7 @@
       :extra-params.sync="instrumentConfig.extra_params"
       :validation-schema="extraParamsValidationSchema"
       :errors="errors.extra_params"
+      :ignore-params="['offset_ra', 'offset_dec']"
       :parent-show="show"
       @extraparamsupdate="update"
     >
@@ -283,6 +284,14 @@ export default {
         } else if (value < 134.0) {
           this.instrumentConfig.mode = 'fowler8_coadds1';
         } else {
+          this.instrumentConfig.mode = 'fowler16_coadds1';
+        }
+      } else if(this.selectedInstrument === 'BLANCO_NEWFIRM') {
+        if (value < 60.0) {
+          this.instrumentConfig.mode = 'fowler1_coadds1';
+        } else if (value <= 300.0) {
+          this.instrumentConfig.mode = 'fowler8_coadds1';
+        } else if (value > 300.0) {
           this.instrumentConfig.mode = 'fowler16_coadds1';
         }
       }
