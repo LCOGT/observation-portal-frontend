@@ -47,7 +47,7 @@
                   {{ proposal.title }}
                 </b-link>
                 <b-modal :id="'modal' + proposal.id" :title="proposal.title" ok-only ok-title="Close" ok-variant="white">
-                  <p class="abstract" v-katex:auto>{{ proposal.abstract }}</p>
+                  <p v-katex:auto class="abstract">{{ proposal.abstract }}</p>
                 </b-modal>
               </td>
               <td>
@@ -112,7 +112,7 @@ export default {
       return this.$store.state.urls.observationPortalApi + '/api/semesters/' + this.id + '/proposals/';
     },
     archiveClientLinkForProposal: function(proposal) {
-      return this.archiveClientUrl + "?proposal_id=" + proposal.id;
+      return this.archiveClientUrl + '?proposal_id=' + proposal.id;
     },
     getInstrumentTypes: function(proposal) {
       let instrumentTypesSet = new Set();
@@ -135,7 +135,7 @@ export default {
     },
     getScaName: function(scaProposals) {
       return _.get(scaProposals, [0, 'sca_name'], '');
-    },
+    }
   }
 };
 </script>

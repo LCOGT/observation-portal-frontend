@@ -119,17 +119,6 @@
       :errors="null"
       @input="updateInstrumentConfigExtraParam($event, field)"
     />
-    <!-- TODO: Validate to make sure this is a floating point number -->
-    <ocs-custom-field
-      v-model="defocus"
-      field="defocus"
-      :label="getFromObject(formConfig, ['instrumentConfig', 'defocus', 'label'], 'Defocus')"
-      :desc="getFromObject(formConfig, ['instrumentConfig', 'defocus', 'desc'], '')"
-      :hide="getFromObject(formConfig, ['instrumentConfig', 'defocus', 'hide'], selectedInstrumentCategory !== 'IMAGE' || simpleInterface)"
-      :errors="null"
-      type="number"
-      @input="update"
-    />
     <ocs-custom-field
       v-model="offsetRA"
       field="offset-ra"
@@ -148,6 +137,15 @@
       :errors="null"
       @input="update"
     />
+    <ocs-extra-params-fields
+      :extra-params.sync="instrumentConfig.extra_params"
+      :validation-schema="extraParamsValidationSchema"
+      :errors="errors.extra_params"
+      :ignore-params="['offset_ra', 'offset_dec']"
+      :parent-show="show"
+      @extraparamsupdate="update"
+    >
+    </ocs-extra-params-fields>
   </b-form>
 </template>
 <script>
@@ -216,6 +214,7 @@ export default {
       rotatorModeOptions,
       requiredRotatorModeFields,
       availableOpticalElementGroups,
+      extraParamsValidationSchema,
       update,
       updateOpticalElement,
       updateInstrumentConfigExtraParam
@@ -230,6 +229,7 @@ export default {
       rotatorModeOptions,
       requiredRotatorModeFields,
       availableOpticalElementGroups,
+      extraParamsValidationSchema,
       // Methods
       update,
       updateOpticalElement,
@@ -238,7 +238,6 @@ export default {
   },
   data: function() {
     return {
-      defocus: 0,
       // Fields used for the muscat instrument
       muscat: {
         exposure_time_g: 0,
@@ -274,25 +273,25 @@ export default {
     }
   },
   watch: {
-    defocus: function(value) {
-      this.instrumentConfig.extra_params.defocus = value || undefined;
-      this.update();
-    },
     'instrumentConfig.exposure_time': function(value) {
-      if (this.selectedInstrument === 'SOAR_TRIPLESPEC'){
+      if (this.selectedInstrument === 'SOAR_TRIPLESPEC') {
         if (value < 7.0) {
           this.instrumentConfig.mode = 'fowler1_coadds2';
-        }
-        else if (value < 25.0) {
+        } else if (value < 25.0) {
           this.instrumentConfig.mode = 'fowler1_coadds1';
-        }
-        else if (value < 58.0) {
+        } else if (value < 58.0) {
           this.instrumentConfig.mode = 'fowler4_coadds1';
-        }
-        else if (value < 134.0) {
+        } else if (value < 134.0) {
           this.instrumentConfig.mode = 'fowler8_coadds1';
+        } else {
+          this.instrumentConfig.mode = 'fowler16_coadds1';
         }
-        else {
+      } else if(this.selectedInstrument === 'BLANCO_NEWFIRM') {
+        if (value < 60.0) {
+          this.instrumentConfig.mode = 'fowler1_coadds1';
+        } else if (value <= 300.0) {
+          this.instrumentConfig.mode = 'fowler8_coadds1';
+        } else if (value > 300.0) {
           this.instrumentConfig.mode = 'fowler16_coadds1';
         }
       }
@@ -333,44 +332,38 @@ export default {
         this.instrumentConfig.extra_params.exposure_mode = undefined;
       }
     },
-    selectedInstrumentCategory: function(value) {
-      if (value === 'IMAGE') {
-        this.instrumentConfig.extra_params.defocus = this.defocus;
-      } else {
-        this.instrumentConfig.extra_params.defocus = undefined;
-      }
+    selectedInstrumentCategory: function() {
       this.update();
     }
   },
   mounted: function() {
     // For any instrument, remove any optical elements that do not currently exist but were set
     // This can happen when loading an old draft or copying an old request after OE have changed.
-    for (let oe in this.instrumentConfig.optical_elements){
+    for (let oe in this.instrumentConfig.optical_elements) {
       let plural_oe = oe + 's';
-      if (!(plural_oe in this.availableInstruments[this.selectedInstrument].optical_elements )) {
+      if (!(plural_oe in this.availableInstruments[this.selectedInstrument].optical_elements)) {
         delete this.instrumentConfig.optical_elements[oe];
       }
     }
 
     // Now set the default of any unset optical elements if a default exists
-    for (let plural_oe in this.availableInstruments[this.selectedInstrument].optical_elements) {
-      let oe = plural_oe.slice(0, -1);
-      if (!(oe in this.instrumentConfig.optical_elements)) {
-        this.availableInstruments[this.selectedInstrument].optical_elements[plural_oe].every(oe_value => {
-          if (oe_value.default && oe_value.schedulable) {
-            this.instrumentConfig.optical_elements[oe] = oe_value.code;
-            return false;
-          }
-          return true;
-        });
+    if (this.selectedInstrument in this.availableInstruments) {
+      for (let plural_oe in this.availableInstruments[this.selectedInstrument].optical_elements) {
+        let oe = plural_oe.slice(0, -1);
+        if (!(oe in this.instrumentConfig.optical_elements)) {
+          this.availableInstruments[this.selectedInstrument].optical_elements[plural_oe].every(oe_value => {
+            if (oe_value.default && oe_value.schedulable) {
+              this.instrumentConfig.optical_elements[oe] = oe_value.code;
+              return false;
+            }
+            return true;
+          });
+        }
       }
     }
 
     // If a draft is loaded in that has any extra_params set, update the corresponding params
     // here since extra_params is not reactive and cannot be watched
-    if (this.instrumentConfig.extra_params.defocus) {
-      this.defocus = this.instrumentConfig.extra_params.defocus;
-    }
     if (this.instrumentConfig.extra_params.exposure_time_g) {
       this.muscat.exposure_time_g = this.instrumentConfig.extra_params.exposure_time_g;
     }
