@@ -24,7 +24,7 @@
       </p>
       <p>
         If you are composing a proposal for the LCO network for the first time, we recommend that you consult our
-        <a href="https://lco.global/observatory/proposal/guidelines/">guidelines for writing proposals,</a> as well as the
+        <a href="https://lco.global/observatory/process/regular-proposal-guidelines/">guidelines for writing proposals,</a> as well as the
         <a href="https://lco.global/documents/2505/GettingStartedontheLCONetwork.latest.pdf">"Getting Started" Guide.</a> Information about the
         <a href="//lco.global/observatory/telescopes">telescopes</a>, <a href="//lco.global/observatory/instruments">instruments</a>,
         <a href="//lco.global/observatory/data">data handling and quality</a>, <a href="//lco.global/observatory/scheduling">scheduling</a> and other
