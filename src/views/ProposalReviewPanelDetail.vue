@@ -120,7 +120,6 @@ export default {
       },
       userReviewFields: [
         {key: "comments", label: ""},
-        "username",
         {key: "grade", label: "Grade", sortable: true},
         "finished"
       ],
