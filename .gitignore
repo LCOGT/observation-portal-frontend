@@ -25,6 +25,5 @@ pnpm-debug.log*
 *.sw?
 
 # Devenv
-.devenv*
-devenv.local.nix
-
+.devenv
+.pre-commit-config.yaml
