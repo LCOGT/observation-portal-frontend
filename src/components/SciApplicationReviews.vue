@@ -1,6 +1,18 @@
 <template>
     <b-container>
-      <b-table class="text-center" id="sciapplication-reviews-table" :items="data.results" :fields="fields" :busy="isBusy" show-empty striped responsive>
+      <b-table
+        class="text-center"
+        id="sciapplication-reviews-table"
+        :items="data.results" :fields="fields"
+        :busy="isBusy"
+        :sort-by="getSortByFromQueryParams()"
+        :sort-desc="getSortDescFromQueryParams()"
+        @sort-changed="sortingChanged"
+        show-empty
+        striped
+        responsive
+        no-local-sorting
+        >
         <template v-slot:table-busy>
           <div class="text-center my-2"><i class="fa fa-spin fa-spinner" /> Loading...</div>
         </template>
@@ -126,9 +138,9 @@ export default {
   data: function() {
     return {
       fields: [
-        { key: 'title', label: 'Proposal', tdClass: 'align-middle' },
-        { key: 'semester', label: 'Semester', tdClass: 'align-middle' },
-        { key: 'science_category', label: 'Category', tdClass: 'align-middle' },
+        { key: 'title', label: 'Proposal', tdClass: 'align-middle', sortable: true, sortKey: 'science_application__title' },
+        { key: 'semester', label: 'Semester', tdClass: 'align-middle', sortable: true, sortKey: 'science_application__call__semester__start' },
+        { key: 'science_category', label: 'Category', tdClass: 'align-middle', sortable: true },
         { key: 'pdf', label: 'PDF', tdClass: 'align-middle' },
         { key: 'mean_grade', label: 'Mean Grade', tdClass: 'align-middle' },
         { key: 'panel_review', label: 'Panel Reviews', tdClass: 'align-middle' },
@@ -146,6 +158,30 @@ export default {
     }
   },
   methods: {
+    initializeDefaultQueryParams: function() {
+      return {
+        ordering: ''
+      }
+    },
+    getSortByFromQueryParams: function() {
+      return this.queryParams.ordering.replace("-", "");
+    },
+    getSortDescFromQueryParams: function() {
+      return this.queryParams.ordering.startsWith("-");
+    },
+    getOrderingFromSort: function(sortDesc, sortBy) {
+      // Return what the `ordering` value in the query params should be given the sort order and the sort field
+      let ordering = '';
+      if (sortBy) {
+        ordering = sortDesc ? `-${sortBy}` : sortBy;
+      }
+      return ordering;
+    },
+    sortingChanged: function(ctx) {
+      this.queryParams.ordering = this.getOrderingFromSort(ctx.sortDesc, ctx.sortBy);
+      this.goToFirstPage();
+      this.update();
+    },
     initializeDataEndpoint: function() {
       return this.$store.state.urls.observationPortalApi + '/api/scienceapplication-reviews/';
     },
