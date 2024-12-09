@@ -59,6 +59,7 @@ export default {
       queryParamsType: '',
       idField: 'id',
       pagination: true,
+      pageList: '[10, 25, 100, All]',
       pageSize: 10,
       buttonsClass: 'outline-secondary',
       classes: 'table table-hover',
