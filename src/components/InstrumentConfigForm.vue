@@ -75,6 +75,11 @@
       @input="update"
     />
     <!-- End of MUSCAT instrument specific fields -->
+    <b-alert variant="warning" :show="badFilterReadoutMode">
+      <strong>Warning:</strong> This filter/readout mode combination is not eligible for automatic reduction. <br><br>
+      Please contact science support if this
+      combination is required.
+    </b-alert>
     <ocs-custom-select
       v-model="instrumentConfig.mode"
       field="readout_mode"
@@ -151,6 +156,7 @@
 <script>
 import { toRef } from '@vue/composition-api';
 import { OCSComposable, OCSUtil } from 'ocs-component-lib';
+import _ from 'lodash';
 
 import { lampFlatDefaultExposureTime, arcDefaultExposureTime } from '@/utils';
 
@@ -249,7 +255,8 @@ export default {
           { value: 'SYNCHRONOUS', text: 'Synchronous' },
           { value: 'ASYNCHRONOUS', text: 'Asynchronous' }
         ]
-      }
+      },
+      badFilterReadoutMode: false
     };
   },
   computed: {
@@ -273,6 +280,26 @@ export default {
     }
   },
   watch: {
+    'instrumentConfig.optical_elements.filter': function(value) {
+      this.badFilterReadoutMode = false;
+      if (this.selectedInstrument === '1M0-SCICAM-SINISTRO') {
+        if (this.instrumentConfig.mode === 'central_2k_2x2') {
+          if (_.includes(['u', 'b', 'v', 'r', 'i'], value)) {
+            this.badFilterReadoutMode = true;
+          }
+        }
+      }
+    },
+    'instrumentConfig.mode': function(value) {
+      this.badFilterReadoutMode = false;
+      if (this.selectedInstrument === '1M0-SCICAM-SINISTRO') {
+        if (value === 'central_2k_2x2') {
+          if (_.includes(['u', 'b', 'v', 'r', 'i'], this.instrumentConfig.optical_elements.filter)) {
+            this.badFilterReadoutMode = true;
+          }
+        }
+      }
+    },
     'instrumentConfig.exposure_time': function(value) {
       if (this.selectedInstrument === 'SOAR_TRIPLESPEC') {
         if (value < 7.0) {
