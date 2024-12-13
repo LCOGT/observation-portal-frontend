@@ -77,8 +77,7 @@
     <!-- End of MUSCAT instrument specific fields -->
     <b-alert variant="warning" :show="badFilterReadoutMode">
       <strong>Warning:</strong> This filter/readout mode combination is not eligible for automatic reduction. <br><br>
-      Please contact science support if this
-      combination is required.
+      Please contact <a href="mailto:science-support@lco.global">science support</a> if this combination is required.
     </b-alert>
     <ocs-custom-select
       v-model="instrumentConfig.mode"

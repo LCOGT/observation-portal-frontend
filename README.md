@@ -40,6 +40,7 @@ In this root directory:
 
 If you are developing locally, you will probably need to set a few variables in your development Observation
 Portal Django local settings file to handle cross site requests. For example, if your frontend is running at
+
 `http://127.0.0.1:8080`, you would set the following:
 
 ```
@@ -48,7 +49,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:8080'
 ]
 CSRF_TRUSTED_ORIGINS = [
-    '127.0.0.1:8080'
+    'http://127.0.0.1:8080'
 ]
 ```
 
