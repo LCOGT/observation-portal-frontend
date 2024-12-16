@@ -290,10 +290,14 @@ export default {
       }
     },
     'instrumentConfig.mode': function(value) {
+      if ("extra_params" in this.instrumentConfig) {
+        delete this.instrumentConfig.extra_params.bin_x
+        delete this.instrumentConfig.extra_params.bin_y
+      }
       this.badFilterReadoutMode = false;
       if (this.selectedInstrument === '1M0-SCICAM-SINISTRO') {
         if (value === 'central_2k_2x2') {
-          if (_.includes(['u', 'b', 'v', 'r', 'i'], this.instrumentConfig.optical_elements.filter)) {
+          if (_.includes(['u', 'b', 'v', 'r', 'i'], this.instrumentConfig.optical_elements.filter.toLowerCase())) {
             this.badFilterReadoutMode = true;
           }
         }
