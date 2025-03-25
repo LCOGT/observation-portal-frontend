@@ -28,7 +28,7 @@
       <table class="observing-budget-table">
         <thead>
           <tr>
-            <th v-if="isKeyApplication">Semester</th>
+            <th v-if="showSemester">Semester</th>
             <th>Instrument</th>
             <th>Standard Time</th>
             <th>Rapid Response</th>
@@ -37,11 +37,11 @@
         </thead>
         <tbody>
           <template v-for="(timeRequestGroup, semester) in timeRequestsBySemester">
-            <tr v-if="isKeyApplication" :key="semester">
+            <tr v-if="showSemester" :key="semester">
               <td class="semester-row" colspan="5">{{ semester }}</td>
             </tr>
             <tr v-for="(timeRequest, index) in timeRequestGroup" :key="semester + '-' + index">
-              <td v-if="isKeyApplication"></td>
+              <td v-if="showSemester"></td>
               <td>{{ timeRequest.instrument_names.join(', ') }}</td>
               <td class="centered-text">{{ timeRequest.std_time }}</td>
               <td class="centered-text">{{ timeRequest.rr_time }}</td>
@@ -193,6 +193,10 @@ export default {
     },
     timeRequestsBySemester: function() {
       return _.groupBy(this.timeRequests, 'semester');
+    },
+    showSemester: function() {
+      const proposalType = _.get(this.sciApp, ['call', 'proposal_type'], '');
+      return proposalType === 'KEY' || proposalType === 'SCIENCE';
     },
     isKeyApplication: function() {
       return _.get(this.sciApp, ['call', 'proposal_type'], '') === 'KEY';
