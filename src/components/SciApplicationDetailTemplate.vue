@@ -196,7 +196,7 @@ export default {
     },
     showSemester: function() {
       const proposalType = _.get(this.sciApp, ['call', 'proposal_type'], '');
-      return proposalType === 'KEY' || proposalType === 'SCIENCE';
+      return proposalType === 'KEY' || proposalType === 'SCI';
     },
     isKeyApplication: function() {
       return _.get(this.sciApp, ['call', 'proposal_type'], '') === 'KEY';
