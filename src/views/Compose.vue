@@ -729,7 +729,7 @@ export default {
   methods: {
     ditheringAllowed: function(configuration) {
       let instrumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
-      return !this.simpleInterface && instrumentCategory === 'IMAGE';
+      return !this.simpleInterface && instrumentCategory === 'IMAGE' && configuration.instrument_type != 'BLANCO_NEWFIRM';
     },
     mosaicAllowed: function(request) {
       if (request.configurations.length !== 1) {
