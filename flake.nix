@@ -8,6 +8,11 @@
 
     nixpkgs.follows = "devenv-k8s/nixpkgs";
     flake-parts.follows = "devenv-k8s/flake-parts";
+
+    devenv-root = {
+      url = "file+file:///dev/null";
+      flake = false;
+    };
   };
 
   nixConfig = {
@@ -39,6 +44,14 @@
         # Enter using `nix develop --impure`
         config.devenv.shells.default = {
 
+          # use direnv without --impure
+          devenv.root = let
+            devenvRootFileContent = builtins.readFile inputs.devenv-root.outPath;
+          in pkgs.lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
+
+          # setup local development cluster
+          devenv-k8s.local-cluster.enable = true;
+
           # https://devenv.sh/packages/
           packages = [
 
@@ -50,16 +63,6 @@
             pnpm.enable = true;
           };
 
-          # https://devenv.sh/reference/options/#entershell
-          enterShell = ''
-            export KUBECONFIG="~/.kube/kind-ocs-kubeconfig"
-
-            echo "Setting KUBECONFIG=$KUBECONFIG"
-            echo
-            echo "This is done to sandbox Kubernetes tools (kubectl, skaffold, etc) to the local K8s cluster for this project."
-            echo "If you would like to use a local K8s cluster across multiple projects, then set 'KUBECONFIG' to a common path"
-            echo "in both projects before running the command to create the local cluster."
-          '';
         };
       };
 

@@ -68,6 +68,7 @@
             description="Check when you have finished making changes."
             :errors="apiValidationErrors.finished"
             checkbox-option-label="Finished"
+            label=""
             value=true
           ></basic-custom-field>
 
