@@ -179,6 +179,25 @@ export default {
       return this.$store.state.urls.observationPortalApi + '/api/scienceapplication-reviews/';
     },
     onSuccessfulDataRetrieval: function() {
+      for (const item of this.data.results) {
+        item.total_requested_time_0m4 = 0;
+        item.total_requested_time_1m0 = 0;
+        item.total_requested_time_2m0 = 0;
+
+        for (const [key, value] of Object.entries(item.total_requested_time_inst_code)) {
+          if (key.toLowerCase().startsWith("0m4")) {
+            item.total_requested_time_0m4 += value;
+          }
+
+          if (key.toLowerCase().startsWith("1m0")) {
+            item.total_requested_time_1m0 += value;
+          }
+
+          if (key.toLowerCase().startsWith("2m0")) {
+            item.total_requested_time_2m0 += value;
+          }
+        }
+      }
       this.clearErrors();
     },
     onErrorRetrievingData: function(response) {
