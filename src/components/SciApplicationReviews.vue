@@ -134,6 +134,7 @@ export default {
         { key: 'pdf', label: 'PDF', tdClass: 'align-middle' },
         { key: 'panel_review', label: 'Panel Reviews', tdClass: 'align-middle' },
         { key: 'review', label: 'Review', tdClass: 'align-middle' },
+        { key: 'application_id', label: 'Proposal', tdClass: 'align-middle' },
         { key: 'is_primary_reviewer', label: 'Primary', tdClass: 'align-middle' },
         { key: 'is_secondary_reviewer', label: 'Secondary', tdClass: 'align-middle' },
         { key: 'long_term', label: 'Long Term', tdClass: 'align-middle' },
