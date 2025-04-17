@@ -130,7 +130,7 @@ export default {
         { key: 'pdf', label: 'PDF', tdClass: 'align-middle' },
         { key: 'panel_review', label: 'Panel Reviews', tdClass: 'align-middle' },
         { key: 'review', label: 'Review', tdClass: 'align-middle' },
-        { key: 'application_id', label: 'Application', tdClass: 'align-middle' },
+        { key: 'application_id', label: 'Proposal', tdClass: 'align-middle' },
         { key: 'mean_grade', label: 'Mean Grade', tdClass: 'align-middle', sortable: true, sortKey: 'science_application_review__mean_grade' },
         { key: 'grade', label: 'Grade', tdClass: 'align-middle', sortable: true },
         { key: 'finished', label: 'Finished', tdClass: 'align-middle' }
