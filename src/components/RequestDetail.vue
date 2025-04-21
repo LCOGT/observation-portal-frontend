@@ -71,9 +71,9 @@
             Visibility data not available
           </p>
         </b-tab>
-        <b-tab @click="tab = 'data'">
+        <b-tab v-if="!isBlanco" @click="tab = 'data'">
           <template slot="title">
-            <span title="Scheduling history.">Data</span>
+            <span title="Archive Data">Data</span>
           </template>
           <div class="row">
             <div v-if="request.state === 'COMPLETED' && curFrame" class="col-md-4">
@@ -184,6 +184,10 @@ export default {
     },
     hasTarget: function() {
       return this.request.configurations && this.request.configurations.length > 0 && !_.isEmpty(this.request.configurations[0].target);
+    },
+    isBlanco: function() {
+      let instrumentType = _.get(this.request, ['configurations', 0, 'instrument_type']);
+      return instrumentType === 'BLANCO_NEWFIRM';
     }
   },
   watch: {

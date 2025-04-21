@@ -316,14 +316,6 @@ export default {
         } else {
           this.instrumentConfig.mode = 'fowler16_coadds1';
         }
-      } else if(this.selectedInstrument === 'BLANCO_NEWFIRM') {
-        if (value < 60.0) {
-          this.instrumentConfig.mode = 'fowler1_coadds1';
-        } else if (value <= 300.0) {
-          this.instrumentConfig.mode = 'fowler8_coadds1';
-        } else if (value > 300.0) {
-          this.instrumentConfig.mode = 'fowler16_coadds1';
-        }
       }
       this.update();
     },

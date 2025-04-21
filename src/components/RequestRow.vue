@@ -12,7 +12,7 @@
           <b-row align-h="center">
             <b-button-group>
               <b-button :href="requestApiUrl" variant="outline-secondary"><i class="fa fa-fw fa-code" /> View in API</b-button>
-              <b-button v-if="requestIsComplete" variant="outline-secondary" :disabled="!archiveDataIsAvailable" @click="downloadAllData">
+              <b-button v-if="requestIsComplete && !isBlanco" variant="outline-secondary" :disabled="!archiveDataIsAvailable" @click="downloadAllData">
                 <i class="fa fa-fw fa-download" /> Download
               </b-button>
             </b-button-group>
@@ -20,14 +20,19 @@
         </b-col>
         <b-col align-self="center" class="text-center">
           <template v-if="requestIsComplete">
-            <b-img v-if="thumbnailUrl" :src="thumbnailUrl" fluid :alt="frame.filename" :title="frame.filename" />
-            <div v-else-if="thumbnailError">
-              {{ thumbnailError }}
-            </div>
-            <div v-else-if="archiveError">
-              {{ archiveError }}
-            </div>
-            <i v-else class="fa fa-spin fa-spinner" />
+            <span v-if="isBlanco">
+              <a href="https://astroarchive.noirlab.edu/portal/search" target="_blank">Search NOIRLab Archive for data</a>
+            </span>
+            <span v-else>
+              <b-img v-if="thumbnailUrl" :src="thumbnailUrl" fluid :alt="frame.filename" :title="frame.filename" />
+              <div v-else-if="thumbnailError">
+                {{ thumbnailError }}
+              </div>
+              <div v-else-if="archiveError">
+                {{ archiveError }}
+              </div>
+              <i v-else class="fa fa-spin fa-spinner" />
+            </span>
           </template>
           <template v-else-if="requestIsPending">
             <div>
@@ -120,6 +125,10 @@ export default {
         return instrumentType;
       }
     },
+    isBlanco: function() {
+      let instrumentType = _.get(this.request, ['configurations', 0, 'instrument_type']);
+      return instrumentType === 'BLANCO_NEWFIRM';
+    },
     archiveDataIsAvailable: function() {
       return this.frame.id ? true : false;
     },
@@ -151,25 +160,30 @@ export default {
       downloadAll(this.request.id, this.archiveApiUrl, this.archiveClientUrl, this.$store.state.profile.tokens.api_token);
     },
     loadLatestThumbnail: function() {
-      const thumbnailSize = 75;
-      let that = this;
-      getLatestFrame(this.request.id, this.archiveApiUrl, function(frame) {
-        if (!frame) {
-          that.archiveError = 'Waiting on data to become available';
-        } else {
-          that.frame = frame;
-          $.ajax({
-            url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
-            dataType: 'json'
-          })
-            .done(function(response) {
-              that.thumbnailUrl = response.url;
+      if (this.isBlanco) {
+        this.archiveError = 'Search NOIRLab Archive for data'
+      }
+      else {
+        const thumbnailSize = 75;
+        let that = this;
+        getLatestFrame(this.request.id, this.archiveApiUrl, function(frame) {
+          if (!frame) {
+            that.archiveError = 'Waiting on data to become available';
+          } else {
+            that.frame = frame;
+            $.ajax({
+              url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
+              dataType: 'json'
             })
-            .fail(function() {
-              that.thumbnailError = 'Could not load thumbnail for this file';
-            });
-        }
-      });
+              .done(function(response) {
+                that.thumbnailUrl = response.url;
+              })
+              .fail(function() {
+                that.thumbnailError = 'Could not load thumbnail for this file';
+              });
+          }
+        });
+      }
     },
     getPendingDetails: function() {
       let that = this;
