@@ -2,7 +2,7 @@
     <b-container>
       <b-table
         class="text-center"
-        id="sciapplication-reviews-table"
+        id="sciapplication-user-reviews-table"
         :items="data.results" :fields="fields"
         :busy="isBusy"
         :sort-by="getSortByFromQueryParams()"
@@ -18,7 +18,7 @@
         </template>
         <template v-slot:empty>
           <div>
-            No applications to review.
+            No applications reviewed.
           </div>
         </template>
 
@@ -64,7 +64,7 @@
               variant="primary"
               size="2em"
               title="View all panel reviews."
-              :to="{ name: 'proposalReviewPanelDetail', params: { id: `${data.item.id}` } }"
+              :to="{ name: 'proposalReviewPanelDetail', params: { id: `${data.item.review_id}` } }"
             ></b-avatar>
         </template>
 
@@ -74,39 +74,35 @@
               variant="primary"
               size="2em"
               title="Make changes to your review."
-              :to="{ name: 'proposalReviewUserDetail', params: { id: `${data.item.id}` } }"
+              :to="{ name: 'proposalReviewUserDetail', params: { id: `${data.item.review_id}` } }"
             >
             </b-avatar>
         </template>
 
-        <template v-slot:head(is_primary_reviewer)="data">
-            <span v-b-tooltip.hover title="As the primary reviewer of a proposal, you can summarize all other panel reviews.">{{ data.label }}</span>
+        <template v-slot:cell(finished)="data">
+            <b-icon v-if="data.item.finished" icon="check-circle-fill" variant="success"></b-icon>
         </template>
 
-        <template v-slot:cell(is_primary_reviewer)="data">
-            <b-icon v-if="data.item.is_primary_reviewer" icon="check-circle-fill" variant="success"></b-icon>
+        <template v-slot:head(mean_grade)="data">
+            <span v-b-tooltip.hover title="Mean of all grades from panelists for this proposal.">{{ data.label }}</span>
         </template>
 
-        <template v-slot:head(is_secondary_reviewer)="data">
-            <span v-b-tooltip.hover title="As the secondary reviewer of a proposal, you can also summarize all other panel reviews.">{{ data.label }}</span>
+        <template v-slot:cell(mean_grade)="data">
+            <b-icon
+              v-if="data.item.status === 'AWAITING_REVIEWS'"
+              icon="eye-slash-fill"
+              variant="dark"
+              size="2em"
+              title="Hidden until panel discussions have started"
+            ></b-icon>
+            <span v-else>{{ data.item.mean_grade || '-'  }}</span>
         </template>
 
-        <template v-slot:cell(is_secondary_reviewer)="data">
-            <b-icon v-if="data.item.is_secondary_reviewer" icon="check-circle-fill" variant="success"></b-icon>
-        </template>
-
-        <template v-slot:cell(long_term)="data">
-            <b-icon v-if="data.item.long_term" icon="check-circle-fill" variant="success"></b-icon>
-        </template>
-
-        <template v-slot:head(total_requested_time_0m4)="data">
-            <span v-b-tooltip.hover title="Total time requested">{{ data.label }}</span>
-        </template>
       </b-table>
 
       <ocs-pagination
         v-if="!isBusy"
-        table-id="sciapplication-reviews-table"
+        table-id="sciapplication-user-reviews-table"
         :per-page="queryParams.limit"
         :total-rows="data.count"
         :current-page="currentPage"
@@ -123,24 +119,21 @@ import { OCSMixin } from 'ocs-component-lib';
 import { clearAndSetErrorsMixin } from '@/components/util/utilMixins.js';
 
 export default {
-  name: 'SciApplicationReviews',
+  name: 'SciApplicationUserReviews',
   mixins: [OCSMixin.paginationAndFilteringMixin, clearAndSetErrorsMixin],
   data: function() {
     return {
       fields: [
-        { key: 'title', label: 'Proposal', tdClass: 'align-middle', sortable: true, sortKey: 'science_application__title' },
-        { key: 'semester', label: 'Semester', tdClass: 'align-middle', sortable: true, sortKey: 'science_application__call__semester__start' },
-        { key: 'science_category', label: 'Category', tdClass: 'align-middle', sortable: true },
+        { key: 'title', label: 'Proposal', tdClass: 'align-middle', sortable: true, sortKey: 'science_application_review__science_application__title' },
+        { key: 'semester', label: 'Semester', tdClass: 'align-middle', sortable: true, sortKey: 'science_application_review__science_application__call__semester__start' },
+        { key: 'science_category', label: 'Category', tdClass: 'align-middle', sortable: true, sortKey: 'science_application_review__category' },
         { key: 'pdf', label: 'PDF', tdClass: 'align-middle' },
         { key: 'panel_review', label: 'Panel Reviews', tdClass: 'align-middle' },
         { key: 'review', label: 'Review', tdClass: 'align-middle' },
         { key: 'application_id', label: 'Proposal', tdClass: 'align-middle' },
-        { key: 'is_primary_reviewer', label: 'Primary', tdClass: 'align-middle' },
-        { key: 'is_secondary_reviewer', label: 'Secondary', tdClass: 'align-middle' },
-        { key: 'long_term', label: 'Long Term', tdClass: 'align-middle' },
-        { key: 'total_requested_time_0m4', label: '0m4', tdClass: 'align-middle' },
-        { key: 'total_requested_time_1m0', label: '1m0', tdClass: 'align-middle' },
-        { key: 'total_requested_time_2m0', label: '2m0', tdClass: 'align-middle' }
+        { key: 'mean_grade', label: 'Mean Grade', tdClass: 'align-middle', sortable: true, sortKey: 'science_application_review__mean_grade' },
+        { key: 'grade', label: 'Grade', tdClass: 'align-middle', sortable: true },
+        { key: 'finished', label: 'Finished', tdClass: 'align-middle' }
       ]
     };
   },
@@ -177,28 +170,9 @@ export default {
       this.update();
     },
     initializeDataEndpoint: function() {
-      return this.$store.state.urls.observationPortalApi + '/api/scienceapplication-reviews/';
+      return this.$store.state.urls.observationPortalApi + '/api/scienceapplication-user-reviews/';
     },
     onSuccessfulDataRetrieval: function() {
-      for (const item of this.data.results) {
-        item.total_requested_time_0m4 = 0;
-        item.total_requested_time_1m0 = 0;
-        item.total_requested_time_2m0 = 0;
-
-        for (const [key, value] of Object.entries(item.total_requested_time_inst_code)) {
-          if (key.toLowerCase().startsWith("0m4")) {
-            item.total_requested_time_0m4 += value;
-          }
-
-          if (key.toLowerCase().startsWith("1m0")) {
-            item.total_requested_time_1m0 += value;
-          }
-
-          if (key.toLowerCase().startsWith("2m0")) {
-            item.total_requested_time_2m0 += value;
-          }
-        }
-      }
       this.clearErrors();
     },
     onErrorRetrievingData: function(response) {

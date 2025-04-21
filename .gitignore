@@ -27,3 +27,4 @@ pnpm-debug.log*
 # Devenv
 .devenv
 .pre-commit-config.yaml
+.direnv
