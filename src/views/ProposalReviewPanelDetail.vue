@@ -52,7 +52,7 @@
       </b-card-text>
 
       <b-card-text>
-      <h5>Summary</h5>
+      <h5>Primary reviewer’s summary (for the PI)</h5>
       <b-form @submit="updateSummary" >
         <basic-custom-field
           v-model="form.summary"
@@ -65,6 +65,24 @@
         ></basic-custom-field>
 
         <b-button v-if="data.can_summarize" type="submit" variant="primary" :disabled="updatingSummary">Save</b-button>
+
+      </b-form>
+      </b-card-text>
+
+      <b-card-text>
+      <h5>Secondary reviewer’s notes on the TAC’s discussion</h5>
+      <b-form @submit="updateSecondaryNotes" >
+        <basic-custom-field
+          v-model="form.secondary_notes"
+          :errors="apiValidationErrors.secondary_notes"
+          :placeholder="data.can_edit_secondary_notes ? 'Enter your notes here...' : 'You do not have permissions to edit this.'"
+          :label="null"
+          field="secondary_notes"
+          field-type="textarea"
+          :disabled="!data.can_edit_secondary_notes"
+        ></basic-custom-field>
+
+        <b-button v-if="data.can_edit_secondary_notes" type="submit" variant="primary" :disabled="updatingSecondaryNotes">Save</b-button>
 
       </b-form>
       </b-card-text>
@@ -125,6 +143,7 @@ export default {
       ],
       form: {
         summary: "",
+        secondary_notes: "",
       },
       updatingSummary: false,
       apiValidationErrors: {}
@@ -133,6 +152,7 @@ export default {
   watch: {
     data: function(data) {
       this.form.summary = data.summary;
+      this.form.secondary_notes = data.secondary_notes
     }
   },
   computed: {
@@ -180,7 +200,40 @@ export default {
       }).always(function() {
         that.updatingSummary = false;
       });
+    },
+    updateSecondaryNotes(event) {
+      event.preventDefault();
+      this.updatingSecondaryNotes = true
 
+      const that = this;
+
+      $.ajax({
+        method: "PUT",
+        url: this.initializeDataEndpoint() + "/secondary-notes",
+        data: JSON.stringify(this.form),
+        dataType: "json",
+        processData: "false",
+        contentType: "application/json",
+        cache: false
+      }).done(function(response) {
+        that.apiValidationErrors = {};
+
+        that.data.secondary_notes = response;
+        that.$store.commit("addMessage", { text: "Saved", variant: "success" });
+
+      }).fail(function(response) {
+        if (response.status === 400) {
+          that.$store.commit("addMessage", { text: "There was an error with your submission.", variant: "danger" });
+          that.apiValidationErrors = response.responseJSON;
+        } else {
+          that.$store.commit("addMessage", {
+            text: "There was an unexpected error, please try again later.",
+            variant: "danger"
+          });
+        }
+      }).always(function() {
+        that.secondaryNotes = false;
+      });
     },
   }
 };
