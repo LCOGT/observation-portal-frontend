@@ -146,6 +146,7 @@ export default {
         secondary_notes: "",
       },
       updatingSummary: false,
+      updatingSecondaryNotes: false,
       apiValidationErrors: {}
     };
   },
