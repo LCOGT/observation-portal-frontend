@@ -459,9 +459,9 @@ export default {
           timeLimit += result.time_limit;
           timeUsed += result.time_used_by_user;
         }
-        // convert from seconds to hours
-        this.coInvestigatorTimeInformation.timeLimit = Math.floor(timeLimit / 3600);
-        this.coInvestigatorTimeInformation.timeUsed = Math.floor(timeUsed / 3600);
+        // convert from seconds to hours, and round to the nearest tenth of an hour
+        this.coInvestigatorTimeInformation.timeLimit = Math.round((timeLimit / 3600) * 10) / 10;
+        this.coInvestigatorTimeInformation.timeUsed = Math.round((timeUsed / 3600) * 10) / 10;
         this.coInvestigatorTimeInformation.role = 'CI';
       }
     },
