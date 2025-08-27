@@ -21,7 +21,7 @@
         <b-col align-self="center" class="text-center">
           <template v-if="requestIsComplete">
             <span v-if="isBlanco">
-              <a href="https://astroarchive.noirlab.edu/portal/search" target="_blank">Search NOIRLab Archive for data</a>
+              <a :href="blancoArchiveUrl" target="_blank">Search NOIRLab Archive for data</a>
             </span>
             <span v-else>
               <b-img v-if="thumbnailUrl" :src="thumbnailUrl" fluid :alt="frame.filename" :title="frame.filename" />
@@ -84,6 +84,10 @@ export default {
       type: Object,
       required: true
     },
+    proposal: {
+      type: String,
+      default: ''
+    },
     link: {
       type: Boolean,
       default: false
@@ -128,6 +132,14 @@ export default {
     isBlanco: function() {
       let instrumentType = _.get(this.request, ['configurations', 0, 'instrument_type']);
       return instrumentType === 'BLANCO_NEWFIRM';
+    },
+    blancoArchiveUrl: function() {
+      let modified = new Date(this.request.modified);
+      let caldat = new Date(modified);
+      if (modified.getHours() < 14) {
+        caldat.setDate(modified.getDate() - 1);
+      }
+      return "https://astroarchive.noirlab.edu/portal/results/proposal/" + this.proposal + "/?caldat=" + caldat.toISOString().split('T')[0];
     },
     archiveDataIsAvailable: function() {
       return this.frame.id ? true : false;

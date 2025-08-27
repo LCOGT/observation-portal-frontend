@@ -62,7 +62,7 @@
       </b-col>
     </b-row>
     <template v-if="requestDetail">
-      <request-row :request="request" :instruments="instruments" />
+      <request-row :request="request" :instruments="instruments" :proposal="requestgroup.proposal" />
       <request-detail :request="request" />
     </template>
     <template v-else>
@@ -78,7 +78,7 @@
         small
       >
         <template v-slot:cell(requestRow)="data">
-          <request-row :request="data.item" :instruments="instruments" :link="true" />
+          <request-row :request="data.item" :instruments="instruments" :proposal="requestgroup.proposal" :link="true" />
         </template>
       </b-table>
       <b-pagination
