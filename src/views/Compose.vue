@@ -729,7 +729,8 @@ export default {
   methods: {
     ditheringAllowed: function(configuration) {
       let instrumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
-      return !this.simpleInterface && instrumentCategory === 'IMAGE' && configuration.instrument_type != 'BLANCO_NEWFIRM';
+      return (!this.simpleInterface && instrumentCategory === 'IMAGE' && configuration.instrument_type != 'BLANCO_NEWFIRM'
+        && configuration.instrument_type != 'SOAR_GHTS_REDCAM_IMAGER' && configuration.instrument_type != 'SOAR_GHTS_BLUECAM_IMAGER');
     },
     mosaicAllowed: function(request) {
       if (request.configurations.length !== 1) {
