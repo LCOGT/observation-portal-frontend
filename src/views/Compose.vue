@@ -152,13 +152,21 @@
                   @instrument-config-update="slotProps.update"
                 />
               </template>
-              <template #instrument-config-help>
+              <template #instrument-config-help="slotProps">
                 <ul>
                   <li>
                     Try the
                     <a href=" https://exposure-time-calculator.lco.global/" target="_blank">
                       online Exposure Time Calculator.
                     </a>
+                  </li>
+                  <li v-if="newfirmAndTooLong(slotProps.data.position)">
+                    <i
+                      class="fas fa-exclamation-triangle text-warning align-top"
+                      title="Warning"
+                    > With exposure time >=5s, many stars will be saturated. Furthermore, the sky level will be approximately 25% of the saturation level.
+                      The sky level is ~50% of the saturation level for HX and KXs exposures 10s or greater.
+                    </i>
                   </li>
                 </ul>
               </template>
@@ -727,6 +735,13 @@ export default {
     });
   },
   methods: {
+    newfirmAndTooLong: function(position) {
+      let config = this.requestGroup.requests[position.requestIndex].configurations[position.configurationIndex];
+      if (config.instrument_type == 'BLANCO_NEWFIRM' && config.instrument_configs[position.instrumentConfigIndex].exposure_time >= 5.0) {
+        return true;
+      }
+      return false;
+    },
     ditheringAllowed: function(configuration) {
       let instrumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
       return (!this.simpleInterface && instrumentCategory === 'IMAGE' && configuration.instrument_type != 'BLANCO_NEWFIRM'
