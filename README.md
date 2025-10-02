@@ -82,3 +82,16 @@ npm run lint:fix
 ```
 npm run lint:check
 ```
+
+### Deploy
+When everything is ready to deploy, update the version number in `package.json` and run
+```
+npm i
+```
+
+Then, push your changes to master and tag the version 
+```
+git tag -m "message" x.x.x
+```
+
+Finally, go to github and convert the tag to a release.
