@@ -92,6 +92,7 @@ npm i
 Then, push your changes to master and tag the version 
 ```
 git tag -m "message" x.x.x
+git push --tags
 ```
 
 Finally, go to github and convert the tag to a release.
