@@ -95,4 +95,13 @@ git tag -m "message" x.x.x
 git push --tags
 ```
 
+Next you will need to update the `Chart.yaml` and `values.yaml` with the new tag in the `helm_charts` repo, then update the dev/prod values in the `eks-productions1` repo.
+Once that's done, you will need to enter the helm_charts directory and run
+```
+helm upgrade --install observation-portal-frontend-dev . -f ../../eks-production1/dev/observation-portal-frontend-dev-values.yaml --namespace=dev
+```
+The important things are that the observation-portal-frontend-dev matches the deployed name you can find of the currently running pods. And the -f path to the dev values goes to where you have them locally on your machine.
+
+For prod, the differences are the deployed name (doesn't have dev in it), the eks-production1 points to the prod/values, and the namespace is switched to prod.
+
 Finally, go to github and convert the tag to a release.
