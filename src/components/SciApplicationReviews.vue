@@ -1,7 +1,7 @@
 <template>
     <b-container>
       <b-table
-        class="text-center"
+        class="text-center small"
         id="sciapplication-reviews-table"
         :items="data.results" :fields="fields"
         :busy="isBusy"
