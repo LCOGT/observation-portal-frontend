@@ -723,6 +723,7 @@ export default {
   },
   created: function() {
     // Get instruments
+    this.prefillQueryParams();
     $.ajax({
       url: `${this.observationPortalApiUrl}/api/instruments/`
     }).done(data => {
@@ -814,6 +815,12 @@ export default {
         .fail(() => {
           this.alerts.push({ class: 'danger', msg: `Failed to load requestgroup ${requestGroupId}` });
         });
+    },
+    prefillQueryParams: function() {
+      if (this.$route.query.target_name) {
+        this.requestGroup.requests[0].configurations[0].target.name = this.$route.query.target_name;
+      }
+      // TODO: Put in other target params to prefill from the query params here
     },
     closeEdPopup: function() {
       localStorage.setItem('hasVisited', 'true');
@@ -924,7 +931,12 @@ export default {
       this.alerts.push({ class: 'success', msg: 'Draft id: ' + draftId + ' saved successfully' });
     },
     onRequestGroupSaved: function(requestGroupId) {
-      this.$router.push({ name: 'requestgroupDetail', params: { id: requestGroupId } });
+      if (this.$route.query.redirect_uri) {
+        window.location.href = this.$route.query.redirect_uri;
+      }
+      else {
+        this.$router.push({ name: 'requestgroupDetail', params: { id: requestGroupId } });
+      }
     },
     showFractionalRate: function(target) {
       if (target.type === 'ORBITAL_ELEMENTS' && !target.scheme.includes('MAJOR_PLANET')) {
