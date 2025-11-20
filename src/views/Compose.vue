@@ -817,10 +817,26 @@ export default {
         });
     },
     prefillQueryParams: function() {
-      if (this.$route.query.target_name) {
-        this.requestGroup.requests[0].configurations[0].target.name = this.$route.query.target_name;
-      }
-      // TODO: Put in other target params to prefill from the query params here
+      let target = this.requestGroup.requests[0].configurations[0].target;
+      let query = this.$route.query;
+      target.name = query.target_name ?? target.name;
+      target.ra = query.target_ra ?? target.ra;
+      target.dec = query.target_dec ?? target.dec;
+      target.proper_motion_ra = query.target_pm_ra ?? target.proper_motion_ra;
+      target.proper_motion_dec = query.target_pm_dec ?? target.proper_motion_dec;
+      target.epoch = query.target_epoch ?? target.epoch;
+      target.parallax = query.target_parallax ?? target.parallax;
+      target.scheme = query.target_scheme ?? target.scheme;
+      target.epochofel = query.target_epoch_of_elements ?? target.epochofel;
+      target.orbinc = query.target_inclination ?? target.orbinc;
+      target.longascnode = query.target_lng_asc_node ?? target.longascnode;
+      target.argofperih = query.target_arg_of_perihelion ?? target.argofperih;
+      target.eccentricity = query.target_eccentricity ?? target.eccentricity;
+      target.meandist = query.target_semimajor_axis ?? target.meandist;
+      target.meananom = query.target_mean_anomaly ?? target.meananom;
+      target.dailymot = query.target_mean_daily_motion ?? target.dailymot;
+      target.perihdist = query.target_perihdist ?? target.perihdist;
+      target.epochofperih = query.target_epoch_of_perihelion ?? target.epochofperih;
     },
     closeEdPopup: function() {
       localStorage.setItem('hasVisited', 'true');
