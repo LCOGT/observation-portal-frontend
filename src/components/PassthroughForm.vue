@@ -48,9 +48,16 @@ export default {
     url: function() {
       let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
       // make sure we include any URL params, too.
-      let params = this.$route.query;
-      params.passthrough = true;
-      return this.$store.state.urls.observationPortalApi + endpoint + '?' + new URLSearchParams(params).toString();
+      let url = this.$store.state.urls.observationPortalApi + endpoint;
+      // Django backend handles the next query param on the login view, but it has no knowledge
+      // of the frontend url we are actually redirecting to so it fails. We want to keep the next
+      // param handling for login purely on the frontend.
+      if (!this.endpoint.includes('login')) {
+        let params = this.$route.query;
+        params.passthrough = true;
+        return url + '?' + new URLSearchParams(params).toString();
+      }
+      return url;
     }
   },
   mounted: function() {
