@@ -49,9 +49,10 @@ export default {
       let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
       // make sure we include any URL params, too.
       let url = this.$store.state.urls.observationPortalApi + endpoint;
-      // Django backend handles the next query param on the login view, but it has no knowledge
-      // of the frontend url we are actually redirecting to so it fails. We want to keep the next
-      // param handling for login purely on the frontend.
+      // if we pass the next? parmater to Django's login view, it will attempt to send a redirect
+      // to that URL. However that URL only exists here on the frontend, so it will actually
+      // invoke Django's 404 handler which messes up all the handling over on this side. So
+      // we just don't send a next? param at all in this case and handle it all client-side.
       if (!this.endpoint.includes('login')) {
         let params = this.$route.query;
         params.passthrough = true;
