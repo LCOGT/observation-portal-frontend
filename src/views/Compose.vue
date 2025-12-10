@@ -723,6 +723,7 @@ export default {
   },
   created: function() {
     // Get instruments
+    this.prefillQueryParams();
     $.ajax({
       url: `${this.observationPortalApiUrl}/api/instruments/`
     }).done(data => {
@@ -814,6 +815,44 @@ export default {
         .fail(() => {
           this.alerts.push({ class: 'danger', msg: `Failed to load requestgroup ${requestGroupId}` });
         });
+    },
+    prefillQueryParams: function() {
+      let target = this.requestGroup.requests[0].configurations[0].target;
+      let query = this.$route.query;
+      target.name = query.target_name ?? target.name;
+      if (query.target_type.toUpperCase() == 'SIDEREAL') {
+        target.type = 'ICRS';
+        target.ra = query.target_ra ?? target.ra;
+        target.dec = query.target_dec ?? target.dec;
+        target.proper_motion_ra = query.target_pm_ra ?? target.proper_motion_ra;
+        target.proper_motion_dec = query.target_pm_dec ?? target.proper_motion_dec;
+        target.epoch = query.target_epoch ?? target.epoch;
+        target.parallax = query.target_parallax ?? target.parallax;
+      } else if (query.target_type.toUpperCase() == 'NON_SIDEREAL') {
+        this.clearSiderealFields();
+        target.type = 'ORBITAL_ELEMENTS';
+        target.scheme = query.target_scheme ?? target.scheme;
+        target.scheme = query.target_scheme ?? target.scheme;
+        target.epochofel = query.target_epoch_of_elements ?? target.epochofel;
+        target.orbinc = query.target_inclination ?? target.orbinc;
+        target.longascnode = query.target_lng_asc_node ?? target.longascnode;
+        target.argofperih = query.target_arg_of_perihelion ?? target.argofperih;
+        target.eccentricity = query.target_eccentricity ?? target.eccentricity;
+        target.meandist = query.target_semimajor_axis ?? target.meandist;
+        target.meananom = query.target_mean_anomaly ?? target.meananom;
+        target.dailymot = query.target_mean_daily_motion ?? target.dailymot;
+        target.perihdist = query.target_perihdist ?? target.perihdist;
+        target.epochofperih = query.target_epoch_of_perihelion ?? target.epochofperih;
+      }
+    },
+    clearSiderealFields: function() {
+      let target = this.requestGroup.requests[0].configurations[0].target;
+      delete target.ra;
+      delete target.dec;
+      delete target.proper_motion_ra;
+      delete target.proper_motion_dec;
+      delete target.epoch;
+      delete target.parallax;
     },
     closeEdPopup: function() {
       localStorage.setItem('hasVisited', 'true');
@@ -924,7 +963,12 @@ export default {
       this.alerts.push({ class: 'success', msg: 'Draft id: ' + draftId + ' saved successfully' });
     },
     onRequestGroupSaved: function(requestGroupId) {
-      this.$router.push({ name: 'requestgroupDetail', params: { id: requestGroupId } });
+      if (this.$route.query.redirect_uri) {
+        window.location.href = this.$route.query.redirect_uri + '&observation_id=' + requestGroupId;
+      }
+      else {
+        this.$router.push({ name: 'requestgroupDetail', params: { id: requestGroupId } });
+      }
     },
     showFractionalRate: function(target) {
       if (target.type === 'ORBITAL_ELEMENTS' && !target.scheme.includes('MAJOR_PLANET')) {
