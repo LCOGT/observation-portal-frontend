@@ -48,9 +48,17 @@ export default {
     url: function() {
       let endpoint = this.endpoint.endsWith('/') ? this.endpoint : this.endpoint + '/';
       // make sure we include any URL params, too.
-      let params = this.$route.query;
-      params.passthrough = true;
-      return this.$store.state.urls.observationPortalApi + endpoint + '?' + new URLSearchParams(params).toString();
+      let url = this.$store.state.urls.observationPortalApi + endpoint;
+      // if we pass the next? parmater to Django's login view, it will attempt to send a redirect
+      // to that URL. However that URL only exists here on the frontend, so it will actually
+      // invoke Django's 404 handler which messes up all the handling over on this side. So
+      // we just don't send a next? param at all in this case and handle it all client-side.
+      if (!this.endpoint.includes('login')) {
+        let params = this.$route.query;
+        params.passthrough = true;
+        return url + '?' + new URLSearchParams(params).toString();
+      }
+      return url;
     }
   },
   mounted: function() {

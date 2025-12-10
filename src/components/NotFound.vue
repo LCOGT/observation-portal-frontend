@@ -22,7 +22,7 @@ export default {
       return {
         name: 'login',
         query: {
-          next: this.$route.path
+          next: this.$route.fullPath
         }
       };
     }
