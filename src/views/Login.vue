@@ -4,7 +4,7 @@
       <b-card title="Login">
         <b-form @submit.prevent="handleSubmit">
           <b-form-group label="Username:" label-for="username">
-            <b-form-input id="username" v-model="form.username" type="text" required :disabled="loading"></b-form-input>
+            <b-form-input id="username" v-model="form.username" type="text" required :disabled="loading" autofocus></b-form-input>
           </b-form-group>
 
           <b-form-group label="Password:" label-for="password">
@@ -59,42 +59,42 @@ export default {
       this.error = null;
 
       try {
-        const response = await fetch(`${this.$store.state.urls.observationPortalApi}/accounts/api-login/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include', // set cookies
-          body: JSON.stringify(this.form)
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          // Auth was ok, but we need to call getProfileData as this is what
-          // actually sets the logged in state of the application. See src/store/index.js
-          // In the future we might want to remove this requirement as it can lead to inconsistent
-          // state between tabs (logged in on one, still logged out in the other until page reload.)
-          try {
-            await this.$store.dispatch('getProfileData');
-
-            // Success and redirect
-            if (this.redirectPath) {
-              this.$router.push({ name: this.redirectPath });
-            } else {
-              const redirectPath = this.$route.query.next || '/';
-              this.$router.push(redirectPath);
-            }
-          } catch (profileError) {
-            this.error = 'Login successful but failed to load profile data. Please refresh the page.';
-          }
-        } else {
-          this.error = data.message || 'Login failed';
-        }
+        await this.loginUser();
+        await this.loadProfile();
+        this.redirectAfterLogin();
       } catch (err) {
-        this.error = 'Network error. Please try again.';
+        this.error = err.message;
       } finally {
         this.loading = false;
+      }
+    },
+    async loginUser() {
+      const response = await fetch(`${this.$store.state.urls.observationPortalApi}/accounts/api-login/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include', // set cookies
+        body: JSON.stringify(this.form)
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Login failed');
+      }
+    },
+    async loadProfile() {
+      try {
+        await this.$store.dispatch('getProfileData');
+      } catch (error) {
+        throw new Error('Login successful but failed to load profile data. Please refresh the page.');
+      }
+    },
+    redirectAfterLogin(){
+      if (this.redirectPath) {
+        this.$router.push({ name: this.redirectPath });
+      } else {
+        const redirectPath = this.$route.query.next || '/';
+        this.$router.push(redirectPath);
       }
     }
   }
