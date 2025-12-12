@@ -820,7 +820,7 @@ export default {
       let target = this.requestGroup.requests[0].configurations[0].target;
       let query = this.$route.query;
       target.name = query.target_name ?? target.name;
-      if (query.target_type.toUpperCase() == 'SIDEREAL') {
+      if (query.target_type && query.target_type.toUpperCase() == 'SIDEREAL') {
         target.type = 'ICRS';
         target.ra = query.target_ra ?? target.ra;
         target.dec = query.target_dec ?? target.dec;
@@ -828,7 +828,7 @@ export default {
         target.proper_motion_dec = query.target_pm_dec ?? target.proper_motion_dec;
         target.epoch = query.target_epoch ?? target.epoch;
         target.parallax = query.target_parallax ?? target.parallax;
-      } else if (query.target_type.toUpperCase() == 'NON_SIDEREAL') {
+      } else if (query.target_type && query.target_type.toUpperCase() == 'NON_SIDEREAL') {
         this.clearSiderealFields();
         target.type = 'ORBITAL_ELEMENTS';
         target.scheme = query.target_scheme ?? target.scheme;
