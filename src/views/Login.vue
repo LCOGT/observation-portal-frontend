@@ -79,6 +79,10 @@ export default {
       });
       if (!response.ok) {
         const data = await response.json();
+        // Do this passthrough thing until password reset is implemented on the frontend
+        if (data?.message?.toLowerCase().includes('password expired')) {
+          this.$router.push({ path: '/accounts/password/reset?passthrough=true' });
+        }
         throw new Error(data.message || 'Login failed');
       }
     },
