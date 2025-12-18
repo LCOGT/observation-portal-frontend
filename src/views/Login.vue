@@ -51,7 +51,7 @@ export default {
       },
       loading: false,
       error: null
-    }
+    };
   },
   methods: {
     async handleSubmit() {
@@ -93,7 +93,7 @@ export default {
         throw new Error('Login successful but failed to load profile data. Please refresh the page.');
       }
     },
-    redirectAfterLogin(){
+    redirectAfterLogin() {
       if (this.redirectPath) {
         this.$router.push({ name: this.redirectPath });
       } else {
