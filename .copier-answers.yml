@@ -1,0 +1,7 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: ee7f145
+_src_path: gh:LCOGT/k8s-application-copier-template
+app_description: LCO Observation Portal Frontend
+app_name: obs-portal-frontend
+default_branch_name: master
+dockerfile_path: Dockerfile
