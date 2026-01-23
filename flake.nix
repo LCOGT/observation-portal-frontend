@@ -1,8 +1,8 @@
 {
-  description = "Description for the project";
+  description = "LCO Observation Portal Frontend";
 
   inputs = {
-    devenv-k8s.url = "github:LCOGT/devenv-k8s";
+    devenv-k8s.url = "github:LCOGT/devenv-k8s/v1";
 
     nixpkgs.follows = "devenv-k8s/nixpkgs";
     flake-parts.follows = "devenv-k8s/flake-parts";
@@ -11,6 +11,7 @@
       url = "file+file:///dev/null";
       flake = false;
     };
+
   };
 
   nixConfig = {
@@ -55,12 +56,6 @@
 
           ];
 
-          languages.javascript = {
-            enable = true;
-            npm.enable = true;
-            pnpm.enable = true;
-          };
-
         };
       };
 
@@ -72,3 +67,4 @@
       };
     };
 }
+

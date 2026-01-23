@@ -1,0 +1,7 @@
+{
+  "observationPortalApiUrl": "https://api-obs-portal.local.lco.earth",
+  "archiveApiUrl": "https://archive-api.lco.global",
+  "archiveClientUrl": "https://archive.lco.global",
+  "simbadServiceUrl": "https://simbad2k.lco.global",
+  "thumbnailServiceUrl": "https://thumbnails.lco.global"
+}

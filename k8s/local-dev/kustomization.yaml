@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../base/
+  - ./ing/
+
+namespace: obs-portal-frontend
+
+configMapGenerator:
+  - name: app-config
+    behavior: replace
+    files:
+      - urls.json
+
+  - name: env
+    literals:
+      - INTERNAL_OBSERVATION_PORTAL_API_URL=http://api.obs-portal
