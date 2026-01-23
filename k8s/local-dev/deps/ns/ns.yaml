@@ -1,5 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/namespace.json
 apiVersion: v1
 kind: Namespace
-metadata:
+metadata: # kpt-merge: /example
   name: obs-portal-frontend
+  annotations:
+    internal.kpt.dev/upstream-identifier: '|Namespace|default|example'
