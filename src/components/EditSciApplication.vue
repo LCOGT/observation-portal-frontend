@@ -92,7 +92,7 @@
               </strong>
             </div>
             <div class="help-block">
-              <template v-else-if="data.proposal_type !== 'KEY'">The principle investigator will not be presented to reviewers.</template>
+              <div class="help-block" v-if="data.proposal_type !== 'KEY'">The principle investigator will not be presented to reviewers.</div>
             </div>
             <b-table-lite :items="[{}]" :fields="userTableFields">
               <template #cell(email)>
@@ -142,7 +142,7 @@
           <div class="help-block">
             <!-- TODO: Translate this -->
             Add the details of co-investigators on this proposal. 
-             <template v-else-if="data.proposal_type !== 'KEY'">Co-investigators will not be presented to reviewers. </template>
+             <div class="help-block" v-if="data.proposal_type !== 'KEY'">Co-investigators will not be presented to reviewers. </div>
           </div>
           <b-alert v-for="error in coInvestigatorsNonFieldErrors" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
           <b-table-lite :items="sciApp.coinvestigator_set" :fields="userTableFields" class="mb-0">
