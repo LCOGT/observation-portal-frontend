@@ -316,7 +316,7 @@
                 <template v-else-if="data.proposal_type === 'KEY'">
                   <p>
                     For the remainder of your proposal, please upload a single pdf file. Consult the Call for Key Projects and the
-                    <a href="https://lco.global/observatory/process/key-project-proposal-guidelines/"> Writing key project proposals guide</a>.
+                    <a href="https://lco.global/observatory/process/key-project-proposal-guidelines/"> Key project proposal guidelines</a>.
                   </p> 
                 </template>
                 <template v-else-if="data.proposal_type === 'DDT'">
