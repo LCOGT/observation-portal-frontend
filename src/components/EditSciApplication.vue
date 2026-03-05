@@ -91,7 +91,7 @@
                 You can view and update your details on your <router-link :to="{ name: 'profile' }">profile</router-link> page.
               </strong>
             </div>
-            <div class="help-block">
+            <div class="help-block" v-if="data.proposal_type !== 'KEY'">
               The principle investigator will not be presented to reviewers.
             </div>
             <b-table-lite :items="[{}]" :fields="userTableFields">
@@ -141,7 +141,8 @@
           <h5>Co-investigators</h5>
           <div class="help-block">
             <!-- TODO: Translate this -->
-            Add the details of co-investigators on this proposal. Co-investigators will not be presented to reviewers.
+            Add the details of co-investigators on this proposal. 
+            <p v-if="data.proposal_type !== 'KEY'">Co-investigators will not be presented to reviewers.</p>
           </div>
           <b-alert v-for="error in coInvestigatorsNonFieldErrors" :key="error" variant="danger" dismissible show> {{ error }}</b-alert>
           <b-table-lite :items="sciApp.coinvestigator_set" :fields="userTableFields" class="mb-0">
@@ -314,62 +315,9 @@
                 </template>
                 <template v-else-if="data.proposal_type === 'KEY'">
                   <p>
-                    For the remainder of your proposal, please upload a single pdf file that includes the sections listed below,
-                    <em>but not an author list</em>. Consult the Call for Key Projects for information on the sections (e.g. Plan for management) that
-                    are unique to key projects.
-                  </p>
-                  <ul>
-                    <li>
-                      <strong>Science Justification.</strong> This section must provide appropriate background information and state the goals of the
-                      project. The results of any previous time allocated for this project should be discussed. Pertinent references should be
-                      included. Figures and tables may be embedded or appended, but the text itself should be limited to approximately the equivalent of 5
-                      pages.
-                    </li>
-                    <li>
-                      <strong>Experimental Design.</strong> This section should describe how the proposed study takes advantage of the
-                      unique aspects of the LCO network. This section should also include the strategy of the observing program, including the
-                      characteristics of your targets, what measurements will be made, and what additional work will be done to address
-                      the science goals. If the targets are known, list them and their expected brightnesses. This section must include an
-                      explanation of the observing budget, in which the instruments, the exposure times, and the total number of hours requested
-                      are justified. Requests for Rapid Response or Time Critical observations must be justified independently. If
-                      these are not adequately justified, they will not be granted. If unusual scheduling constraints might impact the project's success,
-                      identify them. The text should be limited to approximately 4 pages.
-                    </li>
-                    <li>
-                      <strong>Management Plan.</strong> A description of how the project will be managed, including the observing program and the path to science.
-                      This section should also describe what resources collaborators on the key project team will commit to making the key project successful.
-                      Such resources could be access to other facilities, additional time on the LCO network from their own institutions, computing resources,
-                      or scientist time. The text should be limited to approximately 2 pages.
-                    </li>
-                    <li>
-                      <strong>Report of related programs on other telescopes.</strong> A concise account of other programs that relate to this
-                      proposal.
-                    </li>
-                    <li>
-                      <strong> References.</strong> Approximately 1 page.
-                    </li>
-                  </ul>
-                  <p>The following supporting material must begin on a new page (within the same pdf):</p>
-                  <ul>
-                    <li>
-                      <strong>Report on use of LCO in the past 3 years.</strong> A concise account of LCO network time used in the past 3 years.
-                      The text should be no more than 3 pages.
-                    </li>
-                    <li>
-                      <strong>List of the authors’ related publications.</strong> Approximately 1 page.
-                    </li>
-                    <li>
-                      <strong> Large Co-I list.</strong> Proposals with >10 investigators can include a separate page listing all of the Co-I information in a table.
-                    </li>
-                  </ul>
-                  <p>The format of the pdf file is subject to the following constraints.</p>
-                  <ul>
-                    <li>The font size must be 11 points or larger.</li>
-                    <li>Margins on all edges must be at least 1 inch.</li>
-                    <li>Line spacing must be no denser than 6 lines per inch.</li>
-                    <li>The file size must be under {{ pdfSizeLimit.asMegaBytes }}MB.</li>
-                    <li>The recommended length of the main proposal (i.e. without the supporting materials) is 15 pages.</li>
-                  </ul>
+                    For the remainder of your proposal, please upload a single pdf file. Consult the Call for Key Projects and the
+                    <a href="https://lco.global/observatory/process/key-project-proposal-guidelines/"> Key project proposal guidelines</a>.
+                  </p> 
                 </template>
                 <template v-else-if="data.proposal_type === 'DDT'">
                   <p>
