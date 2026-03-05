@@ -98,7 +98,13 @@ export default {
         this.$router.push({ name: this.redirectPath });
       } else {
         const redirectPath = this.$route.query.next || '/';
-        this.$router.push(redirectPath);
+        // The redirectPath could be external (targetting the backend) for oauth endpoints, so need a full redirect in those cases
+        if (redirectPath.startsWith('/o/')) {
+          window.location.href = `${this.$store.state.urls.observationPortalApi}redirectPath`;
+        }
+        else {
+          this.$router.push(redirectPath);
+        }
       }
     }
   }
