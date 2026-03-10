@@ -260,9 +260,14 @@
                   :label-sr-only="true"
                   min="0"
                 ></basic-custom-field>
-                <b-link class="float-right" href="#" title="Delete time request" @click="removeTimeRequest(data.index)">
+                <div class="container d-flex justify-content-end">
+                <b-link class="mr-3" href="#" title="Copy time request" @click="copyTimeRequest(data.index)">
+                  <span class="mx-auto"><i class="far fa-copy"></i></span>
+                </b-link>
+                <b-link href="#" title="Delete time request" @click="removeTimeRequest(data.index)">
                   <span class="text-danger mx-auto"><i class="far fa-trash-alt"></i></span>
                 </b-link>
+                </div>
               </template>
             </b-table-lite>
             <b-link href="#" @click="addTimeRequest"><i class="fas fa-plus"></i> Add another</b-link>
@@ -628,6 +633,11 @@ export default {
     removeTimeRequest: function(index) {
       if (index >= 0) {
         this.sciApp.timerequest_set.splice(index, 1);
+      }
+    },
+    copyTimeRequest: function(index) {
+      if (index >= 0) {
+        this.sciApp.timerequest_set.push(OCSUtil.copyObject(this.sciApp.timerequest_set.at(index)));
       }
     },
     addTimeRequest: function() {
