@@ -745,13 +745,16 @@ export default {
     },
     ditheringAllowed: function(configuration) {
       let instrumentCategory = _.get(this.instruments, [configuration.instrument_type, 'type']);
-      return (!this.simpleInterface && instrumentCategory === 'IMAGE' && configuration.instrument_type != 'BLANCO_NEWFIRM'
+      return (!this.simpleInterface && instrumentCategory === 'IMAGE' && configuration.instrument_type != 'BLANCO_NEWFIRM' && configuration.instrument_type != 'BLANCO_DECAM'
         && configuration.instrument_type != 'SOAR_GHTS_REDCAM_IMAGER' && configuration.instrument_type != 'SOAR_GHTS_BLUECAM_IMAGER');
     },
     mosaicAllowed: function(request) {
+      const excludedInstruments = ['BLANCO_NEWFIRM', 'BLANCO_DECAM', 'SOAR_GHTS_REDCAM_IMAGER', 'SOAR_GHTS_BLUECAM_IMAGER'];
       if (request.configurations.length !== 1) {
         return false;
       } else if (_.get(this.instruments, [request.configurations[0].instrument_type, 'type']) !== 'IMAGE') {
+        return false;
+      } else if (excludedInstruments.includes(request.configurations[0].instrument_type)) {
         return false;
       } else if (request.configurations[0].target.type !== 'ICRS') {
         return false;
@@ -933,6 +936,7 @@ export default {
           'REPEAT_SPECTRUM',
           'SPECTRUM',
           'STANDARD',
+          'SKY',
           'REPEAT_NRES_SPECTRUM',
           'NRES_SPECTRUM'
         ];

@@ -131,7 +131,7 @@ export default {
     },
     isBlanco: function() {
       let instrumentType = _.get(this.request, ['configurations', 0, 'instrument_type']);
-      return instrumentType === 'BLANCO_NEWFIRM';
+      return instrumentType === 'BLANCO_NEWFIRM' || instrumentType === 'BLANCO_DECAM';
     },
     blancoArchiveUrl: function() {
       let modified = new Date(this.request.modified);
