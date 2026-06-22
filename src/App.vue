@@ -56,12 +56,9 @@
             <b-nav-text class="d-none d-lg-block"><span v-if="simpleInterface" class="green mx-1">Basic Mode</span></b-nav-text>
             <b-nav-item-dropdown v-if="userIsAuthenticated" class="d-none d-lg-block" right>
               <template #button-content>
-                <i class="fas fa-user-alt"></i>
+                <span class="font-weight-bold">{{ profile.username }}</span>
+                <i class="fas fa-user-alt ml-2"></i>
               </template>
-              <b-dropdown-text
-                >Logged in as <span class="font-weight-bold">{{ profile.username }}</span></b-dropdown-text
-              >
-              <b-dropdown-divider></b-dropdown-divider>
               <b-dropdown-item :to="{ name: 'profile' }">Profile</b-dropdown-item>
               <passthrough-get
                 endpoint="/accounts/logout/"
