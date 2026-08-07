@@ -117,6 +117,9 @@ export default {
     archiveApiUrl: function() {
       return this.$store.state.urls.archiveApi;
     },
+    thumbnailServiceUrl: function() {
+      return this.$store.state.urls.thumbnailService;
+    },
     archiveClientUrl: function() {
       return this.$store.state.urls.archiveClient;
     },
@@ -192,6 +195,28 @@ export default {
         error: ''
       };
     },
+    generateFromService: function(requestId) {
+      let that = this;
+      const thumbnailSize = 75;
+      if (!this.thumbnailServiceUrl) {
+        that.thumbnailError = 'Could not load thumbnail for this file';
+        return;
+      }
+      $.ajax({
+        url: this.thumbnailServiceUrl + '/' + this.frame.id + '/?height=' + thumbnailSize,
+        dataType: 'json'
+      })
+        .done(function(response) {
+          if (String(that.request.id) === String(requestId)) {
+            that.thumbnailUrl = response.url;
+          }
+        })
+        .fail(function() {
+          if (String(that.request.id) === String(requestId)) {
+            that.thumbnailError = 'Could not load thumbnail for this file';
+          }
+        });
+    },
     loadLatestThumbnail: function() {
       if (this.isBlanco) {
         this.archiveError = 'Search NOIRLab Archive for data';
@@ -217,13 +242,13 @@ export default {
                   if (thumbnail) {
                     that.thumbnailUrl = thumbnail.url;
                   } else {
-                    that.thumbnailError = 'Could not load thumbnail for this file';
+                    that.generateFromService(requestId);
                   }
                 }
               })
               .catch(function() {
                 if (String(that.request.id) === String(requestId)) {
-                  that.thumbnailError = 'Could not load thumbnail for this file';
+                  that.generateFromService(requestId);
                 }
               });
           }

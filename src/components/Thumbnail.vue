@@ -9,6 +9,8 @@
   </div>
 </template>
 <script>
+import $ from 'jquery';
+
 export default {
   props: {
     frame: {
@@ -35,6 +37,11 @@ export default {
       loadLarge: false
     };
   },
+  computed: {
+      thumbnailServiceUrl: function() {
+        return this.$store.state.urls.thumbnailService;
+      }
+    },
   watch: {
     frame: function() {
       this.updateFrame();
@@ -65,13 +72,30 @@ export default {
             if (thumbnail) {
               that.src = thumbnail.url;
             } else {
-              that.error = 'Could not load thumbnail for this image';
+              that.generateFromService(frameId);
             }
           }
         })
         .catch(function() {
-          that.error = 'Could not load thumbnail for this image';
+          that.generateFromService(frameId);
         });
+    },
+    generateFromService: function(frameId) {
+      let that = this;
+      if (!this.thumbnailServiceUrl) {
+        that.error = 'Could not load thumbnail for this image';
+        return;
+      }
+      let url =
+        this.thumbnailServiceUrl + '/' + this.frame.id +
+        '/?width=' + this.width + '&height=' + this.height + '&label=' + this.frame.filename;
+      $.getJSON(url, function(data) {
+        if (that.frame && String(that.frame.id) === String(frameId)) {
+          that.src = data.url;
+        }
+      }).fail(function() {
+        that.error = 'Could not load thumbnail for this image';
+      });
     },
     generateLarge: function() {
       let that = this;
