@@ -81,6 +81,7 @@
                 Click a row in the data table to preview the file below. Click preview for a larger version.
               </p>
               <thumbnail v-show="curFrame" :frame="curFrame" width="400" height="400" />
+              {{ curFrame.filename }}
               <p v-show="canViewColor && curFrame">
                 RVB frames found.
                 <b-link title="Color Image" @click="viewColorImage"> View color image <i class="fas fa-external-link-alt" /> </b-link>
@@ -107,7 +108,6 @@ import { OCSUtil } from 'ocs-component-lib';
 import Thumbnail from '@/components/Thumbnail.vue';
 import ArchiveTable from '@/components/ArchiveTable.vue';
 import AirmassTelescopeStates from '@/components/AirmassTelescopeStates.vue';
-import { getLatestFrame } from '@/archive.js';
 
 Vue.filter('formatDate', function(value) {
   return OCSUtil.formatDate(value);
@@ -146,21 +146,18 @@ export default {
     archiveApiUrl: function() {
       return this.$store.state.urls.archiveApi;
     },
-    thumbnailServiceUrl: function() {
-      return this.$store.state.urls.thumbnailService;
-    },
     colorImage: function() {
       if (this.curFrame) {
-        return this.thumbnailServiceUrl + '/' + this.curFrame.id + '/?width=4000&height=4000&color=true';
+        return this.archiveApiUrl + '/?request_id=' + this.curFrame.request_id + '&width=4000&height=4000&color=true';
       } else {
         return '';
       }
     },
     configurationRepeatString: function() {
       if (this.request.configuration_repeats > 1) {
-        return "Configurations - " + this.request.configuration_repeats + " repeats";
+        return 'Configurations - ' + this.request.configuration_repeats + ' repeats';
       }
-      return "Configurations";
+      return 'Configurations';
     },
     canViewColor: function() {
       let colorFilters = {
@@ -191,6 +188,10 @@ export default {
     }
   },
   watch: {
+    'request.id': function() {
+      this.resetArchiveData();
+      this.loadLatestFrame();
+    },
     tab: function(tab) {
       if (tab === 'scheduling' && this.observationData.length === 0) {
         this.loadObservationData();
@@ -210,11 +211,7 @@ export default {
   created: function() {
     let that = this;
     this.$store.dispatch('getProfileData').then(() => {
-      if (that.request.state === 'COMPLETED') {
-        getLatestFrame(that.request.id, that.archiveApiUrl, function(frame) {
-          that.curFrame = frame;
-        });
-      }
+      that.loadLatestFrame();
     });
     if (that.request.windows && that.request.windows.length === 0) {
       $.getJSON(that.observationPortalApiUrl + '/api/requests/' + that.request.id + '/observations/', function(observations) {
@@ -230,6 +227,22 @@ export default {
   methods: {
     isObjEmpty: function(obj) {
       return $.isEmptyObject(obj);
+    },
+    resetArchiveData: function() {
+      this.frames = [];
+      this.curFrame = null;
+      this.loadingColor = false;
+    },
+    loadLatestFrame: function() {
+      if (this.request.state === 'COMPLETED') {
+        let that = this;
+        let requestId = this.request.id;
+        this.$store.dispatch('getLatestFrameForRequest', requestId).then(function(frame) {
+          if (String(that.request.id) === String(requestId)) {
+            that.curFrame = frame;
+          }
+        });
+      }
     },
     loadObservationData: function() {
       let that = this;

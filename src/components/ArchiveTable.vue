@@ -43,9 +43,15 @@ export default {
     $('#archive-table').bootstrapTable({
       url: null,
       responseHandler: function(res) {
+        console.log('Archive table response: ', res);
         if (res.count > 1000) {
           alert('More than 1000 results found, please view on archive to view all data');
         }
+        that.$store.commit('setFramesForRequest', {
+          requestId: that.requestid,
+          count: res.count,
+          frames: res.results
+        });
         that.$emit('dataLoaded', res.results);
         $('.fixed-table-loading').hide();
         return res.results;
@@ -84,6 +90,7 @@ export default {
           title: 'DATE_OBS',
           sortable: 'true',
           formatter: function(value) {
+            console.log('DATE_OBS value: ', value);
             return OCSUtil.formatDate(value);
           }
         },
@@ -130,8 +137,18 @@ export default {
     },
     refreshTable: function() {
       if (this.requestid) {
-        $('#archive-table').bootstrapTable('refresh', {
-          url: this.archiveApiUrl + '/frames/?limit=1000&exclude_configuration_type=GUIDE&request_id=' + this.requestid
+        let that = this;
+        let requestId = this.requestid;
+        $('#archive-table').bootstrapTable('showLoading');
+        this.$store.dispatch('getFramesForRequest', requestId).then(function(frames) {
+          let count = that.$store.state.thumbnails.frameCountsByRequestId[String(requestId)];
+          console.log('count: ', count);
+          if (count > 1000) {
+            alert('More than 1000 results found, please view on archive to view all data');
+          }
+          $('#archive-table').bootstrapTable('load', frames);
+          that.$emit('dataLoaded', frames);
+          $('#archive-table').bootstrapTable('hideLoading');
         });
       }
     }

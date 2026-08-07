@@ -9,8 +9,6 @@
   </div>
 </template>
 <script>
-import $ from 'jquery';
-
 export default {
   props: {
     frame: {
@@ -37,21 +35,6 @@ export default {
       loadLarge: false
     };
   },
-  computed: {
-    thumbnailServiceUrl: function() {
-      return this.$store.state.urls.thumbnailService;
-    },
-    url: function() {
-      return this.thumbnailServiceUrl + '/' + this.frame.id + '/?width=' + this.width + '&height=' + this.height + '&label=' + this.frame.filename;
-    },
-    largeUrl: function() {
-      if (this.frame) {
-        return this.thumbnailServiceUrl + '/' + this.frame.id + '/?width=4000&height=4000';
-      } else {
-        return '';
-      }
-    }
-  },
   watch: {
     frame: function() {
       this.updateFrame();
@@ -64,24 +47,55 @@ export default {
     updateFrame: function() {
       if (this.frame) {
         this.src = '';
+        this.error = null;
         this.fetch();
       }
     },
     fetch: function() {
       let that = this;
-      $.getJSON(this.url, function(data) {
-        that.src = data.url;
-      }).fail(function() {
-        that.error = 'Could not load thumbnail for this image';
-      });
+      let frameId = this.frame.id;
+      this.$store
+        .dispatch('fetchThumbnailsByRequestId', {
+          requestId: this.frame.request_id,
+          size: 'small'
+        })
+        .then(function(thumbnails) {
+          if (that.frame && String(that.frame.id) === String(frameId)) {
+            let thumbnail = that.thumbnailForFrame(thumbnails, frameId);
+            if (thumbnail) {
+              that.src = thumbnail.url;
+            } else {
+              that.error = 'Could not load thumbnail for this image';
+            }
+          }
+        })
+        .catch(function() {
+          that.error = 'Could not load thumbnail for this image';
+        });
     },
     generateLarge: function() {
       let that = this;
+      let frameId = this.frame.id;
       this.loadLarge = true;
-      $.getJSON(this.largeUrl, function(data) {
-        that.loadLarge = false;
-        window.open(data['url'], '_blank');
-      });
+      this.$store
+        .dispatch('fetchThumbnailsByRequestId', {
+          requestId: this.frame.request_id,
+          size: 'small'
+        })
+        .then(function(thumbnails) {
+          let thumbnail = that.thumbnailForFrame(thumbnails, frameId);
+          that.loadLarge = false;
+          if (thumbnail) {
+            window.open(thumbnail.url, '_blank');
+          }
+        });
+    },
+    thumbnailForFrame: function(thumbnails, frameId) {
+      for (let index in thumbnails) {
+        if (String(thumbnails[index].frame) === String(frameId)) {
+          return thumbnails[index];
+        }
+      }
     }
   }
 };

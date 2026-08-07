@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import $ from 'jquery';
+import thumbnails from '@/store/thumbnails.js';
 
 Vue.use(Vuex);
 
@@ -100,5 +101,7 @@ export default new Vuex.Store({
       });
     }
   },
-  modules: {}
+  modules: {
+    thumbnails
+  }
 });

@@ -12,7 +12,12 @@
           <b-row align-h="center">
             <b-button-group>
               <b-button :href="requestApiUrl" variant="outline-secondary"><i class="fa fa-fw fa-code" /> View in API</b-button>
-              <b-button v-if="requestIsComplete && !isBlanco" variant="outline-secondary" :disabled="!archiveDataIsAvailable" @click="downloadAllData">
+              <b-button
+                v-if="requestIsComplete && !isBlanco"
+                variant="outline-secondary"
+                :disabled="!archiveDataIsAvailable"
+                @click="downloadAllData"
+              >
                 <i class="fa fa-fw fa-download" /> Download
               </b-button>
             </b-button-group>
@@ -60,7 +65,7 @@ import $ from 'jquery';
 import _ from 'lodash';
 import { OCSUtil } from 'ocs-component-lib';
 
-import { downloadAll, getLatestFrame } from '@/archive.js';
+import { downloadAll } from '@/archive.js';
 
 export default {
   name: 'RequestRow',
@@ -112,9 +117,6 @@ export default {
     archiveApiUrl: function() {
       return this.$store.state.urls.archiveApi;
     },
-    thumbnailServiceUrl: function() {
-      return this.$store.state.urls.thumbnailService;
-    },
     archiveClientUrl: function() {
       return this.$store.state.urls.archiveClient;
     },
@@ -139,7 +141,7 @@ export default {
       if (modified.getHours() < 14) {
         caldat.setDate(modified.getDate() - 1);
       }
-      return "https://astroarchive.noirlab.edu/portal/results/proposal/" + this.proposal + "/?caldat=" + caldat.toISOString().split('T')[0];
+      return 'https://astroarchive.noirlab.edu/portal/results/proposal/' + this.proposal + '/?caldat=' + caldat.toISOString().split('T')[0];
     },
     archiveDataIsAvailable: function() {
       return this.frame.id ? true : false;
@@ -158,6 +160,15 @@ export default {
       return this.request.state === 'PENDING';
     }
   },
+  watch: {
+    'request.id': function() {
+      this.resetArchiveData();
+      this.loadLatestThumbnail();
+      if (this.request.state === 'PENDING') {
+        this.getPendingDetails();
+      }
+    }
+  },
   created: function() {
     let that = this;
     this.$store.dispatch('getProfileData').then(() => {
@@ -171,30 +182,59 @@ export default {
     downloadAllData: function() {
       downloadAll(this.request.id, this.archiveApiUrl, this.archiveClientUrl, this.$store.state.profile.tokens.api_token);
     },
+    resetArchiveData: function() {
+      this.thumbnailUrl = '';
+      this.thumbnailError = '';
+      this.archiveError = '';
+      this.frame = {};
+      this.schedulingInformation = {
+        found: false,
+        error: ''
+      };
+    },
     loadLatestThumbnail: function() {
       if (this.isBlanco) {
-        this.archiveError = 'Search NOIRLab Archive for data'
-      }
-      else {
-        const thumbnailSize = 75;
+        this.archiveError = 'Search NOIRLab Archive for data';
+      } else {
         let that = this;
-        getLatestFrame(this.request.id, this.archiveApiUrl, function(frame) {
+        let requestId = this.request.id;
+        this.$store.dispatch('getLatestFrameForRequest', requestId).then(function(frame) {
+          if (String(that.request.id) !== String(requestId)) {
+            return;
+          }
           if (!frame) {
             that.archiveError = 'Waiting on data to become available';
           } else {
             that.frame = frame;
-            $.ajax({
-              url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
-              dataType: 'json'
-            })
-              .done(function(response) {
-                that.thumbnailUrl = response.url;
+            that.$store
+              .dispatch('fetchThumbnailsByRequestId', {
+                requestId: that.frame.request_id,
+                size: 'small'
               })
-              .fail(function() {
-                that.thumbnailError = 'Could not load thumbnail for this file';
+              .then(function(thumbnails) {
+                if (String(that.request.id) === String(requestId)) {
+                  let thumbnail = that.thumbnailForFrame(thumbnails, that.frame.id);
+                  if (thumbnail) {
+                    that.thumbnailUrl = thumbnail.url;
+                  } else {
+                    that.thumbnailError = 'Could not load thumbnail for this file';
+                  }
+                }
+              })
+              .catch(function() {
+                if (String(that.request.id) === String(requestId)) {
+                  that.thumbnailError = 'Could not load thumbnail for this file';
+                }
               });
           }
         });
+      }
+    },
+    thumbnailForFrame: function(thumbnails, frameId) {
+      for (let index in thumbnails) {
+        if (String(thumbnails[index].frame) === String(frameId)) {
+          return thumbnails[index];
+        }
       }
     },
     getPendingDetails: function() {

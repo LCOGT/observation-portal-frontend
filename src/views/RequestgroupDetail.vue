@@ -152,6 +152,11 @@ export default {
       return requestDict;
     }
   },
+  watch: {
+    id: function() {
+      this.loadRequestgroup();
+    }
+  },
   created: function() {
     let that = this;
     // Get the archive token here before the rest of the components are rendered since
@@ -159,15 +164,21 @@ export default {
     // the token is sent.
     this.$store.dispatch('getProfileData').finally(() => {
       that.profileLoaded = true;
-      if (that.requestDetail) {
-        that.getRequestgroupByRequestId();
-      } else {
-        that.getRequestgroupByRequestgroupId();
-      }
+      that.loadRequestgroup();
     });
     this.getInstruments();
   },
   methods: {
+    loadRequestgroup: function() {
+      this.requestgroupLoaded = false;
+      this.requestgroupLoadError = false;
+      this.requestgroupNotFound = false;
+      if (this.requestDetail) {
+        this.getRequestgroupByRequestId();
+      } else {
+        this.getRequestgroupByRequestgroupId();
+      }
+    },
     getInstruments: function() {
       let that = this;
       $.ajax({
@@ -179,11 +190,15 @@ export default {
     },
     getRequestgroupByRequestgroupId: function() {
       let that = this;
+      let requestgroupId = this.id;
       $.ajax({
-        url: this.observationPortalApiUrl + '/api/requestgroups/' + this.id + '/',
+        url: this.observationPortalApiUrl + '/api/requestgroups/' + requestgroupId + '/',
         dataType: 'json'
       })
         .done(function(response) {
+          if (String(that.id) !== String(requestgroupId)) {
+            return;
+          }
           that.requestgroup = response;
           if (response.requests.length === 1) {
             that.$router.replace({
@@ -193,6 +208,9 @@ export default {
           }
         })
         .fail(function(response) {
+          if (String(that.id) !== String(requestgroupId)) {
+            return;
+          }
           if (response.status === 404) {
             that.requestgroupNotFound = true;
           } else {
@@ -200,16 +218,22 @@ export default {
           }
         })
         .always(function() {
-          that.requestgroupLoaded = true;
+          if (String(that.id) === String(requestgroupId)) {
+            that.requestgroupLoaded = true;
+          }
         });
     },
     getRequestgroupByRequestId: function() {
       let that = this;
+      let requestId = this.id;
       $.ajax({
-        url: this.observationPortalApiUrl + '/api/requestgroups/' + '?request_id=' + this.id,
+        url: this.observationPortalApiUrl + '/api/requestgroups/' + '?request_id=' + requestId,
         dataType: 'json'
       })
         .done(function(response) {
+          if (String(that.id) !== String(requestId)) {
+            return;
+          }
           if (response.results.length > 0) {
             that.requestgroup = response.results[0];
           } else {
@@ -217,6 +241,9 @@ export default {
           }
         })
         .fail(function(response) {
+          if (String(that.id) !== String(requestId)) {
+            return;
+          }
           if (response.status === 404) {
             that.requestgroupNotFound = true;
           } else {
@@ -224,7 +251,9 @@ export default {
           }
         })
         .always(function() {
-          that.requestgroupLoaded = true;
+          if (String(that.id) === String(requestId)) {
+            that.requestgroupLoaded = true;
+          }
         });
     },
     cancelRequestGroup: function() {
