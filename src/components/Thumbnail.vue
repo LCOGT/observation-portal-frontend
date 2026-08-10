@@ -82,10 +82,6 @@ export default {
     },
     generateFromService: function(frameId) {
       let that = this;
-      if (!this.thumbnailServiceUrl) {
-        that.error = 'Could not load thumbnail for this image';
-        return;
-      }
       let url =
         this.thumbnailServiceUrl + '/' + this.frame.id +
         '/?width=' + this.width + '&height=' + this.height + '&label=' + this.frame.filename;

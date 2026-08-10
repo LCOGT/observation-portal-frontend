@@ -198,10 +198,7 @@ export default {
     generateFromService: function(requestId) {
       let that = this;
       const thumbnailSize = 75;
-      if (!this.thumbnailServiceUrl) {
-        that.thumbnailError = 'Could not load thumbnail for this file';
-        return;
-      }
+
       $.ajax({
         url: this.thumbnailServiceUrl + '/' + this.frame.id + '/?height=' + thumbnailSize,
         dataType: 'json'
