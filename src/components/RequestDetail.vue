@@ -108,6 +108,7 @@ import { OCSUtil } from 'ocs-component-lib';
 import Thumbnail from '@/components/Thumbnail.vue';
 import ArchiveTable from '@/components/ArchiveTable.vue';
 import AirmassTelescopeStates from '@/components/AirmassTelescopeStates.vue';
+import { getLatestFrame } from '@/archive.js';
 
 Vue.filter('formatDate', function(value) {
   return OCSUtil.formatDate(value);
@@ -146,9 +147,12 @@ export default {
     archiveApiUrl: function() {
       return this.$store.state.urls.archiveApi;
     },
+    thumbnailServiceUrl: function() {
+      return this.$store.state.urls.thumbnailService;
+    },
     colorImage: function() {
       if (this.curFrame) {
-        return this.archiveApiUrl + '/?request_id=' + this.curFrame.request_id + '&width=4000&height=4000&color=true';
+        return this.thumbnailServiceUrl + '/' + this.curFrame.id + '/?width=4000&height=4000&color=true';
       } else {
         return '';
       }
@@ -188,10 +192,6 @@ export default {
     }
   },
   watch: {
-    'request.id': function() {
-      this.resetArchiveData();
-      this.loadLatestFrame();
-    },
     tab: function(tab) {
       if (tab === 'scheduling' && this.observationData.length === 0) {
         this.loadObservationData();
@@ -228,19 +228,11 @@ export default {
     isObjEmpty: function(obj) {
       return $.isEmptyObject(obj);
     },
-    resetArchiveData: function() {
-      this.frames = [];
-      this.curFrame = null;
-      this.loadingColor = false;
-    },
     loadLatestFrame: function() {
       if (this.request.state === 'COMPLETED') {
         let that = this;
-        let requestId = this.request.id;
-        this.$store.dispatch('getLatestFrameForRequest', requestId).then(function(frame) {
-          if (String(that.request.id) === String(requestId)) {
-            that.curFrame = frame;
-          }
+        getLatestFrame(this.request.id, this.archiveApiUrl, function(frame) {
+          that.curFrame = frame;
         });
       }
     },

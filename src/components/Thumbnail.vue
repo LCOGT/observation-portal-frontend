@@ -38,10 +38,10 @@ export default {
     };
   },
   computed: {
-      thumbnailServiceUrl: function() {
-        return this.$store.state.urls.thumbnailService;
-      }
-    },
+    thumbnailServiceUrl: function() {
+      return this.$store.state.urls.thumbnailService;
+    }
+  },
   watch: {
     frame: function() {
       this.updateFrame();
@@ -59,26 +59,15 @@ export default {
       }
     },
     fetch: function() {
-      let that = this;
       let frameId = this.frame.id;
-      this.$store
-        .dispatch('fetchThumbnailsByRequestId', {
-          requestId: this.frame.request_id,
-          size: 'small'
-        })
-        .then(function(thumbnails) {
-          if (that.frame && String(that.frame.id) === String(frameId)) {
-            let thumbnail = that.thumbnailForFrame(thumbnails, frameId);
-            if (thumbnail) {
-              that.src = thumbnail.url;
-            } else {
-              that.generateFromService(frameId);
-            }
-          }
-        })
-        .catch(function() {
-          that.generateFromService(frameId);
-        });
+      let thumbnail = this.thumbnailFromFrame(this.frame, 'small');
+      if (thumbnail) {
+        this.src = thumbnail.url;
+      } else {
+        // The archive has no pre-generated thumbnail for this frame, so fall
+        // back to the thumbnail service to generate one on demand.
+        this.generateFromService(frameId);
+      }
     },
     generateFromService: function(frameId) {
       let that = this;
@@ -95,27 +84,24 @@ export default {
     },
     generateLarge: function() {
       let that = this;
-      let frameId = this.frame.id;
       this.loadLarge = true;
-      this.$store
-        .dispatch('fetchThumbnailsByRequestId', {
-          requestId: this.frame.request_id,
-          size: 'small'
-        })
-        .then(function(thumbnails) {
-          let thumbnail = that.thumbnailForFrame(thumbnails, frameId);
-          that.loadLarge = false;
-          if (thumbnail) {
-            window.open(thumbnail.url, '_blank');
-          }
-        });
+      let url = this.thumbnailServiceUrl + '/' + this.frame.id + '/?width=4000&height=4000';
+      $.getJSON(url, function(data) {
+        that.loadLarge = false;
+        window.open(data.url, '_blank');
+      }).fail(function() {
+        that.loadLarge = false;
+      });
     },
-    thumbnailForFrame: function(thumbnails, frameId) {
-      for (let index in thumbnails) {
-        if (String(thumbnails[index].frame) === String(frameId)) {
-          return thumbnails[index];
-        }
+    thumbnailFromFrame: function(frame, size) {
+      // the purpose of using include_thumbnails=true is so that the archive attaches any pre-generated thumbnails to each frame :D
+      if (!frame.thumbnails) {
+        return null;
       }
+      return frame.thumbnails.find(function(thumbnail) {
+        // Thumbnail objects have no size field; the size is in the basename (e.g. "...-small_thumbnail").
+        return thumbnail.basename && thumbnail.basename.includes(size + '_thumbnail');
+      });
     }
   }
 };

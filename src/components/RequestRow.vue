@@ -65,7 +65,7 @@ import $ from 'jquery';
 import _ from 'lodash';
 import { OCSUtil } from 'ocs-component-lib';
 
-import { downloadAll } from '@/archive.js';
+import { downloadAll, getLatestFrame } from '@/archive.js';
 
 export default {
   name: 'RequestRow',
@@ -163,15 +163,6 @@ export default {
       return this.request.state === 'PENDING';
     }
   },
-  watch: {
-    'request.id': function() {
-      this.resetArchiveData();
-      this.loadLatestThumbnail();
-      if (this.request.state === 'PENDING') {
-        this.getPendingDetails();
-      }
-    }
-  },
   created: function() {
     let that = this;
     this.$store.dispatch('getProfileData').then(() => {
@@ -185,79 +176,48 @@ export default {
     downloadAllData: function() {
       downloadAll(this.request.id, this.archiveApiUrl, this.archiveClientUrl, this.$store.state.profile.tokens.api_token);
     },
-    resetArchiveData: function() {
-      this.thumbnailUrl = '';
-      this.thumbnailError = '';
-      this.archiveError = '';
-      this.frame = {};
-      this.schedulingInformation = {
-        found: false,
-        error: ''
-      };
+    loadLatestThumbnail: function() {
+      if (this.isBlanco) {
+        this.archiveError = 'Search NOIRLab Archive for data';
+        return;
+      }
+      let that = this;
+      getLatestFrame(this.request.id, this.archiveApiUrl, function(frame) {
+        if (!frame) {
+          that.archiveError = 'Waiting on data to become available';
+          return;
+        }
+        that.frame = frame;
+        let thumbnail = that.thumbnailFromFrame(frame, 'small');
+        if (thumbnail) {
+          that.thumbnailUrl = thumbnail.url;
+        } else {
+          that.generateFromService();
+        }
+      });
     },
-    generateFromService: function(requestId) {
+    generateFromService: function() {
       let that = this;
       const thumbnailSize = 75;
-
       $.ajax({
         url: this.thumbnailServiceUrl + '/' + this.frame.id + '/?height=' + thumbnailSize,
         dataType: 'json'
       })
         .done(function(response) {
-          if (String(that.request.id) === String(requestId)) {
-            that.thumbnailUrl = response.url;
-          }
+          that.thumbnailUrl = response.url;
         })
         .fail(function() {
-          if (String(that.request.id) === String(requestId)) {
-            that.thumbnailError = 'Could not load thumbnail for this file';
-          }
+          that.thumbnailError = 'Could not load thumbnail for this file';
         });
     },
-    loadLatestThumbnail: function() {
-      if (this.isBlanco) {
-        this.archiveError = 'Search NOIRLab Archive for data';
-      } else {
-        let that = this;
-        let requestId = this.request.id;
-        this.$store.dispatch('getLatestFrameForRequest', requestId).then(function(frame) {
-          if (String(that.request.id) !== String(requestId)) {
-            return;
-          }
-          if (!frame) {
-            that.archiveError = 'Waiting on data to become available';
-          } else {
-            that.frame = frame;
-            that.$store
-              .dispatch('fetchThumbnailsByRequestId', {
-                requestId: that.frame.request_id,
-                size: 'small'
-              })
-              .then(function(thumbnails) {
-                if (String(that.request.id) === String(requestId)) {
-                  let thumbnail = that.thumbnailForFrame(thumbnails, that.frame.id);
-                  if (thumbnail) {
-                    that.thumbnailUrl = thumbnail.url;
-                  } else {
-                    that.generateFromService(requestId);
-                  }
-                }
-              })
-              .catch(function() {
-                if (String(that.request.id) === String(requestId)) {
-                  that.generateFromService(requestId);
-                }
-              });
-          }
-        });
+    thumbnailFromFrame: function(frame, size) {
+      if (!frame.thumbnails) {
+        return null;
       }
-    },
-    thumbnailForFrame: function(thumbnails, frameId) {
-      for (let index in thumbnails) {
-        if (String(thumbnails[index].frame) === String(frameId)) {
-          return thumbnails[index];
-        }
-      }
+      return frame.thumbnails.find(function(thumbnail) {
+        // Thumbnail objects have no size field; the size is in the basename (e.g. "...-small_thumbnail").
+        return thumbnail.basename && thumbnail.basename.includes(size + '_thumbnail');
+      });
     },
     getPendingDetails: function() {
       let that = this;
