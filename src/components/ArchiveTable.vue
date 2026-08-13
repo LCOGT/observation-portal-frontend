@@ -131,7 +131,7 @@ export default {
     refreshTable: function() {
       if (this.requestid) {
         $('#archive-table').bootstrapTable('refresh', {
-          url: this.archiveApiUrl + '/frames/?limit=1000&exclude_configuration_type=GUIDE&request_id=' + this.requestid
+          url: this.archiveApiUrl + '/frames/?limit=1000&include_thumbnails=true&exclude_configuration_type=GUIDE&request_id=' + this.requestid
         });
       }
     }
