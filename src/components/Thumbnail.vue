@@ -44,7 +44,7 @@ export default {
     url: function() {
       return this.thumbnailServiceUrl + '/' + this.frame.id + '/?width=' + this.width + '&height=' + this.height + '&label=' + this.frame.filename;
     },
-    largeUrl: function() {
+    largelUrl: function() {
       if (this.frame) {
         return this.thumbnailServiceUrl + '/' + this.frame.id + '/?width=4000&height=4000';
       } else {
@@ -69,11 +69,18 @@ export default {
     },
     fetch: function() {
       let that = this;
-      $.getJSON(this.url, function(data) {
-        that.src = data.url;
-      }).fail(function() {
-        that.error = 'Could not load thumbnail for this image';
-      });
+      const frame = that.frame;
+      const thumbnails = frame.thumbnails;
+      if (thumbnails.length > 0) {
+        const smallThumbnail = thumbnails.find(t => t.size === 'small');
+        that.src = smallThumbnail.url;
+      } else {
+        $.getJSON(this.url, function(data) {
+          that.src = data.url;
+        }).fail(function() {
+          that.error = 'Could not load thumbnail for this image';
+        });
+      }
     },
     generateLarge: function() {
       let that = this;
