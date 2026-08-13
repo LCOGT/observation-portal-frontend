@@ -44,7 +44,7 @@ export default {
     url: function() {
       return this.thumbnailServiceUrl + '/' + this.frame.id + '/?width=' + this.width + '&height=' + this.height + '&label=' + this.frame.filename;
     },
-    largelUrl: function() {
+    largeUrl: function() {
       if (this.frame) {
         return this.thumbnailServiceUrl + '/' + this.frame.id + '/?width=4000&height=4000';
       } else {
