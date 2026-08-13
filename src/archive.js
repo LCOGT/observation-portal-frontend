@@ -35,7 +35,7 @@ function downloadAll(requestId, archiveRoot, archiveClientUrl, archiveToken) {
 
 function getLatestFrame(requestId, archiveRoot, callback) {
   $.ajax({
-    url: archiveRoot + '/frames/?ordering=-id&limit=1&request_id=' + requestId,
+    url: archiveRoot + '/frames/?include_thumbnails=true&ordering=-id&limit=1&request_id=' + requestId,
     dataType: 'json'
   }).done(function(response) {
     callback(response.results[0]);
