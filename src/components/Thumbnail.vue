@@ -44,12 +44,22 @@ export default {
     url: function() {
       return this.thumbnailServiceUrl + '/' + this.frame.id + '/?width=' + this.width + '&height=' + this.height + '&label=' + this.frame.filename;
     },
+    hasLargeThumbnail: function() {
+      const thumbnails = this.frame && Array.isArray(this.frame.thumbnails) ? this.frame.thumbnails : [];
+      return thumbnails.some(t => t.size === 'large' && t.url);
+    },
     largeUrl: function() {
-      if (this.frame) {
-        return this.thumbnailServiceUrl + '/' + this.frame.id + '/?width=4000&height=4000';
-      } else {
-        return '';
+      if (!this.frame) {
+        return null;
       }
+
+      const thumbnails = Array.isArray(this.frame.thumbnails) ? this.frame.thumbnails : [];
+      const largeThumbnail = thumbnails.find(t => t.size === 'large' && t.url);
+      if (largeThumbnail) {
+        return largeThumbnail.url;
+      }
+
+      return this.thumbnailServiceUrl + '/' + this.frame.id + '/?width=4000&height=4000';
     }
   },
   watch: {
@@ -70,25 +80,39 @@ export default {
     fetch: function() {
       let that = this;
       const frame = that.frame;
-      const thumbnails = frame.thumbnails;
+      const thumbnails = Array.isArray(frame.thumbnails) ? frame.thumbnails : [];
       if (thumbnails.length > 0) {
         const smallThumbnail = thumbnails.find(t => t.size === 'small');
-        that.src = smallThumbnail.url;
-      } else {
-        $.getJSON(this.url, function(data) {
-          that.src = data.url;
-        }).fail(function() {
-          that.error = 'Could not load thumbnail for this image';
-        });
+        if (smallThumbnail && smallThumbnail.url) {
+          that.src = smallThumbnail.url;
+          return;
+        }
       }
+
+      $.getJSON(this.url, function(data) {
+        that.src = data.url;
+      }).fail(function() {
+        that.error = 'Could not load thumbnail for this image';
+      });
     },
     generateLarge: function() {
       let that = this;
-      this.loadLarge = true;
-      $.getJSON(this.largeUrl, function(data) {
-        that.loadLarge = false;
-        window.open(data['url'], '_blank');
-      });
+      if (!this.largeUrl) {
+        return;
+      }
+
+      if (this.hasLargeThumbnail) {
+        window.open(this.largeUrl, '_blank');
+      } else {
+        this.loadLarge = true;
+        $.getJSON(this.largeUrl, function(data) {
+          that.loadLarge = false;
+          window.open(data.url, '_blank');
+        }).fail(function() {
+          that.loadLarge = false;
+          that.error = 'Could not generate large thumbnail for this image';
+        });
+      }
     }
   }
 };
