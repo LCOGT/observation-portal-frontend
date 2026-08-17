@@ -190,7 +190,7 @@ export default {
               const thumbnails = that.frame.thumbnails;
               const smallThumbnail = thumbnails.find(t => t.size === 'small');
               that.thumbnailUrl = smallThumbnail.url;
-            } else if (that.frame && that.frame.thumbnails.length === 0) {
+            } else {
               const thumbnailSize = 75;
               $.ajax({
                 url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
