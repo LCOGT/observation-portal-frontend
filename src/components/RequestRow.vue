@@ -12,7 +12,12 @@
           <b-row align-h="center">
             <b-button-group>
               <b-button :href="requestApiUrl" variant="outline-secondary"><i class="fa fa-fw fa-code" /> View in API</b-button>
-              <b-button v-if="requestIsComplete && !isBlanco" variant="outline-secondary" :disabled="!archiveDataIsAvailable" @click="downloadAllData">
+              <b-button
+                v-if="requestIsComplete && !isBlanco"
+                variant="outline-secondary"
+                :disabled="!archiveDataIsAvailable"
+                @click="downloadAllData"
+              >
                 <i class="fa fa-fw fa-download" /> Download
               </b-button>
             </b-button-group>
@@ -139,7 +144,7 @@ export default {
       if (modified.getHours() < 14) {
         caldat.setDate(modified.getDate() - 1);
       }
-      return "https://astroarchive.noirlab.edu/portal/results/proposal/" + this.proposal + "/?caldat=" + caldat.toISOString().split('T')[0];
+      return 'https://astroarchive.noirlab.edu/portal/results/proposal/' + this.proposal + '/?caldat=' + caldat.toISOString().split('T')[0];
     },
     archiveDataIsAvailable: function() {
       return this.frame.id ? true : false;
@@ -173,26 +178,34 @@ export default {
     },
     loadLatestThumbnail: function() {
       if (this.isBlanco) {
-        this.archiveError = 'Search NOIRLab Archive for data'
-      }
-      else {
-        const thumbnailSize = 75;
+        this.archiveError = 'Search NOIRLab Archive for data';
+      } else {
         let that = this;
         getLatestFrame(this.request.id, this.archiveApiUrl, function(frame) {
           if (!frame) {
             that.archiveError = 'Waiting on data to become available';
           } else {
             that.frame = frame;
-            $.ajax({
-              url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
-              dataType: 'json'
-            })
-              .done(function(response) {
-                that.thumbnailUrl = response.url;
+            if (that.frame.thumbnails.length > 0) {
+              const thumbnails = that.frame.thumbnails;
+              const smallThumbnail = thumbnails.find(t => t.size === 'small');
+              that.thumbnailUrl = smallThumbnail.url;
+              if (!smallThumbnail) {
+                that.thumbnailUrl = thumbnails[0].url;
+              }
+            } else {
+              const thumbnailSize = 75;
+              $.ajax({
+                url: that.thumbnailServiceUrl + '/' + that.frame.id + '/?height=' + thumbnailSize,
+                dataType: 'json'
               })
-              .fail(function() {
-                that.thumbnailError = 'Could not load thumbnail for this file';
-              });
+                .done(function(response) {
+                  that.thumbnailUrl = response.url;
+                })
+                .fail(function() {
+                  that.thumbnailError = 'Could not load thumbnail for this file';
+                });
+            }
           }
         });
       }
