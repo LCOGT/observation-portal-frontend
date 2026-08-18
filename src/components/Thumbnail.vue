@@ -95,6 +95,13 @@ export default {
         that.error = 'Could not load thumbnail for this image';
       });
     },
+    openLargeThumbnailUrl: async function(url) {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const imageBlob = new Blob([blob], { type: 'image/jpeg' });
+      const blobUrl = URL.createObjectURL(imageBlob);
+      window.open(blobUrl, '_blank');
+    },
     generateLarge: function() {
       let that = this;
       if (!this.largeUrl) {
@@ -102,12 +109,12 @@ export default {
       }
 
       if (this.hasLargeThumbnail) {
-        window.open(this.largeUrl, '_blank');
+        this.openLargeThumbnailUrl(this.largeUrl);
       } else {
         this.loadLarge = true;
         $.getJSON(this.largeUrl, function(data) {
           that.loadLarge = false;
-          window.open(data.url, '_blank');
+          that.openLargeThumbnailUrl(data.url);
         }).fail(function() {
           that.loadLarge = false;
           that.error = 'Could not generate large thumbnail for this image';
