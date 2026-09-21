@@ -251,6 +251,7 @@ export {
   datetimeFormat,
   siteToColor,
   siteCodeToName,
+  isSoarInstrument,
   arcDefaultExposureTime,
   lampFlatDefaultExposureTime,
   observatoryCodeToNumber,
