@@ -112,8 +112,14 @@
                     <h3>Calibration frames</h3>
                     <p>
                       We recommend that you schedule calibration frames with a spectrum type configuration. Click
-                      <em>'Create calibration frames'</em> to add four calibration configurations to this request: one arc and one flat before and one
-                      arc and one flat after your spectrum.
+                      <em>'Create calibration frames'</em>
+                      <span v-if="isSoarInstrument(slotProps.data.configuration.instrument_type)">
+                        to add an arc calibration configuration to the end of this request.
+                      </span>
+                      <span v-else>
+                        to add four calibration configurations to this request: one arc and one flat before and one arc and one flat after your
+                        spectrum.
+                      </span>
                     </p>
                     <b-button
                       variant="outline-primary"
@@ -335,7 +341,15 @@ import { OCSUtil } from 'ocs-component-lib';
 
 import Archive from '@/components/Archive.vue';
 import InstrumentConfigForm from '@/components/InstrumentConfigForm.vue';
-import { siteToColor, siteCodeToName, tooltipConfig, julianToModifiedJulian, lampFlatDefaultExposureTime, arcDefaultExposureTime } from '@/utils.js';
+import {
+  siteToColor,
+  siteCodeToName,
+  tooltipConfig,
+  julianToModifiedJulian,
+  isSoarInstrument,
+  lampFlatDefaultExposureTime,
+  arcDefaultExposureTime
+} from '@/utils.js';
 
 export default {
   name: 'Compose',
@@ -736,6 +750,8 @@ export default {
     });
   },
   methods: {
+    // Exposed as a method so that it can be used within the template
+    isSoarInstrument: isSoarInstrument,
     newfirmAndTooLong: function(position) {
       let config = this.requestGroup.requests[position.requestIndex].configurations[position.configurationIndex];
       if (config.instrument_type == 'BLANCO_NEWFIRM' && config.instrument_configs[position.instrumentConfigIndex].exposure_time >= 5.0) {
@@ -1038,52 +1054,37 @@ export default {
           callback();
         });
     }, 500),
-    generateCalibs: function(configurationIndex, requestIndex) {
-      let request = this.requestGroup.requests[requestIndex];
-      let instrumentType = _.get(request, ['configurations', configurationIndex, 'instrument_type'], '');
-      let calibs = [{}, {}, {}, {}];
-      for (let c in calibs) {
-        calibs[c] = _.cloneDeep(request.configurations[configurationIndex]);
-        for (let ic in calibs[c].instrument_configs) {
-          calibs[c].instrument_configs[ic].exposure_time = arcDefaultExposureTime(instrumentType);
+    makeCalibConfiguration: function(configuration, type) {
+      // Create an ARC or LAMP_FLAT calibration configuration based on the given science configuration
+      let calib = _.cloneDeep(configuration);
+      let instrumentType = _.get(configuration, ['instrument_type'], '');
+      calib.type = type;
+      calib.guiding_config.optional = true;
+      calib.guiding_config.mode = 'ON';
+      calib.acquisition_config.extra_params = {};
+      calib.acquisition_config.mode = 'OFF';
+      for (let instrumentConfig of calib.instrument_configs) {
+        if (type === 'LAMP_FLAT') {
+          instrumentConfig.exposure_time = lampFlatDefaultExposureTime(instrumentConfig.optical_elements.slit, instrumentType, instrumentConfig.mode);
+        } else {
+          instrumentConfig.exposure_time = arcDefaultExposureTime(instrumentType);
         }
       }
-      calibs[0].type = 'LAMP_FLAT';
-      calibs[1].type = 'ARC';
-      calibs[0].guiding_config.optional = true;
-      calibs[1].guiding_config.optional = true;
-      calibs[0].guiding_config.mode = 'ON';
-      calibs[1].guiding_config.mode = 'ON';
-      calibs[0].acquisition_config.extra_params = {};
-      calibs[1].acquisition_config.extra_params = {};
-      calibs[0].acquisition_config.mode = 'OFF';
-      calibs[1].acquisition_config.mode = 'OFF';
-      for (let ic in calibs[0].instrument_configs) {
-        calibs[0].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
-          calibs[0].instrument_configs[ic].optical_elements.slit,
-          instrumentType,
-          calibs[0].instrument_configs[ic].mode
-        );
+      return calib;
+    },
+    generateCalibs: function(configurationIndex, requestIndex) {
+      let request = this.requestGroup.requests[requestIndex];
+      let configuration = request.configurations[configurationIndex];
+      // LCO Spectrographs get a lamp flat / arc sandwich around the spectrum configuration
+      // SOAR instruments only need a single arc taken after the spectrum configuration
+      let isSoar = isSoarInstrument(_.get(configuration, ['instrument_type'], ''));
+      if (!isSoar) {
+        request.configurations.unshift(this.makeCalibConfiguration(configuration, 'LAMP_FLAT'), this.makeCalibConfiguration(configuration, 'ARC'));
       }
-      request.configurations.unshift(calibs[0], calibs[1]);
-      calibs[2].type = 'ARC';
-      calibs[3].type = 'LAMP_FLAT';
-      calibs[2].guiding_config.optional = true;
-      calibs[3].guiding_config.optional = true;
-      calibs[2].guiding_config.mode = 'ON';
-      calibs[3].guiding_config.mode = 'ON';
-      calibs[2].acquisition_config.extra_params = {};
-      calibs[3].acquisition_config.extra_params = {};
-      calibs[2].acquisition_config.mode = 'OFF';
-      calibs[3].acquisition_config.mode = 'OFF';
-      for (let ic in calibs[3].instrument_configs) {
-        calibs[3].instrument_configs[ic].exposure_time = lampFlatDefaultExposureTime(
-          calibs[3].instrument_configs[ic].optical_elements.slit,
-          instrumentType,
-          calibs[3].instrument_configs[ic].mode
-        );
+      request.configurations.push(this.makeCalibConfiguration(configuration, 'ARC'));
+      if (!isSoar) {
+        request.configurations.push(this.makeCalibConfiguration(configuration, 'LAMP_FLAT'));
       }
-      request.configurations.push(calibs[2], calibs[3]);
     }
   }
 };
