@@ -8,8 +8,8 @@
       </b-alert>
       <template v-else>
         <p>
-          Link user <strong>{{ $store.state.profile.username }}</strong> to proposal <strong>{{ invitation.proposal_title }}</strong> as a
-          {{ roleLabel }}. You can only do this once.
+          Link user <strong>{{ $store.state.profile.username }}</strong> to proposal
+          <strong>{{ invitation.proposal }}: {{ invitation.proposal_title }}</strong> as a {{ roleLabel }}. You can only do this once.
         </p>
         <b-button variant="primary" :disabled="accepting" @click="acceptInvitation">
           <b-spinner v-if="accepting" small></b-spinner>
