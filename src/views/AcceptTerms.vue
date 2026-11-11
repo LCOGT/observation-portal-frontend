@@ -60,8 +60,15 @@ export default {
           method: 'POST',
           url: this.url,
           success: function() {
-            let homePath = that.$router.resolve({ name: 'home' });
-            window.location.pathname = homePath.href;
+            // Reload the profile so the router guard sees the terms as accepted before continuing to the original destination
+            that.$store
+              .dispatch('getProfileData')
+              .then(function() {
+                that.$router.push(that.$route.query.next || { name: 'home' });
+              })
+              .catch(function() {
+                that.$store.commit('addMessage', { text: 'Terms accepted, please refresh the page', variant: 'danger' });
+              });
           },
           error: function() {
             that.$store.commit('addMessage', { text: 'There was a problem accepting the terms, please try again', variant: 'danger' });

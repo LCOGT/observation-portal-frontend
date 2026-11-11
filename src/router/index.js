@@ -18,6 +18,7 @@ import ProposalReviewDashboard from '../views/ProposalReviewDashboard.vue';
 import ProposalReviewUserDetail from '../views/ProposalReviewUserDetail.vue';
 import ProposalReviewPanelDetail from '../views/ProposalReviewPanelDetail.vue';
 import ProposalDetail from '../views/ProposalDetail.vue';
+import ProposalInvitation from '../views/ProposalInvitation.vue';
 import SemesterDetail from '../views/SemesterDetail.vue';
 import SemesterDetailCurrent from '../views/SemesterDetailCurrent.vue';
 import SemesterAdminTable from '../views/SemesterAdminTable.vue';
@@ -97,6 +98,15 @@ const routes = [
     props: true,
     meta: {
       title: 'Proposal Detail',
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/proposal-invitation',
+    name: 'proposalInvitation',
+    component: ProposalInvitation,
+    meta: {
+      title: 'Proposal Invitation',
       requiresAuth: true
     }
   },
@@ -340,7 +350,7 @@ router.beforeEach((to, from, next) => {
   // Redirect to the Accept Terms page if the user is logged in but has not
   // yet accepted the terms.
   if (store.state.userIsAuthenticated && !store.state.userAcceptedTerms && to.name !== 'passwordChange' && to.name !== 'acceptTerms') {
-    next({ name: 'acceptTerms' });
+    next({ name: 'acceptTerms', query: { next: to.fullPath } });
   } else {
     next();
   }

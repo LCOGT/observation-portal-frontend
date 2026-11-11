@@ -303,8 +303,9 @@ export default {
   data: function() {
     return {
       inviteCoIHelpText:
-        'Invite co-investigators by entering their email address below and clicking "invite". If you would like to add multiple address at once, enter' +
-        'them below, comma separated. If the user is already registered with LCO, they will be added to this proposal. If not, they will be invited.',
+        'Invite co-investigators by entering their email address below and clicking "invite". If you would like to add multiple address at once, enter ' +
+        'them below, comma separated. If the user is already registered with LCO, they will be added to this proposal. If not, they will be invited. ' +
+        'Invited users who already have an account under a different email address can use the link in their invitation email to join with that account.',
       tooltipConfig: tooltipConfig,
       // Changing this key forces a reload of the CoInvestigator table
       coInvestigatorTableKey: 0,
